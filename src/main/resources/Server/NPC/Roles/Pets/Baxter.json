@@ -1,0 +1,64 @@
+{
+  "Type": "Variant",
+  "Reference": "Template_Animal_Neutral",
+  "Modify": {
+    "Appearance": "Baxter",
+    "FlockArray": [
+      "Bunny",
+      "Rabbit"
+    ],
+    "LovedItems": [
+      "Ingredient_Poop"
+    ],
+    "DropList": "Drop_Bunny",
+    "MaxHealth": 500,
+    "MaxSpeed": 10,
+    "AlertedActionRange": 10,
+    "ChanceToTurnFriendly": 50,
+    "ChanceToTurnFriendlyWithAttractiveItem": 80,
+    "WeightGreet": 1,
+    "WeightFollowItem": 40,
+    "WeightFollow": 40,
+    "WeightIgnore": 10,
+    "Timid": true,
+    "IsMemory": true,
+    "MemoriesNameOverride": "Bunny",
+    "NameTranslationKey": {
+      "Compute": "NameTranslationKey"
+    }
+  },
+
+  "Parameters": {
+    "NameTranslationKey": {
+      "Value": "server.npcRoles.Baxter.name",
+      "Description": "Translation key for NPC name display"
+    }
+  },
+  "InteractionInstruction": {
+    "Instructions": [
+      {
+        "Continue": true,
+        "Sensor": {
+          "Type": "Any"
+        },
+        "Actions": [
+          {
+            "Type": "SetInteractable",
+            "Interactable": true,
+            "Hint": "Talk to Baxter"
+          }
+        ]
+      },
+      {
+        "Sensor": {
+          "Type": "HasInteracted"
+        },
+        "Actions": [
+          {
+            "Type": "BaxterTalk"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "Group": "org.tact",
+  "Name": "Famished",
+  "Version": "1.0.0",
+  "Description": "Your description",
+  "Authors": [
+    {
+      "Name": "Tact"
+    }
+  ],
+  "Website": "",
+  "ServerVersion": "*",
+  "Dependencies": {
+    "Hytale:NPC": "*"
+  },
+  "OptionalDependencies": {},
+  "DisabledByDefault": false,
+  "Main": "org.tact.Famished",
+  "IncludesAssetPack": true
+}

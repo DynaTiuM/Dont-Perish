@@ -1,0 +1,34 @@
+{
+  "Model": "NPC/Pets/Baxter/Models/Model.blockymodel",
+  "Texture": "NPC/Pets/Baxter/Models/Texture.png",
+  "EyeHeight": 0.5,
+  "CrouchOffset": -0.2,
+  "HitBox": {
+    "Max": {
+      "X": 1,
+      "Y": 1,
+      "Z": 1
+    },
+    "Min": {
+      "X": 0,
+      "Y": 0,
+      "Z": 0
+    }
+  },
+  "AnimationSets": {
+    "OpenChest": {
+      "Animations": [
+        {
+          "Animation": "NPC/Pets/Baxter/Animations/Baxter_Open.blockyanim"
+        }
+      ]
+    },
+    "CloseChest": {
+      "Animations": [
+        {
+          "Animation": "NPC/Pets/Baxter/Animations/Baxter_Close.blockyanim"
+        }
+      ]
+    }
+  }
+}

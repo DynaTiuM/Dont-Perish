@@ -1,0 +1,46 @@
+{
+  "TranslationProperties": {
+    "Name": "items.Baxter.name",
+    "Description": "Baxter"
+  },
+  "Icon": "Icons/ItemsGenerated/Aurora.png",
+  "Model": "Items/Baxter/Model.blockymodel",
+  "Texture": "Items/Baxter/Texture.png",
+  "Quality": "Common",
+  "MaxStack": 1,
+  "ItemLevel": 3,
+  "Categories": [
+    "Items.Tools"
+  ],
+  "Tags": {
+    "Type": [
+      "Tool"
+    ],
+    "Family": [
+      "Fishing_Rod"
+    ]
+  },
+  "IconProperties": {
+    "Scale": 1.1,
+    "Rotation": [
+      350,
+      112,
+      0
+    ],
+    "Translation": [
+      1,
+      -6
+    ]
+  },
+  "Interactions": {
+    "Secondary": {
+      "Interactions": [
+        {
+          "Type": "SpawnBaxter"
+        }
+      ]
+    }
+  },
+  "Set": "",
+  "Scale": 1
+}
