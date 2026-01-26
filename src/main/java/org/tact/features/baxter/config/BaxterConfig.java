@@ -17,7 +17,6 @@ public class BaxterConfig {
     public String inventoryTitle = "Baxter's inventory";
 
     public BaxterConfig() {
-
     }
 
     static {
@@ -39,7 +38,7 @@ public class BaxterConfig {
                 (cfg, v) -> cfg.teleportThreshold = v,
                 cfg -> cfg.teleportThreshold);
 
-        b.append(new KeyedCodec<>("flySpeed", Codec.FLOAT),
+        b.append(new KeyedCodec<>("FlySpeed", Codec.FLOAT),
                 (cfg, v) -> cfg.flySpeed = v,
                 cfg -> cfg.flySpeed);
 
