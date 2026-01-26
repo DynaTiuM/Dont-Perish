@@ -1,9 +1,6 @@
-package org.tact.systems;
+package org.tact.features.baxter.system;
 
-import com.hypixel.hytale.component.ArchetypeChunk;
-import com.hypixel.hytale.component.CommandBuffer;
-import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.math.vector.Vector3d;
@@ -13,12 +10,30 @@ import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
-import org.tact.DontPerish;
-import org.tact.components.BaxterComponent;
+import org.tact.features.baxter.component.BaxterComponent;
+import org.tact.features.baxter.config.BaxterConfig;
 
 import javax.annotation.Nonnull;
 
-public class BaxterSystem extends EntityTickingSystem<EntityStore> {
+public class BaxterMovementSystem extends EntityTickingSystem<EntityStore> {
+
+    private final BaxterConfig config;
+
+    public BaxterMovementSystem(
+            BaxterConfig config
+    ) {
+        this.config = config;
+    }
+
+    @NullableDecl
+    @Override
+    public Query<EntityStore> getQuery() {
+        return Query.and(
+                BaxterComponent.getComponentType(),
+                TransformComponent.getComponentType(),
+                Velocity.getComponentType()
+        );
+    }
 
     @Override
     public void tick(float dt, int index,
@@ -52,7 +67,7 @@ public class BaxterSystem extends EntityTickingSystem<EntityStore> {
 
         double dist3D = Math.sqrt(dx*dx + dy*dy + dz*dz);
 
-        if (dist3D > 20.0) {
+        if (dist3D > config.teleportThreshold) {
             baxterTransform.setPosition(ownerPos.clone().add(1.0, 1.5, 0));
             velocityComp.set(Vector3d.ZERO);
             return;
@@ -63,7 +78,7 @@ public class BaxterSystem extends EntityTickingSystem<EntityStore> {
             baxterTransform.setRotation(new Vector3f(0f, yawRad, 0f));
         }
 
-        double stopDist = Math.max(1.5, baxterComp.getStopDistance());
+        double stopDist = Math.max(1.5F, config.minFollowDistance);
 
         double targetX, targetZ;
 
@@ -77,16 +92,14 @@ public class BaxterSystem extends EntityTickingSystem<EntityStore> {
             targetX = ownerPos.x + (dirX * stopDist);
             targetZ = ownerPos.z + (dirZ * stopDist);
         }
-
+        double baseSpeed = config.movementSpeed;
         double distToTargetXZ = Math.sqrt(Math.pow(targetX - currentPos.x, 2) + Math.pow(targetZ - currentPos.z, 2));
+        double effectiveSpeed = (distToTargetXZ > 2.0) ? baseSpeed : (baseSpeed * 0.5);
 
-        double lerpSpeedXZ = 3.0;
-        if (distToTargetXZ > 2.0) lerpSpeedXZ = 6.0;
+        double alphaXZ = Math.min(1.0, effectiveSpeed * dt);
 
-        double alphaXZ = Math.min(1.0, lerpSpeedXZ * dt);
-
-        double lerpSpeedY = 10.0;
-        double alphaY = Math.min(1.0, lerpSpeedY * dt);
+        double flySpeed = config.flySpeed;
+        double alphaY = Math.min(1.0, flySpeed * dt);
 
         double nextX = currentPos.x + (targetX - currentPos.x) * alphaXZ;
         double nextZ = currentPos.z + (targetZ - currentPos.z) * alphaXZ;
@@ -102,11 +115,5 @@ public class BaxterSystem extends EntityTickingSystem<EntityStore> {
                     (nextZ - currentPos.z) / dt
             ));
         }
-    }
-
-    @NullableDecl
-    @Override
-    public Query<EntityStore> getQuery() {
-        return DontPerish.baxterComponent;
     }
 }

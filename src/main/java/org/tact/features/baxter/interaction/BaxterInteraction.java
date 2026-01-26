@@ -1,25 +1,6 @@
-package org.tact.interactions;
+package org.tact.features.baxter.interaction;
 
-import com.hypixel.hytale.codec.builder.BuilderCodec;
-import com.hypixel.hytale.component.*;
-import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3f;
-import com.hypixel.hytale.protocol.InteractionType;
-import com.hypixel.hytale.server.core.Message;
-import com.hypixel.hytale.server.core.asset.type.model.config.Model;
-import com.hypixel.hytale.server.core.asset.type.model.config.ModelAsset;
-import com.hypixel.hytale.server.core.entity.InteractionContext;
-import com.hypixel.hytale.server.core.entity.UUIDComponent;
-import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.modules.entity.component.*;
-import com.hypixel.hytale.server.core.modules.entity.tracker.NetworkId;
-import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
-import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInstantInteraction;
-import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
-import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.hypixel.hytale.server.npc.entities.NPCEntity;
-import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
-import org.tact.components.BaxterComponent;
+/*import org.tact.components.BaxterComponent;
 import org.tact.services.SpawnResultHandler;
 
 import java.util.UUID;
@@ -85,4 +66,4 @@ public class BaxterInteraction extends SimpleInstantInteraction {
 
         resultHandler.handleSuccess(player, holder, "Baxter");
     }
-}
+}*/

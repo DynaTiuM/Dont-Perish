@@ -1,0 +1,46 @@
+@DefaultItemSlotsPerRow = 9;
+@DefaultItemSlotSpacing = 2;
+@DefaultItemSlotSize = 74;
+@DefaultItemGridPadding = 2;
+@DefaultItemSlotsSelector = 4;
+
+@BottomMargin = 30;
+@ContainerMargin = 6;
+
+@InventoryClosedContainerMargin = @BottomMargin + @ContainerMargin;
+@InventoryOpenedContainerMargin = 0;
+@SpecialSlotHighlightSize = 88;
+
+@HotbarSlotSpacingHud = 4;
+@HotbarSlotSpacingMenu = 2;
+@HotbarWidthHud = @DefaultItemSlotSize * @DefaultItemSlotsPerRow + @HotbarSlotSpacingHud * @DefaultItemSlotsPerRow;
+@HotbarWidthMenu = @DefaultItemSlotSize * @DefaultItemSlotsPerRow + @HotbarSlotSpacingMenu * @DefaultItemSlotsPerRow;
+@HotbarHeight = @DefaultItemSlotSize + (2 * @DefaultItemGridPadding);
+
+@Icon = "Textures/HungerIcon.png";
+@Bar = "Textures/HungerBar.png";
+
+Group {
+  LayoutMode: Bottom;
+  Anchor: (Bottom: @InventoryClosedContainerMargin + @HotbarHeight + 32, Width: @HotbarWidthHud, Height: 12);
+
+  Group {
+    LayoutMode: Right;
+
+    Group {
+      Anchor: (Left: 0, Width: 318, Height: 12);
+      Background: "Textures/HungerBarBg.png";
+
+      ProgressBar #ProgressBar {
+        Anchor: (Width: 318, Height: 12);
+        BarTexturePath: @Bar;
+        Visible: true;
+      }
+    }
+
+    Group #Icon {
+      Anchor: (Left: 4, Width: 24, Height: 24, Right: 0, Top: -9);
+      Background: @Icon;
+    }
+  }
+}

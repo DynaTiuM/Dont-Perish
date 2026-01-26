@@ -1,0 +1,67 @@
+package org.tact.core;
+
+import com.hypixel.hytale.server.core.plugin.JavaPlugin;
+import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
+import com.hypixel.hytale.server.core.util.Config;
+import org.tact.commands.BaxterCommand;
+import org.tact.core.config.ModConfig;
+import org.tact.core.registry.FeatureRegistry;
+import org.tact.features.baxter.BaxterFeature;
+import org.tact.features.hunger.HungerFeature;
+
+import javax.annotation.Nonnull;
+import java.util.logging.Logger;
+
+public class DontPerishPlugin extends JavaPlugin {
+    private static final Logger LOGGER = Logger.getLogger(DontPerishPlugin.class.getName());
+
+    private final Config<ModConfig> configWrapper;
+    private ModConfig modConfig;
+    private FeatureRegistry featureRegistry;
+
+    public DontPerishPlugin(@Nonnull JavaPluginInit init) {
+        super(init);
+        this.configWrapper = this.withConfig("DontPerish", ModConfig.CODEC);
+    }
+
+    @Override
+    protected void setup() {
+        LOGGER.info("Initializing DontPerish mod...");
+
+        modConfig = configWrapper.get();
+
+        featureRegistry = new FeatureRegistry();
+        getCommandRegistry().registerCommand(new BaxterCommand(modConfig.baxter));
+
+        registerFeatures();
+
+        featureRegistry.getEnabledFeatures().forEach(feature -> {
+            LOGGER.info("Setting up feature: " + feature.getId());
+            feature.registerComponents(this);
+            feature.registerEvents(this);
+            feature.registerSystems(this);
+        });
+        this.configWrapper.save();
+    }
+
+    @Override
+    protected void start() {
+        LOGGER.info("Starting DontPerish mod...");
+
+        featureRegistry.getEnabledFeatures().forEach(feature -> {
+            LOGGER.info("Enabling feature: " + feature.getId());
+            feature.enable(this);
+        });
+
+        LOGGER.info("DontPerish mod successfully started!");
+    }
+
+    private void registerFeatures() {
+        featureRegistry.register(new HungerFeature(modConfig.hunger));
+        featureRegistry.register(new BaxterFeature(modConfig.baxter));
+    }
+
+    public ModConfig getModConfig() {
+        return modConfig;
+    }
+}

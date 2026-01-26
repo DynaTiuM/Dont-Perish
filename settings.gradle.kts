@@ -1,2 +1,2 @@
-rootProject.name = "DontPerish"
+rootProject.name = "DontPerishPlugin"
 

@@ -15,6 +15,6 @@
   },
   "OptionalDependencies": {},
   "DisabledByDefault": false,
-  "Main": "org.tact.DontPerish",
+  "Main": "org.tact.core.DontPerishPlugin",
   "IncludesAssetPack": true
 }

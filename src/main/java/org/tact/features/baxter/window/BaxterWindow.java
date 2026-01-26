@@ -1,4 +1,4 @@
-package org.tact.windows;
+package org.tact.features.baxter.window;
 
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;

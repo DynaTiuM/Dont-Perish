@@ -4,7 +4,6 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
-import com.hypixel.hytale.protocol.AnimationSlot;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.asset.type.model.config.Model;
 import com.hypixel.hytale.server.core.asset.type.model.config.ModelAsset;
@@ -21,15 +20,19 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import it.unimi.dsi.fastutil.Pair;
-import org.tact.components.BaxterComponent;
-import org.tact.components.BaxterInventoryComponent;
+import org.tact.features.baxter.component.BaxterComponent;
+import org.tact.features.baxter.component.BaxterInventoryComponent;
+import org.tact.features.baxter.config.BaxterConfig;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class BaxterCommand extends AbstractPlayerCommand {
-    public BaxterCommand() {
+    private final BaxterConfig config;
+
+    public BaxterCommand(BaxterConfig config) {
         super("baxter", "Test Spawning Baxter with NPC");
+        this.config = config;
     }
 
     @Override
@@ -45,7 +48,6 @@ public class BaxterCommand extends AbstractPlayerCommand {
         ModelAsset modelAsset = ModelAsset.getAssetMap().getAsset("Baxter");
         if (modelAsset == null) modelAsset = ModelAsset.DEBUG;
         Model model = Model.createScaledModel(modelAsset, 1.0f);
-
 
         world.execute(() -> {
             TransformComponent transformComponent = store.getComponent(ref, TransformComponent.getComponentType());
@@ -65,11 +67,19 @@ public class BaxterCommand extends AbstractPlayerCommand {
 
             UUIDComponent ownerUUID = store.getComponent(ref, UUIDComponent.getComponentType());
             store.addComponent(npcRef, BaxterComponent.getComponentType(), new BaxterComponent(ownerUUID.getUuid()));
-            store.addComponent(npcRef, BaxterInventoryComponent.getComponentType(), new BaxterInventoryComponent());
+            store.addComponent(npcRef, BaxterInventoryComponent.getComponentType(),
+                    new BaxterInventoryComponent(config.inventorySize));
 
             store.putComponent(npcRef, ActiveAnimationComponent.getComponentType(), new ActiveAnimationComponent());
 
-            store.putComponent(npcRef, TransformComponent.getComponentType(), new TransformComponent(transformComponent.getPosition().clone().add(0, 1, 0), new Vector3f()));
+            store.putComponent(
+                    npcRef,
+                    TransformComponent.getComponentType(),
+                    new TransformComponent(
+                            transformComponent.getPosition().clone().add(0, 1, 0),
+                            new Vector3f()
+                    )
+            );
             store.putComponent(npcRef, Velocity.getComponentType(), new Velocity(new Vector3d(0, 0, 0)));
             store.putComponent(npcRef, UUIDComponent.getComponentType(), new UUIDComponent(UUID.randomUUID()));
             if (model.getBoundingBox() != null) {

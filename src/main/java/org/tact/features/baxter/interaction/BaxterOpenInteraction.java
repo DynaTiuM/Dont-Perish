@@ -1,4 +1,4 @@
-package org.tact.interactions;
+package org.tact.features.baxter.interaction;
 
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
@@ -19,9 +19,9 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Sim
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
-import org.tact.components.BaxterComponent;
-import org.tact.components.BaxterInventoryComponent;
-import org.tact.windows.BaxterWindow;
+import org.tact.features.baxter.component.BaxterComponent;
+import org.tact.features.baxter.component.BaxterInventoryComponent;
+import org.tact.features.baxter.window.BaxterWindow;
 
 public class BaxterOpenInteraction extends SimpleInstantInteraction {
 
@@ -61,7 +61,6 @@ public class BaxterOpenInteraction extends SimpleInstantInteraction {
             player.sendMessage(Message.raw("This chest belongs to someone else!"));
         }
     }
-
 
     private void openBaxter(Player player, Ref<EntityStore> baxterRef, BaxterInventoryComponent invComp) {
         if (baxterRef != null && baxterRef.isValid()) {
