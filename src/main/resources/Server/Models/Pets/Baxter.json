@@ -16,17 +16,21 @@
     }
   },
   "AnimationSets": {
-    "OpenChest": {
+    "OpenBaxter": {
       "Animations": [
         {
-          "Animation": "NPC/Pets/Baxter/Animations/Baxter_Open.blockyanim"
+          "Animation": "NPC/Pets/Baxter/Animations/Baxter_Open.blockyanim",
+          "Looping": false,
+          "SoundEventId": "SFX_Chest_Wooden_Open"
         }
       ]
     },
-    "CloseChest": {
+    "CloseBaxter": {
       "Animations": [
         {
-          "Animation": "NPC/Pets/Baxter/Animations/Baxter_Close.blockyanim"
+          "Animation": "NPC/Pets/Baxter/Animations/Baxter_Close.blockyanim",
+          "Looping": false,
+          "SoundEventId": "SFX_Chest_Wooden_Close"
         }
       ]
     }

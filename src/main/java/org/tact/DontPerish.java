@@ -10,7 +10,6 @@ import org.tact.components.BaxterComponent;
 
 import org.tact.components.BaxterInventoryComponent;
 import org.tact.interactions.BaxterOpenInteraction;
-import org.tact.systems.BaxterDeathSystem;
 import org.tact.systems.BaxterSystem;
 
 import javax.annotation.Nonnull;
@@ -30,8 +29,6 @@ public class DontPerish extends JavaPlugin {
         this.getCodecRegistry(Interaction.CODEC).register("OpenBaxter", BaxterOpenInteraction.class, BaxterOpenInteraction.CODEC);
         this.getEntityStoreRegistry().registerSystem(new BaxterSystem());
         this.getCommandRegistry().registerCommand(new BaxterCommand());
-
-        this.getEntityStoreRegistry().registerSystem(new BaxterDeathSystem());
 
     }
 }

@@ -27,18 +27,12 @@ public class BaxterSystem extends EntityTickingSystem<EntityStore> {
                      @Nonnull CommandBuffer<EntityStore> commandBuffer) {
 
         Ref<EntityStore> baxterRef = archetypeChunk.getReferenceTo(index);
-
-        BaxterComponent baxterComp =
-                store.getComponent(baxterRef, BaxterComponent.getComponentType());
-        TransformComponent baxterTransform =
-                store.getComponent(baxterRef, TransformComponent.getComponentType());
-        Velocity velocityComp =
-                store.getComponent(baxterRef, Velocity.getComponentType());
+        BaxterComponent baxterComp = store.getComponent(baxterRef, BaxterComponent.getComponentType());
+        TransformComponent baxterTransform = store.getComponent(baxterRef, TransformComponent.getComponentType());
+        Velocity velocityComp = store.getComponent(baxterRef, Velocity.getComponentType());
 
         World world = commandBuffer.getExternalData().getWorld();
-
         Vector3d currentPos = baxterTransform.getPosition();
-        Vector3d currentVel = velocityComp.getVelocity();
 
         Ref<EntityStore> ownerRef = world.getEntityStore().getRefFromUUID(baxterComp.getOwnerUUID());
         if (ownerRef == null || !ownerRef.isValid()) return;
@@ -46,61 +40,68 @@ public class BaxterSystem extends EntityTickingSystem<EntityStore> {
         TransformComponent ownerTransform = store.getComponent(ownerRef, TransformComponent.getComponentType());
         if (ownerTransform == null) return;
 
-        Vector3d targetPos = ownerTransform.getPosition();
+        Vector3d ownerPos = ownerTransform.getPosition();
 
-        // Rotation
-        double dx = targetPos.x - currentPos.x;
-        double dz = targetPos.z - currentPos.z;
+        double dx = currentPos.x - ownerPos.x;
+        double dz = currentPos.z - ownerPos.z;
 
-        if (dx * dx + dz * dz > 0.0001) {
-            float yawRad = (float) Math.atan2(dx, dz) + (float) Math.PI;
+        double distH = Math.sqrt(dx*dx + dz*dz);
 
-            baxterTransform.setRotation(new Vector3f(0f, yawRad, 0f));
-        }
+        double idealY = ownerPos.y + 3;
+        double dy = idealY - currentPos.y;
 
-        // Movement
-        double dy = (targetPos.y + 1.5) - currentPos.y;
-        double distance = Math.sqrt(dx * dx + dz * dz);
+        double dist3D = Math.sqrt(dx*dx + dy*dy + dz*dz);
 
-        double deadZone = 0.2;
-
-        double targetVelX = 0;
-        double targetVelZ = 0;
-        double friction;
-
-        double distError = distance - baxterComp.getStopDistance();
-
-        double dirX = (distance > 0) ? dx / distance : 0;
-        double dirZ = (distance > 0) ? dz / distance : 0;
-
-        if (distance > 20.0) {
-            baxterTransform.setPosition(targetPos.clone().add(0, 1.5, 0));
+        if (dist3D > 20.0) {
+            baxterTransform.setPosition(ownerPos.clone().add(1.0, 1.5, 0));
             velocityComp.set(Vector3d.ZERO);
             return;
         }
 
-        if (Math.abs(distError) > deadZone) {
-            if (distError > 0) {
-                targetVelX = dirX * baxterComp.getSpeed();
-                targetVelZ = dirZ * baxterComp.getSpeed();
-                friction = 0.9;
-            } else {
-                targetVelX = -dirX * baxterComp.getSpeed() * 0.5;
-                targetVelZ = -dirZ * baxterComp.getSpeed() * 0.5;
-                friction = 0.8;
-            }
-        } else {
-            friction = 0.5;
+        if (distH > 0.1) {
+            float yawRad = (float) (Math.atan2(-dx, -dz) + Math.PI);
+            baxterTransform.setRotation(new Vector3f(0f, yawRad, 0f));
         }
 
-        double targetVelY = dy * 0.1;
+        double stopDist = Math.max(1.5, baxterComp.getStopDistance());
 
-        double newX = (currentVel.x * friction) + (targetVelX * (1.0 - friction));
-        double newY = (currentVel.y * 0.9) + (targetVelY * 0.1);
-        double newZ = (currentVel.z * friction) + (targetVelZ * (1.0 - friction));
+        double targetX, targetZ;
 
-        velocityComp.set(new Vector3d(newX, newY, newZ));
-        baxterTransform.setPosition(currentPos.add(newX, newY, newZ));
+        if (distH < 0.1) {
+            targetX = ownerPos.x + stopDist;
+            targetZ = ownerPos.z;
+        } else {
+            double dirX = dx / distH;
+            double dirZ = dz / distH;
+
+            targetX = ownerPos.x + (dirX * stopDist);
+            targetZ = ownerPos.z + (dirZ * stopDist);
+        }
+
+        double distToTargetXZ = Math.sqrt(Math.pow(targetX - currentPos.x, 2) + Math.pow(targetZ - currentPos.z, 2));
+
+        double lerpSpeedXZ = 3.0;
+        if (distToTargetXZ > 2.0) lerpSpeedXZ = 6.0;
+
+        double alphaXZ = Math.min(1.0, lerpSpeedXZ * dt);
+
+        double lerpSpeedY = 10.0;
+        double alphaY = Math.min(1.0, lerpSpeedY * dt);
+
+        double nextX = currentPos.x + (targetX - currentPos.x) * alphaXZ;
+        double nextZ = currentPos.z + (targetZ - currentPos.z) * alphaXZ;
+
+        double nextY = currentPos.y + (idealY - currentPos.y) * alphaY;
+
+        baxterTransform.setPosition(new Vector3d(nextX, nextY, nextZ));
+
+        if (dt > 0) {
+            velocityComp.set(new Vector3d(
+                    (nextX - currentPos.x) / dt,
+                    (nextY - currentPos.y) / dt,
+                    (nextZ - currentPos.z) / dt
+            ));
+        }
     }
 
     @NullableDecl

@@ -3,26 +3,21 @@
   "Reference": "Template_Animal_Neutral",
   "Modify": {
     "Appearance": "Baxter",
-    "FlockArray": [
-      "Bunny",
-      "Rabbit"
-    ],
     "LovedItems": [
       "Ingredient_Poop"
     ],
-    "DropList": "Drop_Bunny",
     "MaxHealth": 500,
     "MaxSpeed": 10,
     "AlertedActionRange": 10,
-    "ChanceToTurnFriendly": 50,
-    "ChanceToTurnFriendlyWithAttractiveItem": 80,
+    "ChanceToTurnFriendly": 0,
+    "ChanceToTurnFriendlyWithAttractiveItem": 0,
     "WeightGreet": 1,
     "WeightFollowItem": 40,
     "WeightFollow": 40,
     "WeightIgnore": 10,
-    "Timid": true,
+    "Timid": false,
     "IsMemory": true,
-    "MemoriesNameOverride": "Bunny",
+    "MemoriesNameOverride": "Baxter",
     "NameTranslationKey": {
       "Compute": "NameTranslationKey"
     }

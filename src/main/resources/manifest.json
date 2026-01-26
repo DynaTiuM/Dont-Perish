@@ -1,6 +1,6 @@
 {
   "Group": "org.tact",
-  "Name": "Famished",
+  "Name": "Don't Perish",
   "Version": "1.0.0",
   "Description": "Your description",
   "Authors": [
@@ -15,6 +15,6 @@
   },
   "OptionalDependencies": {},
   "DisabledByDefault": false,
-  "Main": "org.tact.Famished",
+  "Main": "org.tact.DontPerish",
   "IncludesAssetPack": true
 }

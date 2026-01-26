@@ -8,12 +8,12 @@ import com.hypixel.hytale.protocol.AnimationSlot;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.protocol.packets.interface_.Page;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.entity.AnimationUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.UUIDComponent;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.windows.ContainerWindow;
 import com.hypixel.hytale.server.core.inventory.container.SimpleItemContainer;
-import com.hypixel.hytale.server.core.modules.entity.component.ActiveAnimationComponent;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInstantInteraction;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -21,6 +21,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.tact.components.BaxterComponent;
 import org.tact.components.BaxterInventoryComponent;
+import org.tact.windows.BaxterWindow;
 
 public class BaxterOpenInteraction extends SimpleInstantInteraction {
 
@@ -68,24 +69,19 @@ public class BaxterOpenInteraction extends SimpleInstantInteraction {
             World targetWorld = (targetStore.getExternalData()).getWorld();
 
             targetWorld.execute(() -> {
+
                 SimpleItemContainer baxterInventory = invComp.getInventory();
+
+                ContainerWindow containerWindow = new BaxterWindow(baxterInventory, baxterRef, targetStore);
+
                 player.getPageManager().setPageWithWindows(
                         player.getReference(),
                         player.getReference().getStore(),
                         Page.Bench,
                         true,
-                        new ContainerWindow(baxterInventory)
+                        containerWindow
                 );
-
-                // TODO: Animation doesn't work for some reasons
-                ActiveAnimationComponent animComp = targetStore.getComponent(baxterRef, ActiveAnimationComponent.getComponentType());
-                if (animComp != null) {
-                    player.sendMessage(Message.raw("Opening Chest Animation"));
-                    animComp.setPlayingAnimation(AnimationSlot.Action, "OpenChest");
-                }
-                else {
-                    player.sendMessage(Message.raw("NOPE"));
-                }
+                AnimationUtils.playAnimation(baxterRef, AnimationSlot.Action, "OpenBaxter", targetStore);
             });
         } else {
             player.sendMessage(MESSAGE_COMMANDS_ERRORS_PLAYER_NOT_IN_WORLD);

@@ -2,7 +2,7 @@ package org.tact.components;
 
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
-import com.hypixel.hytale.server.core.inventory.container.SimpleItemContainer; // L'import correct
+import com.hypixel.hytale.server.core.inventory.container.SimpleItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.DontPerish;
 

@@ -1,2 +1,2 @@
-rootProject.name = "Famished"
+rootProject.name = "DontPerish"
 

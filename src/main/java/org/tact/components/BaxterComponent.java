@@ -10,8 +10,8 @@ import java.util.UUID;
 public class BaxterComponent implements Component<EntityStore> {
 
     private UUID ownerUUID;
-    private float speed = 0.25f;
-    private float stopDistance = 2.75f;
+    private float speed = 15f;
+    private float stopDistance = 3f;
 
     public BaxterComponent(UUID ownerUUID) {
         this.ownerUUID = ownerUUID;
