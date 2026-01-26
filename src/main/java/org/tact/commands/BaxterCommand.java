@@ -62,7 +62,7 @@ public class BaxterCommand extends AbstractPlayerCommand {
             );
             assert npcPair != null;
             Ref<EntityStore> npcRef = npcPair.first();
-            addInteraction(store, npcRef);
+
             store.tryRemoveComponent(npcRef, StandardPhysicsProvider.getComponentType());
 
             UUIDComponent ownerUUID = store.getComponent(ref, UUIDComponent.getComponentType());
@@ -86,13 +86,5 @@ public class BaxterCommand extends AbstractPlayerCommand {
                 store.putComponent(npcRef, BoundingBox.getComponentType(), new BoundingBox(model.getBoundingBox()));
             }
         });
-    }
-
-    private void addInteraction(Store<EntityStore> store, Ref<EntityStore> npcRef) {
-        store.ensureComponent(npcRef, Interactable.getComponentType());
-        Interactions interactions = new Interactions();
-        interactions.setInteractionId(InteractionType.Use, "Root_Baxter_Use");
-        interactions.setInteractionHint("Open Baxter");
-        store.putComponent(npcRef, Interactions.getComponentType(), interactions);
     }
 }

@@ -7,6 +7,7 @@ import org.tact.features.baxter.component.BaxterComponent;
 import org.tact.features.baxter.component.BaxterInventoryComponent;
 import org.tact.features.baxter.config.BaxterConfig;
 import org.tact.features.baxter.interaction.BaxterOpenInteraction;
+import org.tact.features.baxter.system.BaxterInteractionSystem;
 import org.tact.features.baxter.system.BaxterMovementSystem;
 
 public class BaxterFeature implements Feature {
@@ -24,18 +25,24 @@ public class BaxterFeature implements Feature {
     @Override
     public void registerComponents(JavaPlugin plugin) {
         BaxterComponent.TYPE =
-                plugin.getEntityStoreRegistry().registerComponent(BaxterComponent.class, BaxterComponent::new);
+            plugin.getEntityStoreRegistry().registerComponent(
+                    BaxterComponent.class,
+                    "baxter_component",
+                    BaxterComponent.CODEC
+            );
 
         BaxterInventoryComponent.TYPE =
             plugin.getEntityStoreRegistry().registerComponent(
-                BaxterInventoryComponent.class,
-                () -> new BaxterInventoryComponent(config.inventorySize)
-        );
+                    BaxterInventoryComponent.class,
+                    "baxter_inventory",
+                    BaxterInventoryComponent.CODEC
+            );
     }
 
     @Override
     public void registerSystems(JavaPlugin plugin) {
         plugin.getEntityStoreRegistry().registerSystem(new BaxterMovementSystem(config));
+        plugin.getEntityStoreRegistry().registerSystem(new BaxterInteractionSystem());
     }
 
     @Override
