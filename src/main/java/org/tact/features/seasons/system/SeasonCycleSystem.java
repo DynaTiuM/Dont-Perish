@@ -10,6 +10,7 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.server.core.Message;
+<<<<<<< HEAD
 import com.hypixel.hytale.server.core.entity.entities.Player;
 <<<<<<< HEAD
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -30,6 +31,10 @@ public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
         SeasonsConfig config
     ) {
 =======
+=======
+import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.WorldConfig;
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
@@ -37,16 +42,19 @@ import org.tact.features.seasons.component.SeasonWorldComponent;
 import org.tact.features.seasons.config.SeasonsConfig;
 import org.tact.features.seasons.model.Season;
 
+import java.lang.reflect.Field;
+
 public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
-    private final ComponentType<EntityStore, SeasonWorldComponent> seasonComponentType;
     private final SeasonsConfig config;
 
     public SeasonCycleSystem(
-        ComponentType<EntityStore, SeasonWorldComponent> seasonComponentType,
         SeasonsConfig config
     ) {
+<<<<<<< HEAD
         this.seasonComponentType = seasonComponentType;
 >>>>>>> 5d3194d (feat: seasons, World Ref still not found)
+=======
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
         this.config = config;
     }
 
@@ -59,6 +67,7 @@ public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         SeasonResource data = store.getResource(SeasonResource.TYPE);
         if(data == null) {
             throw new NullPointerException("Season Component is null! (SeasonCycleSystem Class)");
@@ -69,6 +78,9 @@ public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
         data.addSeasonTimer(deltaTime);
 =======
         SeasonWorldComponent seasonComponent = archetypeChunk.getComponent(index, seasonComponentType);
+=======
+        SeasonWorldComponent seasonComponent = archetypeChunk.getComponent(index, SeasonWorldComponent.getComponentType());
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
         if(seasonComponent == null) {
             throw new NullPointerException("Season Component is null! (SeasonCycleSystem Class)");
         }
@@ -141,16 +153,45 @@ public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
             seasonComponent.setCurrentSeason(nextSeason);
             seasonComponent.resetSeasonTime();
             seasonComponent.setSeasonProgress(0.0F);
+            World world = commandBuffer.getExternalData().getWorld();
 
-            Player player = archetypeChunk.getComponent(index, Player.getComponentType());
-            player.sendMessage(Message.raw("Season changed to: " + nextSeason.getDisplayName()));
+            int baseDay = config.baseDayDurationSeconds;
+            int baseNight = config.baseNightDurationSeconds;
+
+            int newDayDuration = (int) (baseDay * nextSeason.getDayLengthMultiplier());
+            int newNightDuration = (int) (baseNight * (2.0f - nextSeason.getDayLengthMultiplier()));
+            WorldConfig config = world.getWorldConfig();
+            try {
+                setPrivateConfig(config, "daytimeDurationSecondsOverride", newDayDuration);
+                setPrivateConfig(config, "nighttimeDurationSecondsOverride", newNightDuration);
+
+                config.markChanged();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            String msg = "Season changed to: " + nextSeason.getDisplayName();
+            world.getPlayerRefs().forEach(player -> {
+                player.sendMessage(Message.raw(msg));
+            });
         }
+    }
+
+    private void setPrivateConfig(Object instance, String fieldName, Object value) throws Exception {
+        Field field = instance.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(instance, value);
     }
 
     @NullableDecl
     @Override
     public Query<EntityStore> getQuery() {
+<<<<<<< HEAD
         return Query.and(seasonComponentType);
 >>>>>>> 5d3194d (feat: seasons, World Ref still not found)
+=======
+        return Query.and(SeasonWorldComponent.getComponentType());
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
     }
 }

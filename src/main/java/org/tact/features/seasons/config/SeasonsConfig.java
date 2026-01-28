@@ -15,6 +15,7 @@ public class SeasonsConfig {
 
     // Duration of the seasons (in seconds)
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
     public float springDuration = 14_400.0F; // 5 days
@@ -28,23 +29,26 @@ public class SeasonsConfig {
      public float winterDuration = 30.0F;
 */
 =======
+=======
+
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
     /*
     public float springDuration = 4800.0F;
     public float summerDuration = 4500.0F;
     public float autumnDuration = 5400.0F;
     public float winterDuration = 4500.0F;
-     */
-
-    public float springDuration = 15.0F;
-    public float summerDuration = 15.0F;
-    public float autumnDuration = 15.0F;
-    public float winterDuration = 15.0F;
+  */
+     public float springDuration = 25.0F;
+     public float summerDuration = 2005.0F;
+     public float autumnDuration = 25.0F;
+     public float winterDuration = 25.0F;
 
 >>>>>>> 5d3194d (feat: seasons, World Ref still not found)
     // Temperature mechanics
     public float springBaseTemperature = 15.0F;
     public float summerBaseTemperature = 35.0F;
     public float autumnBaseTemperature = 10.0F;
+<<<<<<< HEAD
 <<<<<<< HEAD
     public float winterBaseTemperature = 0.0F;
 
@@ -59,6 +63,9 @@ public class SeasonsConfig {
 
 =======
     public float winterBaseTemperature = -15.0F;
+=======
+    public float winterBaseTemperature = 0.0F;
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
 
     public float temperatureTransitionSpeed = 0.5F;
     public float extremeTemperatureThreshold = 5.0F;
@@ -66,13 +73,20 @@ public class SeasonsConfig {
     public float coldDamage = 1.5F;
     public float damageInterval = 3.0F;
 
+<<<<<<< HEAD
 >>>>>>> 5d3194d (feat: seasons, World Ref still not found)
+=======
+    public boolean staminaLoss = true;
+    public float staminaDrainAmount = 5.0f;
+
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
     public Map<String, String> protectionItems = new HashMap<>();
 
     // Meteo
     public boolean enableWeatherControl = true;
     public float springRainDuration = 120.0f;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     // Default Day & Night durations of Hytale
     // Total duration = 2880s
@@ -81,6 +95,11 @@ public class SeasonsConfig {
 
 =======
 >>>>>>> 5d3194d (feat: seasons, World Ref still not found)
+=======
+    public int baseDayDurationSeconds = 1200;
+    public int baseNightDurationSeconds = 600;
+
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
     public SeasonsConfig() {
         initDefaultProtectionItems();
     }
@@ -115,10 +134,14 @@ public class SeasonsConfig {
             case 2 -> autumnBaseTemperature;
             case 3 -> winterBaseTemperature;
 <<<<<<< HEAD
+<<<<<<< HEAD
             default -> 20.0F;
 =======
             default -> 4500.0F;
 >>>>>>> 5d3194d (feat: seasons, World Ref still not found)
+=======
+            default -> 20.0F;
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
         };
     }
 
@@ -169,6 +192,9 @@ public class SeasonsConfig {
                 (cfg, v) -> cfg.springRainDuration = v, cfg -> cfg.springRainDuration);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
 
         b.append(new KeyedCodec<>("StaminaLoss", Codec.BOOLEAN),
                 (cfg, v) -> cfg.staminaLoss = v, cfg -> cfg.staminaLoss);
@@ -181,8 +207,11 @@ public class SeasonsConfig {
         b.append(new KeyedCodec<>("BaseNightDurationSeconds", Codec.INTEGER),
                 (cfg, v) -> cfg.baseNightDurationSeconds = v, cfg -> cfg.baseNightDurationSeconds);
 
+<<<<<<< HEAD
 =======
 >>>>>>> 5d3194d (feat: seasons, World Ref still not found)
+=======
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
         CODEC = b.build();
     }
 }

@@ -26,6 +26,7 @@ public class ModConfig {
                 (cfg, v) -> cfg.baxter = v,
                 cfg -> cfg.baxter);
 <<<<<<< HEAD
+<<<<<<< HEAD
 /*
         b.append(new KeyedCodec<>("Seasons", SeasonsConfig.CODEC),
                 (cfg, v) -> cfg.seasons = v,
@@ -38,6 +39,13 @@ public class ModConfig {
                 cfg -> cfg.seasons);
 
 >>>>>>> 5d3194d (feat: seasons, World Ref still not found)
+=======
+/*
+        b.append(new KeyedCodec<>("Seasons", SeasonsConfig.CODEC),
+                (cfg, v) -> cfg.seasons = v,
+                cfg -> cfg.seasons);
+*/
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
         CODEC = b.build();
     }
 }

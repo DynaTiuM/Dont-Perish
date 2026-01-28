@@ -1,12 +1,17 @@
 package org.tact.features.seasons;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.hypixel.hytale.component.*;
 =======
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 >>>>>>> 5d3194d (feat: seasons, World Ref still not found)
+=======
+import com.hypixel.hytale.component.*;
+import com.hypixel.hytale.component.query.Query;
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent;
@@ -38,15 +43,20 @@ public class SeasonsFeature implements Feature {
     private final SeasonsConfig config;
 =======
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SeasonsFeature implements Feature {
     private final SeasonsConfig config;
+<<<<<<< HEAD
     private ComponentType<EntityStore, SeasonWorldComponent> seasonComponent;
     private ComponentType<EntityStore, TemperatureComponent> temperatureComponent;
     private final Map<World, Ref<EntityStore>> worldReferences = new ConcurrentHashMap<>();
 >>>>>>> 5d3194d (feat: seasons, World Ref still not found)
+=======
+    private ComponentType<EntityStore, TemperatureComponent> temperatureComponentType;
+
+    private final Map<World, Ref<EntityStore>> seasonManagers = new ConcurrentHashMap<>();
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
 
     public SeasonsFeature(SeasonsConfig config) {
         this.config = config;
@@ -60,6 +70,7 @@ public class SeasonsFeature implements Feature {
     @Override
     public void registerComponents(JavaPlugin plugin) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         SeasonResource.TYPE = plugin.getEntityStoreRegistry()
                 .registerResource(SeasonResource.class,"season_resource", SeasonResource.CODEC);
 
@@ -69,6 +80,12 @@ public class SeasonsFeature implements Feature {
         seasonComponent = plugin.getEntityStoreRegistry()
                 .registerComponent(SeasonWorldComponent.class, SeasonWorldComponent::new);
         temperatureComponent = plugin.getEntityStoreRegistry()
+=======
+        SeasonWorldComponent.TYPE = plugin.getEntityStoreRegistry()
+                .registerComponent(SeasonWorldComponent.class,"season_world_component", SeasonWorldComponent.CODEC);
+
+        temperatureComponentType = plugin.getEntityStoreRegistry()
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
                 .registerComponent(TemperatureComponent.class, TemperatureComponent::new);
 >>>>>>> 5d3194d (feat: seasons, World Ref still not found)
     }
@@ -81,6 +98,7 @@ public class SeasonsFeature implements Feature {
     public void registerEvents(JavaPlugin plugin) {
         plugin.getEventRegistry().registerGlobal(PlayerReadyEvent.class, event -> {
             Player player = event.getPlayer();
+<<<<<<< HEAD
 <<<<<<< HEAD
 
             player.sendMessage(Message.raw("[Seasons] New Season Manager created"));
@@ -113,38 +131,96 @@ public class SeasonsFeature implements Feature {
 =======
             Ref<EntityStore> playerRef = player.getReference();
             Store<EntityStore> store = playerRef.getStore();
+=======
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
             World world = player.getWorld();
-            if (!worldReferences.containsKey(world)) {
-                UUID worldUUID = world.getWorldConfig().getUuid();
-                Ref<EntityStore> worldRef = world.getEntityRef(worldUUID);
 
-                if (worldRef != null) {
-                    store.addComponent(worldRef, seasonComponent);
-                    worldReferences.put(world, worldRef);
-                    player.sendMessage(Message.raw("[Seasons] Initialized season system for world: " + world.getName()));
-                }
-                else {
-                    player.sendMessage(Message.raw("[Seasons] World Reference not found: " + world.getName()));
+            getOrCreateSeasonManager(world);
+            player.sendMessage(Message.raw("[Seasons] New Season Manager created"));
+
+            setupPlayer(player);
+            player.sendMessage(Message.raw("[Seasons] Player set up"));
+        });
+    }
+
+    private Ref<EntityStore> getOrCreateSeasonManager(World world) {
+        if (seasonManagers.containsKey(world)) {
+            Ref<EntityStore> existingRef = seasonManagers.get(world);
+            if (existingRef != null && existingRef.isValid()) {
+                return existingRef;
+            }
+        }
+        EntityStore entityStore = world.getEntityStore();
+        Store<EntityStore> store = entityStore.getStore();
+
+        Ref<EntityStore> foundManager = findExistingSeasonManager(store);
+        if (foundManager != null) {
+            seasonManagers.put(world, foundManager);
+            System.out.println("[Seasons] Found existing Season Manager for world: " + world.getName());
+            return foundManager;
+        }
+
+        Holder<EntityStore> holder = EntityStore.REGISTRY.newHolder();
+        Ref<EntityStore> newManager = store.addEntity(holder, AddReason.SPAWN);
+
+        store.addComponent(newManager, SeasonWorldComponent.getComponentType());
+        SeasonWorldComponent comp = store.getComponent(newManager, SeasonWorldComponent.getComponentType());
+        if (comp != null) {
+            comp.setCurrentSeason(Season.SPRING);
+            comp.setSeasonProgress(0.0f);
+        }
+        seasonManagers.put(world, newManager);
+
+        System.out.println("[Seasons] Created new Season Manager for world: " + world.getName());
+        return newManager;
+    }
+
+    private Ref<EntityStore> findExistingSeasonManager(Store<EntityStore> store) {
+        final Ref<EntityStore>[] found = new Ref[]{null};
+
+        store.forEachChunk((chunk, commandBuffer) -> {
+            if (found[0] != null) return;
+
+            if (chunk.getComponent(0, SeasonWorldComponent.getComponentType()) != null) {
+                for (int i = 0; i < chunk.size(); i++) {
+                    SeasonWorldComponent comp = chunk.getComponent(i, SeasonWorldComponent.getComponentType());
+                    if (comp != null) {
+                        found[0] = chunk.getReferenceTo(i);
+                        System.out.println("[Seasons] Found existing manager - Season: " + comp.getCurrentSeason() + ", Timer: " + comp.getSeasonTimer());
+                        return;
+                    }
                 }
             }
-
-            store.addComponent(playerRef, temperatureComponent);
-
-            PlayerRef pRef = store.getComponent(playerRef, PlayerRef.getComponentType());
-            HudManager.open(player, pRef, new SeasonHud(pRef), getId());
-
-            player.sendMessage(Message.raw("[Seasons] Added temperature component to player: " + player.getDisplayName()));
         });
+
+        return found[0];
+    }
+
+    private void setupPlayer(Player player) {
+        Ref<EntityStore> playerRef = player.getReference();
+        Store<EntityStore> store = playerRef.getStore();
+
+        TemperatureComponent existingComp = store.getComponent(playerRef, temperatureComponentType);
+        if (existingComp == null) {
+            store.addComponent(playerRef, temperatureComponentType);
+        }
+
+        PlayerRef pRef = store.getComponent(playerRef, PlayerRef.getComponentType());
+        HudManager.open(player, pRef, new SeasonHud(pRef), getId());
     }
 
     @Override
     public void enable(JavaPlugin plugin) {
         plugin.getEntityStoreRegistry().registerSystem(
-                new SeasonCycleSystem(seasonComponent, config)
+                new SeasonCycleSystem(config)
         );
         plugin.getEntityStoreRegistry().registerSystem(
+<<<<<<< HEAD
                 new TemperatureSystem(temperatureComponent, config, this)
 >>>>>>> 5d3194d (feat: seasons, World Ref still not found)
+=======
+                new TemperatureSystem(temperatureComponentType, config, this)
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
         );
     }
 
@@ -154,38 +230,29 @@ public class SeasonsFeature implements Feature {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     public Ref<EntityStore> getWorldReference(Player player) {
         World world = player.getWorld();
         return worldReferences.get(world);
     }
 
+=======
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
     public Season getCurrentSeason(Player player, Store<EntityStore> store) {
-        Ref<EntityStore> worldRef = getWorldReference(player);
-        if (worldRef == null) {
-            return Season.SPRING;
-        }
+        Ref<EntityStore> managerRef = getOrCreateSeasonManager(player.getWorld());
 
-        SeasonWorldComponent seasonComp = store.getComponent(worldRef, seasonComponent);
-        return seasonComp.getCurrentSeason();
+        SeasonWorldComponent comp = store.getComponent(managerRef, SeasonWorldComponent.getComponentType());
+
+        return comp != null ? comp.getCurrentSeason() : Season.SPRING;
     }
 
     public float getSeasonProgress(Player player, Store<EntityStore> store) {
-        Ref<EntityStore> worldRef = getWorldReference(player);
-        if (worldRef == null) {
-            return 0.0f;
-        }
+        Ref<EntityStore> managerRef = getOrCreateSeasonManager(player.getWorld());
 
-        SeasonWorldComponent seasonComp = store.getComponent(worldRef, seasonComponent);
-        return seasonComp.getSeasonProgress();
-    }
+        SeasonWorldComponent comp = store.getComponent(managerRef, SeasonWorldComponent.getComponentType());
 
-    public ComponentType<EntityStore, SeasonWorldComponent> getSeasonComponent() {
-        return seasonComponent;
-    }
-
-    public ComponentType<EntityStore, TemperatureComponent> getTemperatureComponent() {
-        return temperatureComponent;
+        return comp != null ? comp.getSeasonProgress() : 0.0F;
     }
 >>>>>>> 5d3194d (feat: seasons, World Ref still not found)
 }

@@ -14,6 +14,7 @@ public class SeasonHud extends CustomUIHud {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     public void render(UICommandBuilder builder, Season season, float temperature) {
         float temperaturePercent = (temperature + 20.0f) / 70.0f;
         temperaturePercent = Math.max(0.0f, Math.min(1.0f, temperaturePercent));
@@ -31,41 +32,32 @@ public class SeasonHud extends CustomUIHud {
      * @param temperature Température actuelle en °C
      * @param hasProtection Le joueur a-t-il une protection?
      */
+=======
+>>>>>>> 8f8d73b (feat: Seasons Night & Day variations & Seasons CODEC but Persistence still not working)
     public void updateValues(Season season, float progress, float temperature, boolean hasProtection) {
-        // Convertir température (-20°C à 40°C) en pourcentage (0.0 à 1.0)
-        float tempPercent = (temperature + 20.0f) / 60.0f;
-        tempPercent = Math.max(0.0f, Math.min(1.0f, tempPercent));
+        // -20°C to 50°C
+        float temperaturePercent = (temperature + 20.0f) / 70.0f;
+        temperaturePercent = Math.max(0.0f, Math.min(1.0f, temperaturePercent));
 
         UICommandBuilder builder = new UICommandBuilder()
                 .set("#Icon.Background", "Textures/Season_" + season.name() + ".png")
-                .set("#TemperatureBar.Value", tempPercent)
+                .set("#TemperatureBar.Value", temperaturePercent)
                 .set("#TemperatureBar.Visible", true);
 
         this.update(false, builder);
     }
 
-    /**
-     * Formate la température pour l'affichage
-     */
-    private String formatTemperature(float temp) {
-        int rounded = Math.round(temp);
-        return rounded + "°C";
-    }
-
-    /**
-     * Retourne une couleur selon la température
-     */
     private String getTemperatureColor(float temp) {
         if (temp > 30.0f) {
-            return "#FF4444"; // Rouge (chaud)
+            return "#FF4444";
         } else if (temp > 25.0f) {
-            return "#FF8844"; // Orange
+            return "#FF8844";
         } else if (temp > 15.0f) {
-            return "#44FF44"; // Vert (confortable)
+            return "#44FF44";
         } else if (temp > 5.0f) {
-            return "#4488FF"; // Bleu clair
+            return "#4488FF";
         } else {
-            return "#4444FF"; // Bleu foncé (froid)
+            return "#4444FF";
         }
     }
 
