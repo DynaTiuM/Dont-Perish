@@ -22,6 +22,7 @@ public class BaxterInventoryComponent implements Component<EntityStore> {
                 () -> new BaxterInventoryComponent(27)
         );
 
+        // TODO: Verify whether append() instead of addField() broke everything
         builder.addField(
                 new KeyedCodec<>("Inventory", SimpleItemContainer.CODEC),
 
