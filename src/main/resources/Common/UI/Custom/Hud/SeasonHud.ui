@@ -6,6 +6,10 @@
 
 @BottomMargin = 30;
 @ContainerMargin = 6;
+@RightMargin = 30;
+@WindowWidth = 1920;
+
+@GameHudWidth = @WindowWidth - @RightMargin;
 
 @InventoryClosedContainerMargin = @BottomMargin + @ContainerMargin;
 @InventoryOpenedContainerMargin = 0;
@@ -22,18 +26,18 @@
 
 Group {
   LayoutMode: Bottom;
-  Anchor: (Bottom: @InventoryClosedContainerMargin + @HotbarHeight + 32, Width: @HotbarWidthHud, Height: 12);
+  Anchor: (Bottom: @BottomMargin, Width: @GameHudWidth, Height: 12);
 
   Group {
-    LayoutMode: Left;
+    LayoutMode: Right;
 
     Group #Icon {
       Anchor: (Left: 4, Width: 24, Height: 24, Right: 0, Top: -9);
       Background: @Icon;
     }
     Group {
-      Anchor: (Left: 0, Width: 318, Height: 12);
-      Background: "Textures/HungerBarBg.png";
+      Anchor: (Left: 0, Width: 32, Height: 318);
+      Background: "Textures/SeasonThermometerBg.png";
 
       ProgressBar #TemperatureBar {
         Anchor: (Width: 318, Height: 12);

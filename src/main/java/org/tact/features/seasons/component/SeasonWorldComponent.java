@@ -1,6 +1,10 @@
 package org.tact.features.seasons.component;
 
+import com.hypixel.hytale.codec.Codec;
+import com.hypixel.hytale.codec.KeyedCodec;
+import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Component;
+import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.tact.features.seasons.model.Season;
@@ -9,6 +13,37 @@ public class SeasonWorldComponent implements Component<EntityStore> {
     private Season currentSeason;
     private float seasonProgress;
     private float seasonTimer;
+
+    public static ComponentType<EntityStore, SeasonWorldComponent> TYPE;
+
+    public static final BuilderCodec<SeasonWorldComponent> CODEC;
+
+    static {
+        BuilderCodec.Builder<SeasonWorldComponent> builder = BuilderCodec.builder(
+                SeasonWorldComponent.class,
+                SeasonWorldComponent::new
+        );
+
+        builder.addField(new KeyedCodec<>("CurrentSeason", Codec.STRING),
+                (component, value) -> component.setCurrentSeason(Season.valueOf(value)),
+                component -> component.getCurrentSeason().name()
+        );
+
+        builder.addField(new KeyedCodec<>("SeasonTimer", Codec.FLOAT),
+                SeasonWorldComponent::setSeasonTimer,
+                SeasonWorldComponent::getSeasonTimer
+        );
+
+        builder.addField(new KeyedCodec<>("SeasonProgress", Codec.FLOAT),
+                (component, value) -> {
+                    if (value != null) component.setSeasonProgress(value);
+                },
+                SeasonWorldComponent::getSeasonProgress
+        );
+
+        CODEC = builder.build();
+    }
+
 
     public SeasonWorldComponent() {
         this.currentSeason = Season.SPRING;
@@ -53,5 +88,9 @@ public class SeasonWorldComponent implements Component<EntityStore> {
         cloned.seasonProgress = this.seasonProgress;
         cloned.seasonTimer = this.seasonTimer;
         return cloned;
+    }
+
+    public static ComponentType<EntityStore, SeasonWorldComponent> getComponentType() {
+        return TYPE;
     }
 }

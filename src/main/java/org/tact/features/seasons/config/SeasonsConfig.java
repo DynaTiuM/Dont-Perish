@@ -14,23 +14,23 @@ public class SeasonsConfig {
     public boolean enabled = true;
 
     // Duration of the seasons (in seconds)
+
     /*
     public float springDuration = 4800.0F;
     public float summerDuration = 4500.0F;
     public float autumnDuration = 5400.0F;
     public float winterDuration = 4500.0F;
-     */
-
-    public float springDuration = 15.0F;
-    public float summerDuration = 15.0F;
-    public float autumnDuration = 15.0F;
-    public float winterDuration = 15.0F;
+  */
+     public float springDuration = 25.0F;
+     public float summerDuration = 2005.0F;
+     public float autumnDuration = 25.0F;
+     public float winterDuration = 25.0F;
 
     // Temperature mechanics
     public float springBaseTemperature = 15.0F;
     public float summerBaseTemperature = 35.0F;
     public float autumnBaseTemperature = 10.0F;
-    public float winterBaseTemperature = -15.0F;
+    public float winterBaseTemperature = 0.0F;
 
     public float temperatureTransitionSpeed = 0.5F;
     public float extremeTemperatureThreshold = 5.0F;
@@ -38,11 +38,17 @@ public class SeasonsConfig {
     public float coldDamage = 1.5F;
     public float damageInterval = 3.0F;
 
+    public boolean staminaLoss = true;
+    public float staminaDrainAmount = 5.0f;
+
     public Map<String, String> protectionItems = new HashMap<>();
 
     // Meteo
     public boolean enableWeatherControl = true;
     public float springRainDuration = 120.0f;
+
+    public int baseDayDurationSeconds = 1200;
+    public int baseNightDurationSeconds = 600;
 
     public SeasonsConfig() {
         initDefaultProtectionItems();
@@ -77,7 +83,7 @@ public class SeasonsConfig {
             case 1 -> summerBaseTemperature;
             case 2 -> autumnBaseTemperature;
             case 3 -> winterBaseTemperature;
-            default -> 4500.0F;
+            default -> 20.0F;
         };
     }
 
@@ -126,6 +132,18 @@ public class SeasonsConfig {
                 (cfg, v) -> cfg.enableWeatherControl = v, cfg -> cfg.enableWeatherControl);
         b.append(new KeyedCodec<>("SpringRainDuration", Codec.FLOAT),
                 (cfg, v) -> cfg.springRainDuration = v, cfg -> cfg.springRainDuration);
+
+
+        b.append(new KeyedCodec<>("StaminaLoss", Codec.BOOLEAN),
+                (cfg, v) -> cfg.staminaLoss = v, cfg -> cfg.staminaLoss);
+        b.append(new KeyedCodec<>("StaminaDrainAmount", Codec.FLOAT),
+                (cfg, v) -> cfg.staminaDrainAmount = v, cfg -> cfg.staminaDrainAmount);
+
+        b.append(new KeyedCodec<>("BaseDayDurationSeconds", Codec.INTEGER),
+                (cfg, v) -> cfg.baseDayDurationSeconds = v, cfg -> cfg.baseDayDurationSeconds);
+
+        b.append(new KeyedCodec<>("BaseNightDurationSeconds", Codec.INTEGER),
+                (cfg, v) -> cfg.baseNightDurationSeconds = v, cfg -> cfg.baseNightDurationSeconds);
 
         CODEC = b.build();
     }

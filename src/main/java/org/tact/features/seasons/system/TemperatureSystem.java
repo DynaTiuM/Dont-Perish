@@ -3,20 +3,25 @@ package org.tact.features.seasons.system;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
+import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageCause;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageSystems;
+import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
+import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
+import com.hypixel.hytale.server.core.modules.time.WorldTimeResource;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.tact.common.ui.HudManager;
 import org.tact.features.seasons.SeasonsFeature;
-import org.tact.features.seasons.component.SeasonWorldComponent;
 import org.tact.features.seasons.component.TemperatureComponent;
 import org.tact.features.seasons.config.SeasonsConfig;
 import org.tact.features.seasons.model.Season;
 import org.tact.features.seasons.ui.SeasonHud;
+
+import java.time.LocalDateTime;
 
 public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
 
@@ -28,15 +33,14 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     private DamageCause coldDamageCause;
 
     public TemperatureSystem(
-        ComponentType<EntityStore, TemperatureComponent> temperatureComponentType,
-        SeasonsConfig config,
-        SeasonsFeature seasonsFeature
+            ComponentType<EntityStore, TemperatureComponent> temperatureComponentType,
+            SeasonsConfig config,
+            SeasonsFeature seasonsFeature
     ) {
         this.temperatureComponentType = temperatureComponentType;
         this.config = config;
         this.seasonsFeature = seasonsFeature;
     }
-
 
     @Override
     public void tick(
@@ -53,11 +57,14 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         Season currentSeason = seasonsFeature.getCurrentSeason(player, store);
         float seasonProgress = seasonsFeature.getSeasonProgress(player, store);
 
+        // Exterior temperature
         float targetTemperature = calculateTargetTemperature(currentSeason, player);
         temperatureComponent.setTargetTemperature(targetTemperature);
 
         float currentTemp = temperatureComponent.getCurrentTemperature();
         float tempDiff = targetTemperature - currentTemp;
+
+        // Temperature of the player
         float newTemperature = currentTemp + tempDiff * Math.min(deltaTime * config.temperatureTransitionSpeed, 1.0F);
         temperatureComponent.setCurrentTemperature(newTemperature);
 
@@ -98,9 +105,32 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     private float calculateTargetTemperature(Season season, Player player) {
         float baseTemperature = config.getSeasonBaseTemp(season.ordinal());
 
-        // TODO: Possible modifiers: Biomes, Hour, Interior/Exterior, Altitude
+        float dayMultiplier = season.getDayLengthMultiplier();
 
-        return baseTemperature;
+        float hourCorrection = getTimeModifier(player) * (10.0f * dayMultiplier);
+        float totalTemperature = baseTemperature + hourCorrection;
+        player.sendMessage(Message.raw("Temperature: " +  totalTemperature + ", Season: " + season.getDisplayName()));
+        return totalTemperature;
+    }
+
+    private float getTimeModifier(Player player) {
+
+        Store<EntityStore> store = player.getWorld().getEntityStore().getStore();
+
+        WorldTimeResource timeResource = store.getResource(WorldTimeResource.getResourceType());
+
+        if (timeResource == null) {
+            return 0;
+        }
+
+        LocalDateTime gameTime = timeResource.getGameDateTime();
+
+        int hour = gameTime.getHour();
+        int minute = gameTime.getMinute();
+
+        float preciseHour = hour + (minute / 60.0f);
+
+        return (float) Math.cos(((preciseHour - 14.0f) / 24.0f) * 2.0f * Math.PI);
     }
 
     private boolean checkProtection(Player player, Store<EntityStore> store, Season season) {
@@ -109,8 +139,8 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     }
 
     private boolean isExtremeTemperature(float temp) {
-        return temp > (25.0f + config.extremeTemperatureThreshold) ||
-            temp < (15.0f - config.extremeTemperatureThreshold);
+        return temp > (35.0F + config.extremeTemperatureThreshold) ||
+            temp < (0.0F - config.extremeTemperatureThreshold);
     }
 
     private void applyTemperatureDamage(
@@ -119,13 +149,19 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         float temperature
     ) {
         // TODO: manage the temperature isHot logic inside the config
-        boolean isHot = temperature > 30.0F;
+        boolean isHot = temperature > 35.0F;
         float damageAmount = isHot ? config.heatDamage : config.coldDamage;
 
         DamageCause cause = isHot ? getHeatDamageCause() : getColdDamageCause();
         Damage damage = new Damage(Damage.NULL_SOURCE, cause, damageAmount);
 
         DamageSystems.executeDamage(entityRef, commandBuffer, damage);
+        if (config.staminaLoss) {
+            Store<EntityStore> store = commandBuffer.getStore();
+            EntityStatMap statMap = store.getComponent(entityRef, EntityStatMap.getComponentType());
+            int staminaIdx = DefaultEntityStatTypes.getStamina();
+            statMap.subtractStatValue(staminaIdx, this.config.staminaDrainAmount);
+        }
     }
 
     private DamageCause getHeatDamageCause() {

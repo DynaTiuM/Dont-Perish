@@ -25,11 +25,11 @@ public class ModConfig {
         b.append(new KeyedCodec<>("Baxter", BaxterConfig.CODEC),
                 (cfg, v) -> cfg.baxter = v,
                 cfg -> cfg.baxter);
-
+/*
         b.append(new KeyedCodec<>("Seasons", SeasonsConfig.CODEC),
                 (cfg, v) -> cfg.seasons = v,
                 cfg -> cfg.seasons);
-
+*/
         CODEC = b.build();
     }
 }
