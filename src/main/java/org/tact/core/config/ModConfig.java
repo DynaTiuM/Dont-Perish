@@ -25,11 +25,19 @@ public class ModConfig {
         b.append(new KeyedCodec<>("Baxter", BaxterConfig.CODEC),
                 (cfg, v) -> cfg.baxter = v,
                 cfg -> cfg.baxter);
+<<<<<<< HEAD
 /*
         b.append(new KeyedCodec<>("Seasons", SeasonsConfig.CODEC),
                 (cfg, v) -> cfg.seasons = v,
                 cfg -> cfg.seasons);
 */
+=======
+
+        b.append(new KeyedCodec<>("Seasons", SeasonsConfig.CODEC),
+                (cfg, v) -> cfg.seasons = v,
+                cfg -> cfg.seasons);
+
+>>>>>>> 5d3194d (feat: seasons, World Ref still not found)
         CODEC = b.build();
     }
 }

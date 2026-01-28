@@ -2,11 +2,16 @@ package org.tact.features.seasons.system;
 
 import com.hypixel.hytale.component.ArchetypeChunk;
 import com.hypixel.hytale.component.CommandBuffer;
+<<<<<<< HEAD
+=======
+import com.hypixel.hytale.component.ComponentType;
+>>>>>>> 5d3194d (feat: seasons, World Ref still not found)
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+<<<<<<< HEAD
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.WorldConfig;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -24,6 +29,24 @@ public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
     public SeasonCycleSystem(
         SeasonsConfig config
     ) {
+=======
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
+import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import org.tact.features.seasons.component.SeasonWorldComponent;
+import org.tact.features.seasons.config.SeasonsConfig;
+import org.tact.features.seasons.model.Season;
+
+public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
+    private final ComponentType<EntityStore, SeasonWorldComponent> seasonComponentType;
+    private final SeasonsConfig config;
+
+    public SeasonCycleSystem(
+        ComponentType<EntityStore, SeasonWorldComponent> seasonComponentType,
+        SeasonsConfig config
+    ) {
+        this.seasonComponentType = seasonComponentType;
+>>>>>>> 5d3194d (feat: seasons, World Ref still not found)
         this.config = config;
     }
 
@@ -35,6 +58,7 @@ public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl Store<EntityStore> store,
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
+<<<<<<< HEAD
         SeasonResource data = store.getResource(SeasonResource.TYPE);
         if(data == null) {
             throw new NullPointerException("Season Component is null! (SeasonCycleSystem Class)");
@@ -43,10 +67,21 @@ public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
 
         // Progression of the Timer
         data.addSeasonTimer(deltaTime);
+=======
+        SeasonWorldComponent seasonComponent = archetypeChunk.getComponent(index, seasonComponentType);
+        if(seasonComponent == null) {
+            throw new NullPointerException("Season Component is null! (SeasonCycleSystem Class)");
+        }
+        Season currentSeason = seasonComponent.getCurrentSeason();
+
+        // Progression of the Timer
+        seasonComponent.addSeasonTimer(deltaTime);
+>>>>>>> 5d3194d (feat: seasons, World Ref still not found)
 
         // Duration of the actual season
         float seasonDuration = config.getSeasonDuration(currentSeason.ordinal());
 
+<<<<<<< HEAD
         float progress = Math.min(1.0F, data.getSeasonTimer() / seasonDuration);
         data.setSeasonProgress(progress);
 
@@ -97,5 +132,25 @@ public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
     @Override
     public Query<EntityStore> getQuery() {
         return Query.and(Player.getComponentType());
+=======
+        float progress = Math.min(1.0F, seasonComponent.getSeasonTimer() / seasonDuration);
+        seasonComponent.setSeasonProgress(progress);
+
+        if(seasonComponent.getSeasonTimer() >= seasonDuration) {
+            Season nextSeason = currentSeason.next();
+            seasonComponent.setCurrentSeason(nextSeason);
+            seasonComponent.resetSeasonTime();
+            seasonComponent.setSeasonProgress(0.0F);
+
+            Player player = archetypeChunk.getComponent(index, Player.getComponentType());
+            player.sendMessage(Message.raw("Season changed to: " + nextSeason.getDisplayName()));
+        }
+    }
+
+    @NullableDecl
+    @Override
+    public Query<EntityStore> getQuery() {
+        return Query.and(seasonComponentType);
+>>>>>>> 5d3194d (feat: seasons, World Ref still not found)
     }
 }

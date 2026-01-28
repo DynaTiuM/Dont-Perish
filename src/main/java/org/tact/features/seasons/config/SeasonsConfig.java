@@ -14,6 +14,7 @@ public class SeasonsConfig {
     public boolean enabled = true;
 
     // Duration of the seasons (in seconds)
+<<<<<<< HEAD
 
 
     public float springDuration = 14_400.0F; // 5 days
@@ -26,10 +27,25 @@ public class SeasonsConfig {
      public float autumnDuration = 30.0F;
      public float winterDuration = 30.0F;
 */
+=======
+    /*
+    public float springDuration = 4800.0F;
+    public float summerDuration = 4500.0F;
+    public float autumnDuration = 5400.0F;
+    public float winterDuration = 4500.0F;
+     */
+
+    public float springDuration = 15.0F;
+    public float summerDuration = 15.0F;
+    public float autumnDuration = 15.0F;
+    public float winterDuration = 15.0F;
+
+>>>>>>> 5d3194d (feat: seasons, World Ref still not found)
     // Temperature mechanics
     public float springBaseTemperature = 15.0F;
     public float summerBaseTemperature = 35.0F;
     public float autumnBaseTemperature = 10.0F;
+<<<<<<< HEAD
     public float winterBaseTemperature = 0.0F;
 
     public float temperatureTransitionSpeed = 0.5F;
@@ -41,17 +57,30 @@ public class SeasonsConfig {
     public boolean staminaLoss = true;
     public float staminaDrainAmount = 5.0f;
 
+=======
+    public float winterBaseTemperature = -15.0F;
+
+    public float temperatureTransitionSpeed = 0.5F;
+    public float extremeTemperatureThreshold = 5.0F;
+    public float heatDamage = 1.0F;
+    public float coldDamage = 1.5F;
+    public float damageInterval = 3.0F;
+
+>>>>>>> 5d3194d (feat: seasons, World Ref still not found)
     public Map<String, String> protectionItems = new HashMap<>();
 
     // Meteo
     public boolean enableWeatherControl = true;
     public float springRainDuration = 120.0f;
 
+<<<<<<< HEAD
     // Default Day & Night durations of Hytale
     // Total duration = 2880s
     public int baseDayDurationSeconds = 1728;
     public int baseNightDurationSeconds = 1152;
 
+=======
+>>>>>>> 5d3194d (feat: seasons, World Ref still not found)
     public SeasonsConfig() {
         initDefaultProtectionItems();
     }
@@ -85,7 +114,11 @@ public class SeasonsConfig {
             case 1 -> summerBaseTemperature;
             case 2 -> autumnBaseTemperature;
             case 3 -> winterBaseTemperature;
+<<<<<<< HEAD
             default -> 20.0F;
+=======
+            default -> 4500.0F;
+>>>>>>> 5d3194d (feat: seasons, World Ref still not found)
         };
     }
 
@@ -135,6 +168,7 @@ public class SeasonsConfig {
         b.append(new KeyedCodec<>("SpringRainDuration", Codec.FLOAT),
                 (cfg, v) -> cfg.springRainDuration = v, cfg -> cfg.springRainDuration);
 
+<<<<<<< HEAD
 
         b.append(new KeyedCodec<>("StaminaLoss", Codec.BOOLEAN),
                 (cfg, v) -> cfg.staminaLoss = v, cfg -> cfg.staminaLoss);
@@ -147,6 +181,8 @@ public class SeasonsConfig {
         b.append(new KeyedCodec<>("BaseNightDurationSeconds", Codec.INTEGER),
                 (cfg, v) -> cfg.baseNightDurationSeconds = v, cfg -> cfg.baseNightDurationSeconds);
 
+=======
+>>>>>>> 5d3194d (feat: seasons, World Ref still not found)
         CODEC = b.build();
     }
 }
