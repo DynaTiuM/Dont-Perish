@@ -28,19 +28,16 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
 
     private final ComponentType<EntityStore, TemperatureComponent> temperatureComponentType;
     private final SeasonsConfig config;
-    private final SeasonsFeature seasonsFeature;
 
     private DamageCause heatDamageCause;
     private DamageCause coldDamageCause;
 
     public TemperatureSystem(
             ComponentType<EntityStore, TemperatureComponent> temperatureComponentType,
-            SeasonsConfig config,
-            SeasonsFeature seasonsFeature
+            SeasonsConfig config
     ) {
         this.temperatureComponentType = temperatureComponentType;
         this.config = config;
-        this.seasonsFeature = seasonsFeature;
     }
 
     @Override
