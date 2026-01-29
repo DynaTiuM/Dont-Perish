@@ -1,30 +1,23 @@
 package org.tact.features.seasons;
 
 import com.hypixel.hytale.component.*;
-import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.api.Feature;
 import org.tact.common.ui.HudManager;
 import org.tact.features.seasons.component.TemperatureComponent;
 import org.tact.features.seasons.config.SeasonsConfig;
-import org.tact.features.seasons.model.Season;
 import org.tact.features.seasons.resource.SeasonResource;
 import org.tact.features.seasons.system.SeasonCycleSystem;
 import org.tact.features.seasons.system.TemperatureSystem;
 import org.tact.features.seasons.ui.SeasonHud;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 public class SeasonsFeature implements Feature {
     private final SeasonsConfig config;
-    private ComponentType<EntityStore, TemperatureComponent> temperatureComponentType;
 
     public SeasonsFeature(SeasonsConfig config) {
         this.config = config;
@@ -40,8 +33,8 @@ public class SeasonsFeature implements Feature {
         SeasonResource.TYPE = plugin.getEntityStoreRegistry()
                 .registerResource(SeasonResource.class,"season_resource", SeasonResource.CODEC);
 
-        temperatureComponentType = plugin.getEntityStoreRegistry()
-                .registerComponent(TemperatureComponent.class, TemperatureComponent::new);
+        TemperatureComponent.TYPE = plugin.getEntityStoreRegistry()
+                .registerComponent(TemperatureComponent.class, "temperature_component", TemperatureComponent.CODEC);
     }
 
     @Override
@@ -60,23 +53,13 @@ public class SeasonsFeature implements Feature {
         });
     }
 
-    public SeasonResource getSeasonData(World world) {
-        Store<EntityStore> store = world.getEntityStore().getStore();
-        SeasonResource data = store.getResource(SeasonResource.TYPE);
-        if (data == null) {
-            data = new SeasonResource();
-            store.replaceResource(SeasonResource.TYPE, data);
-        }
-        return data;
-    }
-
     private void setupPlayer(Player player) {
         Ref<EntityStore> playerRef = player.getReference();
         Store<EntityStore> store = playerRef.getStore();
 
-        TemperatureComponent existingComp = store.getComponent(playerRef, temperatureComponentType);
+        TemperatureComponent existingComp = store.getComponent(playerRef, TemperatureComponent.getComponentType());
         if (existingComp == null) {
-            store.addComponent(playerRef, temperatureComponentType);
+            store.addComponent(playerRef, TemperatureComponent.getComponentType());
         }
 
         PlayerRef pRef = store.getComponent(playerRef, PlayerRef.getComponentType());
@@ -89,7 +72,7 @@ public class SeasonsFeature implements Feature {
                 new SeasonCycleSystem(config)
         );
         plugin.getEntityStoreRegistry().registerSystem(
-                new TemperatureSystem(temperatureComponentType, config, this)
+                new TemperatureSystem(TemperatureComponent.getComponentType(), config)
         );
     }
 
