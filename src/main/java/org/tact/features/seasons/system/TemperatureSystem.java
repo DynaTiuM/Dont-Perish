@@ -15,7 +15,6 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.tact.common.ui.HudManager;
-import org.tact.features.seasons.SeasonsFeature;
 import org.tact.features.seasons.component.TemperatureComponent;
 import org.tact.features.seasons.config.SeasonsConfig;
 import org.tact.features.seasons.model.Season;
@@ -110,7 +109,7 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
 
         float hourCorrection = getTimeModifier(player) * (10.0f * dayMultiplier);
         float totalTemperature = baseTemperature + hourCorrection;
-        player.sendMessage(Message.raw("Temperature: " +  totalTemperature + ", Season: " + season.getDisplayName()));
+        //player.sendMessage(Message.raw("Temperature: " +  totalTemperature + ", Season: " + season.getDisplayName()));
         return totalTemperature;
     }
 
