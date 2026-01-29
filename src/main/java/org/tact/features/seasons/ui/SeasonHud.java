@@ -13,19 +13,14 @@ public class SeasonHud extends CustomUIHud {
         super(playerRef);
     }
 
-    public void updateValues(Season season, float progress, float temperature, boolean hasProtection) {
-        // -20°C to 50°C
+    public void render(UICommandBuilder builder, Season season, float temperature) {
         float temperaturePercent = (temperature + 20.0f) / 70.0f;
-        temperaturePercent = Math.max(0.0f, Math.min(1.0f, temperaturePercent)) * 2;
+        temperaturePercent = Math.max(0.0f, Math.min(1.0f, temperaturePercent));
 
-        UICommandBuilder builder = new UICommandBuilder()
-                .set("#Icon.Background", "Textures/Season_" + season.name() + ".png")
+        builder.set("#SeasonIcon.Background", "Hud/Textures/Season_" + season.name() + ".png")
                 .set("#TemperatureBar.Value", temperaturePercent)
                 .set("#TemperatureBar.Visible", true);
-
-        this.update(false, builder);
     }
-
     @Override
     protected void build(@Nonnull UICommandBuilder builder) {
         builder.append("Hud/SeasonHud.ui");
