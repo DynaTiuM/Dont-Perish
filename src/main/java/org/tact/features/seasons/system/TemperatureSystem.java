@@ -19,6 +19,7 @@ import org.tact.features.seasons.SeasonsFeature;
 import org.tact.features.seasons.component.TemperatureComponent;
 import org.tact.features.seasons.config.SeasonsConfig;
 import org.tact.features.seasons.model.Season;
+import org.tact.features.seasons.resource.SeasonResource;
 import org.tact.features.seasons.ui.SeasonHud;
 
 import java.time.LocalDateTime;
@@ -50,12 +51,15 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl Store<EntityStore> store,
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
+
+        SeasonResource data = store.getResource(SeasonResource.TYPE);
+
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
         TemperatureComponent temperatureComponent = archetypeChunk.getComponent(index, temperatureComponentType);
         Ref<EntityStore> entityRef = archetypeChunk.getReferenceTo(index);
 
-        Season currentSeason = seasonsFeature.getCurrentSeason(player, store);
-        float seasonProgress = seasonsFeature.getSeasonProgress(player, store);
+        Season currentSeason = data.getCurrentSeason();
+        float seasonProgress = data.getSeasonProgress();
 
         // Exterior temperature
         float targetTemperature = calculateTargetTemperature(currentSeason, player);
