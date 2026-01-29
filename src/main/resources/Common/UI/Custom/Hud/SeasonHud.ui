@@ -1,48 +1,43 @@
-@DefaultItemSlotsPerRow = 9;
-@DefaultItemSlotSpacing = 2;
-@DefaultItemSlotSize = 74;
-@DefaultItemGridPadding = 2;
-@DefaultItemSlotsSelector = 4;
+@BottomMargin = 300;
+@RightMargin = 42;
+@IconBottomMargin = 6;
+@ThermometerHeight = 318;
+@ThermometerWidth = 32;
 
-@BottomMargin = 30;
-@ContainerMargin = 6;
-@RightMargin = 30;
-@WindowWidth = 1920;
+@TubeWidth = 12;
+@IconHeight = 24;
 
-@GameHudWidth = @WindowWidth - @RightMargin;
+@IconBottom = @IconBottomMargin + @ThermometerHeight;
+@GlobalThermometerHeight = @IconBottom + @IconHeight;
 
-@InventoryClosedContainerMargin = @BottomMargin + @ContainerMargin;
-@InventoryOpenedContainerMargin = 0;
-@SpecialSlotHighlightSize = 88;
-
-@HotbarSlotSpacingHud = 4;
-@HotbarSlotSpacingMenu = 2;
-@HotbarWidthHud = @DefaultItemSlotSize * @DefaultItemSlotsPerRow + @HotbarSlotSpacingHud * @DefaultItemSlotsPerRow;
-@HotbarWidthMenu = @DefaultItemSlotSize * @DefaultItemSlotsPerRow + @HotbarSlotSpacingMenu * @DefaultItemSlotsPerRow;
-@HotbarHeight = @DefaultItemSlotSize + (2 * @DefaultItemGridPadding);
+@TubeStart = @ThermometerWidth - @TubeWidth;
+@CenterPoint = @TubeStart + (@TubeWidth / 2);
+@IconLeft = @CenterPoint - (@IconHeight / 2);
 
 @Icon = "Textures/Season_SPRING.png";
-@Bar = "Textures/HungerBar.png";
+@Bar = "Textures/SeasonThermometerBar.png";
 
 Group {
   LayoutMode: Bottom;
-  Anchor: (Bottom: @BottomMargin, Width: @GameHudWidth, Height: 12);
+  Anchor: (Bottom: @BottomMargin, Right: @RightMargin, Width: 38, Height: @GlobalThermometerHeight);
 
   Group {
-    LayoutMode: Right;
-
     Group #Icon {
-      Anchor: (Left: 4, Width: 24, Height: 24, Right: 0, Top: -9);
+      Anchor: (Left: @IconLeft, Width: @IconHeight, Height: @IconHeight, Right: 0, Top: 0, Bottom: @IconBottom);
       Background: @Icon;
+      Visible: true;
     }
     Group {
-      Anchor: (Left: 0, Width: 32, Height: 318);
+      LayoutMode: Bottom;
+      Anchor: (Left: 0, Width: @ThermometerWidth, Height: @ThermometerHeight, Bottom: 0);
       Background: "Textures/SeasonThermometerBg.png";
 
       ProgressBar #TemperatureBar {
-        Anchor: (Width: 318, Height: 12);
+        Anchor: (Width: 32, Height: 318);
         BarTexturePath: @Bar;
         Visible: true;
+        Alignment: Vertical;
+        Direction: Start;
       }
     }
   }
