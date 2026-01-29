@@ -13,10 +13,9 @@ public class HungerHud extends CustomUIHud {
         super(playerRef);
     }
 
-    public void updateValues(GameMode gameMode, float hungerValue) {
-        UICommandBuilder builder = (new UICommandBuilder()).set("#Icon.Background", "Hud/Textures/HungerIcon.png")
-                .set("#ProgressBar.Value", hungerValue).set("#ProgressBar.Visible", gameMode == GameMode.Adventure);
-        this.update(false, builder);
+    public void render(UICommandBuilder builder, float hungerValue) {
+        builder.set("#HungerBar.Value", hungerValue)
+                .set("#HungerBar.Visible", true);
     }
 
     @Override

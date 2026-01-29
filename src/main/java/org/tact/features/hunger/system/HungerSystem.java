@@ -169,9 +169,10 @@ public class HungerSystem extends EntityTickingSystem<EntityStore> {
     }
 
     private void updateHud(Player player, HungerComponent hunger, EntityStatValue hungerStat) {
-        HudManager.ifPresent(player, "hunger", HungerHud.class, hud -> {
-            float percentage = hunger.getLerpedHunger() / hungerStat.getMax();
-            hud.updateValues(player.getGameMode(), percentage);
+        float percentage = hunger.getLerpedHunger() / hungerStat.getMax();
+        HudManager.updateChild(player, "hunger", HungerHud.class, (hud, builder) -> {
+            hud.render(builder, percentage);
+
         });
     }
 

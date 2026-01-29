@@ -22,7 +22,7 @@ Group {
   Anchor: (Bottom: @BottomMargin, Right: @RightMargin, Width: 38, Height: @GlobalThermometerHeight);
 
   Group {
-    Group #Icon {
+    Group #SeasonIcon {
       Anchor: (Left: @IconLeft, Width: @IconHeight, Height: @IconHeight, Right: 0, Top: 0, Bottom: @IconBottom);
       Background: @Icon;
       Visible: true;

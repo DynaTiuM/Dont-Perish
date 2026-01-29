@@ -62,8 +62,8 @@ public class SeasonsFeature implements Feature {
             store.addComponent(playerRef, TemperatureComponent.getComponentType());
         }
 
-        PlayerRef pRef = store.getComponent(playerRef, PlayerRef.getComponentType());
-        HudManager.open(player, pRef, new SeasonHud(pRef), getId());
+        PlayerRef playerRef_ = store.getComponent(playerRef, PlayerRef.getComponentType());
+        HudManager.open(player, playerRef_, new SeasonHud(playerRef_), getId());
     }
 
     @Override

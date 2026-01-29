@@ -92,13 +92,9 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
             float progress,
             TemperatureComponent tempComp
     ) {
-        HudManager.ifPresent(player, "seasons", SeasonHud.class, hud -> {
-            hud.updateValues(
-                    season,
-                    progress,
-                    tempComp.getCurrentTemperature(),
-                    tempComp.hasProtection()
-            );
+
+        HudManager.updateChild(player, "seasons", SeasonHud.class, (hud, builder) -> {
+            hud.render(builder, season, tempComp.getCurrentTemperature());
         });
     }
 
@@ -109,7 +105,7 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
 
         float hourCorrection = getTimeModifier(player) * (10.0f * dayMultiplier);
         float totalTemperature = baseTemperature + hourCorrection;
-        //player.sendMessage(Message.raw("Temperature: " +  totalTemperature + ", Season: " + season.getDisplayName()));
+
         return totalTemperature;
     }
 
