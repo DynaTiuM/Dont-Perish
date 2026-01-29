@@ -15,17 +15,17 @@ public class SeasonsConfig {
 
     // Duration of the seasons (in seconds)
 
-    /*
-    public float springDuration = 4800.0F;
-    public float summerDuration = 4500.0F;
-    public float autumnDuration = 5400.0F;
-    public float winterDuration = 4500.0F;
-  */
-     public float springDuration = 25.0F;
-     public float summerDuration = 2005.0F;
-     public float autumnDuration = 25.0F;
-     public float winterDuration = 25.0F;
 
+    public float springDuration = 14_400.0F; // 5 days
+    public float summerDuration = 11_520.0F; // 4 days
+    public float autumnDuration = 14_400.0F; // 5 days
+    public float winterDuration = 11_520.0F; // 4 days
+/*
+     public float springDuration = 30.0F;
+     public float summerDuration = 30.0F;
+     public float autumnDuration = 30.0F;
+     public float winterDuration = 30.0F;
+*/
     // Temperature mechanics
     public float springBaseTemperature = 15.0F;
     public float summerBaseTemperature = 35.0F;
@@ -34,7 +34,7 @@ public class SeasonsConfig {
 
     public float temperatureTransitionSpeed = 0.5F;
     public float extremeTemperatureThreshold = 5.0F;
-    public float heatDamage = 1.0F;
+    public float heatDamage = 1.5F;
     public float coldDamage = 1.5F;
     public float damageInterval = 3.0F;
 
@@ -47,8 +47,10 @@ public class SeasonsConfig {
     public boolean enableWeatherControl = true;
     public float springRainDuration = 120.0f;
 
-    public int baseDayDurationSeconds = 1200;
-    public int baseNightDurationSeconds = 600;
+    // Default Day & Night durations of Hytale
+    // Total duration = 2880s
+    public int baseDayDurationSeconds = 1728;
+    public int baseNightDurationSeconds = 1152;
 
     public SeasonsConfig() {
         initDefaultProtectionItems();

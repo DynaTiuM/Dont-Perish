@@ -2,19 +2,19 @@ package org.tact.features.seasons.system;
 
 import com.hypixel.hytale.component.ArchetypeChunk;
 import com.hypixel.hytale.component.CommandBuffer;
-import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.WorldConfig;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
-import org.tact.features.seasons.component.SeasonWorldComponent;
 import org.tact.features.seasons.config.SeasonsConfig;
 import org.tact.features.seasons.model.Season;
+import org.tact.features.seasons.resource.SeasonResource;
 
 import java.lang.reflect.Field;
 
@@ -35,28 +35,32 @@ public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl Store<EntityStore> store,
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
-        SeasonWorldComponent seasonComponent = archetypeChunk.getComponent(index, SeasonWorldComponent.getComponentType());
-        if(seasonComponent == null) {
+        SeasonResource data = store.getResource(SeasonResource.TYPE);
+        if(data == null) {
             throw new NullPointerException("Season Component is null! (SeasonCycleSystem Class)");
         }
-        Season currentSeason = seasonComponent.getCurrentSeason();
+        Season currentSeason = data.getCurrentSeason();
 
         // Progression of the Timer
-        seasonComponent.addSeasonTimer(deltaTime);
+        data.addSeasonTimer(deltaTime);
 
         // Duration of the actual season
         float seasonDuration = config.getSeasonDuration(currentSeason.ordinal());
 
-        float progress = Math.min(1.0F, seasonComponent.getSeasonTimer() / seasonDuration);
-        seasonComponent.setSeasonProgress(progress);
+        float progress = Math.min(1.0F, data.getSeasonTimer() / seasonDuration);
+        data.setSeasonProgress(progress);
 
-        if(seasonComponent.getSeasonTimer() >= seasonDuration) {
+        if(data.getSeasonTimer() >= seasonDuration) {
             Season nextSeason = currentSeason.next();
-            seasonComponent.setCurrentSeason(nextSeason);
-            seasonComponent.resetSeasonTime();
-            seasonComponent.setSeasonProgress(0.0F);
-            World world = commandBuffer.getExternalData().getWorld();
+            data.setCurrentSeason(nextSeason);
 
+            // Preventing the temporal drifting
+            float currentTimer = data.getSeasonTimer();
+            data.setSeasonTimer(currentTimer - seasonDuration);
+            data.setSeasonProgress(0.0F);
+            World world = commandBuffer.getExternalData().getWorld();
+            System.out.println("Daytime: " + world.getDaytimeDurationSeconds());
+            System.out.println("Nighttime: " + world.getNighttimeDurationSeconds());
             int baseDay = config.baseDayDurationSeconds;
             int baseNight = config.baseNightDurationSeconds;
 
@@ -73,10 +77,13 @@ public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
                 e.printStackTrace();
             }
 
+            store.saveAllResources();
+
             String msg = "Season changed to: " + nextSeason.getDisplayName();
             world.getPlayerRefs().forEach(player -> {
                 player.sendMessage(Message.raw(msg));
             });
+
         }
     }
 
@@ -89,6 +96,6 @@ public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
     @NullableDecl
     @Override
     public Query<EntityStore> getQuery() {
-        return Query.and(SeasonWorldComponent.getComponentType());
+        return Query.and(Player.getComponentType());
     }
 }
