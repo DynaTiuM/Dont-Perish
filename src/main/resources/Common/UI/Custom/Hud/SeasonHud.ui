@@ -1,0 +1,44 @@
+@BottomMargin = 300;
+@RightMargin = 42;
+@IconBottomMargin = 6;
+@ThermometerHeight = 318;
+@ThermometerWidth = 32;
+
+@TubeWidth = 12;
+@IconHeight = 24;
+
+@IconBottom = @IconBottomMargin + @ThermometerHeight;
+@GlobalThermometerHeight = @IconBottom + @IconHeight;
+
+@TubeStart = @ThermometerWidth - @TubeWidth;
+@CenterPoint = @TubeStart + (@TubeWidth / 2);
+@IconLeft = @CenterPoint - (@IconHeight / 2);
+
+@Icon = "Textures/Season_SPRING.png";
+@Bar = "Textures/SeasonThermometerBar.png";
+
+Group {
+  LayoutMode: Bottom;
+  Anchor: (Bottom: @BottomMargin, Right: @RightMargin, Width: 38, Height: @GlobalThermometerHeight);
+
+  Group {
+    Group #SeasonIcon {
+      Anchor: (Left: @IconLeft, Width: @IconHeight, Height: @IconHeight, Right: 0, Top: 0, Bottom: @IconBottom);
+      Background: @Icon;
+      Visible: true;
+    }
+    Group {
+      LayoutMode: Bottom;
+      Anchor: (Left: 0, Width: @ThermometerWidth, Height: @ThermometerHeight, Bottom: 0);
+      Background: "Textures/SeasonThermometerBg.png";
+
+      ProgressBar #TemperatureBar {
+        Anchor: (Width: 32, Height: 318);
+        BarTexturePath: @Bar;
+        Visible: true;
+        Alignment: Vertical;
+        Direction: Start;
+      }
+    }
+  }
+}
