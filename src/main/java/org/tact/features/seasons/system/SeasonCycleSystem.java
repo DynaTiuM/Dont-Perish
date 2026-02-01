@@ -59,8 +59,7 @@ public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
             data.setSeasonTimer(currentTimer - seasonDuration);
             data.setSeasonProgress(0.0F);
             World world = commandBuffer.getExternalData().getWorld();
-            System.out.println("Daytime: " + world.getDaytimeDurationSeconds());
-            System.out.println("Nighttime: " + world.getNighttimeDurationSeconds());
+
             int baseDay = config.baseDayDurationSeconds;
             int baseNight = config.baseNightDurationSeconds;
 

@@ -52,13 +52,18 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
 
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
         TemperatureComponent temperatureComponent = archetypeChunk.getComponent(index, temperatureComponentType);
+
+        if(temperatureComponent == null) {
+            return;
+        }
+
         Ref<EntityStore> entityRef = archetypeChunk.getReferenceTo(index);
 
         Season currentSeason = data.getCurrentSeason();
         float seasonProgress = data.getSeasonProgress();
 
         // Exterior temperature
-        float targetTemperature = calculateTargetTemperature(currentSeason, player);
+        float targetTemperature = calculateTargetTemperature(currentSeason, player, temperatureComponent);
         temperatureComponent.setTargetTemperature(targetTemperature);
 
         float currentTemp = temperatureComponent.getCurrentTemperature();
@@ -98,13 +103,19 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         });
     }
 
-    private float calculateTargetTemperature(Season season, Player player) {
+    private float calculateTargetTemperature(Season season, Player player, TemperatureComponent temperatureComponent) {
+
+        // Modifier 0: Temperature based on the Season
         float baseTemperature = config.getSeasonBaseTemp(season.ordinal());
 
+        // Modifier 1: the hour (Day/Night)
         float dayMultiplier = season.getDayLengthMultiplier();
-
         float hourCorrection = getTimeModifier(player) * (10.0f * dayMultiplier);
-        float totalTemperature = baseTemperature + hourCorrection;
+
+        // Modifier 2: Environment (blocks)
+        float blockBonus = temperatureComponent.getEnvironmentModifier();
+
+        float totalTemperature = baseTemperature + blockBonus + hourCorrection;
 
         return totalTemperature;
     }
