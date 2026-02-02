@@ -8,19 +8,24 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.api.Feature;
+import org.tact.common.environment.EnvironmentRegistry;
 import org.tact.common.ui.HudManager;
-import org.tact.features.seasons.component.TemperatureComponent;
+import org.tact.features.seasons.handler.SeasonsTemperatureHandler;
 import org.tact.features.seasons.config.SeasonsConfig;
-import org.tact.features.seasons.resource.SeasonResource;
-import org.tact.features.seasons.system.SeasonCycleSystem;
-import org.tact.features.seasons.system.TemperatureSystem;
-import org.tact.features.seasons.ui.SeasonHud;
+import org.tact.features.seasons.resource.SeasonsResource;
+import org.tact.features.seasons.system.SeasonsCycleSystem;
+import org.tact.features.seasons.ui.SeasonsHud;
 
 public class SeasonsFeature implements Feature {
     private final SeasonsConfig config;
+    private final EnvironmentRegistry environmentRegistry;
 
-    public SeasonsFeature(SeasonsConfig config) {
+    public SeasonsFeature(
+            SeasonsConfig config,
+            EnvironmentRegistry environmentRegistry
+    ) {
         this.config = config;
+        this.environmentRegistry = environmentRegistry;
     }
 
     @Override
@@ -30,11 +35,8 @@ public class SeasonsFeature implements Feature {
 
     @Override
     public void registerComponents(JavaPlugin plugin) {
-        SeasonResource.TYPE = plugin.getEntityStoreRegistry()
-                .registerResource(SeasonResource.class,"season_resource", SeasonResource.CODEC);
-
-        TemperatureComponent.TYPE = plugin.getEntityStoreRegistry()
-                .registerComponent(TemperatureComponent.class, "temperature_component", TemperatureComponent.CODEC);
+        SeasonsResource.TYPE = plugin.getEntityStoreRegistry()
+                .registerResource(SeasonsResource.class,"season_resource", SeasonsResource.CODEC);
     }
 
     @Override
@@ -59,25 +61,20 @@ public class SeasonsFeature implements Feature {
         }
         Store<EntityStore> store = playerRef.getStore();
 
-        TemperatureComponent existingComp = store.getComponent(playerRef, TemperatureComponent.getComponentType());
-        if (existingComp == null) {
-            store.addComponent(playerRef, TemperatureComponent.getComponentType());
-        }
 
-        PlayerRef playerRef_ = store.getComponent(playerRef, PlayerRef.getComponentType());
-        if(playerRef_ == null) {
+        PlayerRef pRef = store.getComponent(playerRef, PlayerRef.getComponentType());
+        if(pRef == null) {
             throw new NullPointerException("[Seasons] PlayerRef is null in store.getComponent()");
         }
-        HudManager.open(player, playerRef_, new SeasonHud(playerRef_), getId());
+        HudManager.open(player, pRef, new SeasonsHud(pRef), getId());
     }
 
     @Override
     public void enable(JavaPlugin plugin) {
+        environmentRegistry.register("seasons_ambient", new SeasonsTemperatureHandler(config));
+
         plugin.getEntityStoreRegistry().registerSystem(
-                new SeasonCycleSystem(config)
-        );
-        plugin.getEntityStoreRegistry().registerSystem(
-                new TemperatureSystem(TemperatureComponent.getComponentType(), config)
+                new SeasonsCycleSystem(config)
         );
     }
 

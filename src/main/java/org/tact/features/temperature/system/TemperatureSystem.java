@@ -1,9 +1,8 @@
-package org.tact.features.seasons.system;
+package org.tact.features.temperature.system;
 
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
-import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageCause;
@@ -15,27 +14,26 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.tact.common.ui.HudManager;
-import org.tact.features.seasons.component.TemperatureComponent;
+import org.tact.features.temperature.component.TemperatureComponent;
 import org.tact.features.seasons.config.SeasonsConfig;
 import org.tact.features.seasons.model.Season;
-import org.tact.features.seasons.resource.SeasonResource;
-import org.tact.features.seasons.ui.SeasonHud;
+import org.tact.features.seasons.resource.SeasonsResource;
+import org.tact.features.seasons.ui.SeasonsHud;
+import org.tact.features.temperature.config.TemperatureConfig;
+import org.tact.features.temperature.ui.TemperatureHud;
 
 import java.time.LocalDateTime;
 
 public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
 
-    private final ComponentType<EntityStore, TemperatureComponent> temperatureComponentType;
-    private final SeasonsConfig config;
+    private final TemperatureConfig config;
 
     private DamageCause heatDamageCause;
     private DamageCause coldDamageCause;
 
     public TemperatureSystem(
-            ComponentType<EntityStore, TemperatureComponent> temperatureComponentType,
-            SeasonsConfig config
+            TemperatureConfig config
     ) {
-        this.temperatureComponentType = temperatureComponentType;
         this.config = config;
     }
 
@@ -48,10 +46,10 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
 
-        SeasonResource data = store.getResource(SeasonResource.TYPE);
+        SeasonsResource data = store.getResource(SeasonsResource.TYPE);
 
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
-        TemperatureComponent temperatureComponent = archetypeChunk.getComponent(index, temperatureComponentType);
+        TemperatureComponent temperatureComponent = archetypeChunk.getComponent(index, TemperatureComponent.getComponentType());
 
         if(temperatureComponent == null) {
             return;
@@ -60,7 +58,6 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         Ref<EntityStore> entityRef = archetypeChunk.getReferenceTo(index);
 
         Season currentSeason = data.getCurrentSeason();
-        float seasonProgress = data.getSeasonProgress();
 
         // Exterior temperature
         float targetTemperature = calculateTargetTemperature(currentSeason, player, temperatureComponent);
@@ -88,57 +85,35 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
             temperatureComponent.resetDamageTimer();
         }
 
-        updateHud(player, currentSeason, seasonProgress, temperatureComponent);
+        updateHud(player, temperatureComponent);
     }
 
     private void updateHud(
             Player player,
-            Season season,
-            float progress,
-            TemperatureComponent tempComp
+            TemperatureComponent temperatureComponent
     ) {
 
-        HudManager.updateChild(player, "seasons", SeasonHud.class, (hud, builder) -> {
-            hud.render(builder, season, tempComp.getCurrentTemperature());
+        HudManager.updateChild(player, "temperature", TemperatureHud.class, (hud, builder) -> {
+            hud.render(builder, temperatureComponent.getCurrentTemperature());
         });
     }
 
     private float calculateTargetTemperature(Season season, Player player, TemperatureComponent temperatureComponent) {
 
-        // Modifier 0: Temperature based on the Season
-        float baseTemperature = config.getSeasonBaseTemp(season.ordinal());
+        // Modifier 0: Base Temperature (without any influence)
+        float baseTemperature = config.defaultBaseTemperature;
 
-        // Modifier 1: the hour (Day/Night)
-        float dayMultiplier = season.getDayLengthMultiplier();
-        float hourCorrection = getTimeModifier(player) * (10.0f * dayMultiplier);
+        // Modifier 1: Season (if feature activated)
+        float seasonal = temperatureComponent.getSeasonalModifier();
 
         // Modifier 2: Environment (blocks)
-        float blockBonus = temperatureComponent.getEnvironmentModifier();
+        float environment = temperatureComponent.getEnvironmentModifier();
 
-        float totalTemperature = baseTemperature + blockBonus + hourCorrection;
+        float totalTemperature = baseTemperature + environment + seasonal;
 
         return totalTemperature;
     }
 
-    private float getTimeModifier(Player player) {
-
-        if(player.getWorld() != null) {
-            return 0.0F;
-        }
-
-        Store<EntityStore> store = player.getWorld().getEntityStore().getStore();
-
-        WorldTimeResource timeResource = store.getResource(WorldTimeResource.getResourceType());
-
-        LocalDateTime gameTime = timeResource.getGameDateTime();
-
-        int hour = gameTime.getHour();
-        int minute = gameTime.getMinute();
-
-        float preciseHour = hour + (minute / 60.0f);
-
-        return (float) Math.cos(((preciseHour - 14.0f) / 24.0f) * 2.0f * Math.PI);
-    }
 
     private boolean checkProtection(Player player, Store<EntityStore> store, Season season) {
         // TODO: Verify the inventory of the player and holding item
@@ -191,6 +166,6 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     @NullableDecl
     @Override
     public Query<EntityStore> getQuery() {
-        return Query.and(Player.getComponentType(), temperatureComponentType);
+        return Query.and(Player.getComponentType(), TemperatureComponent.getComponentType());
     }
 }

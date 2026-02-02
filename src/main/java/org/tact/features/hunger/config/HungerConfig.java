@@ -31,22 +31,18 @@ public class HungerConfig {
         foodValues.put("Ingredient_Dough", 2.0F);
         foodValues.put("Ingredient_Flour", 1.0F);
 
-        // Fruits
         foodValues.put("Plant_Fruit_Apple", 15.0F);
         foodValues.put("Plant_Fruit_Mango", 15.0F);
         foodValues.put("Plant_Fruit_Coconut", 15.0F);
 
-        // Légumes
         foodValues.put("Plant_Crop_Potato_Item", 7.0F);
         foodValues.put("Plant_Crop_Carrot_Item", 8.0F);
         foodValues.put("Plant_Crop_Corn_Item", 10.0F);
 
-        // Viandes crues
         foodValues.put("Food_Beef_Raw", 12.0F);
         foodValues.put("Food_Pork_Raw", 10.0F);
         foodValues.put("Food_Chicken_Raw", 8.0F);
 
-        // Plats cuisinés
         foodValues.put("Food_Bread", 20.0F);
         foodValues.put("Food_Wildmeat_Cooked", 35.0F);
         foodValues.put("Food_Kebab_Meat", 45.0F);

@@ -1,4 +1,4 @@
-package org.tact.features.seasons.handler;
+package org.tact.features.temperature.handler;
 
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
@@ -7,16 +7,16 @@ import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.common.environment.EnvironmentHandler;
 import org.tact.common.environment.EnvironmentResult;
-import org.tact.features.seasons.component.TemperatureComponent;
-import org.tact.features.seasons.config.SeasonsConfig;
+import org.tact.features.temperature.component.TemperatureComponent;
+import org.tact.features.temperature.config.TemperatureConfig;
 
 import java.util.Map;
 
 public class TemperatureEnvironmentHandler implements EnvironmentHandler {
 
-    private final SeasonsConfig config;
+    private final TemperatureConfig config;
 
-    public TemperatureEnvironmentHandler(SeasonsConfig config) {
+    public TemperatureEnvironmentHandler(TemperatureConfig config) {
         this.config = config;
     }
 
