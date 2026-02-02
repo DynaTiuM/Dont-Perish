@@ -11,7 +11,7 @@ import org.tact.core.registry.FeatureRegistry;
 import org.tact.features.baxter.BaxterFeature;
 import org.tact.features.hunger.HungerFeature;
 import org.tact.features.seasons.SeasonsFeature;
-import org.tact.features.seasons.handler.TemperatureEnvironmentHandler;
+import org.tact.features.temperature.TemperatureFeature;
 
 import javax.annotation.Nonnull;
 import java.util.logging.Logger;
@@ -71,9 +71,8 @@ public class DontPerishPlugin extends JavaPlugin {
     private void registerFeatures() {
         featureRegistry.register(new HungerFeature(modConfig.hunger));
         featureRegistry.register(new BaxterFeature(modConfig.baxter));
-        featureRegistry.register(new SeasonsFeature(modConfig.seasons));
-
-        environmentRegistry.register("temperature", new TemperatureEnvironmentHandler(modConfig.seasons));
+        featureRegistry.register(new SeasonsFeature(modConfig.seasons, environmentRegistry));
+        featureRegistry.register(new TemperatureFeature(modConfig.temperature, environmentRegistry));
     }
 
     public ModConfig getModConfig() {

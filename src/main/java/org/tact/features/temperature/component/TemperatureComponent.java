@@ -1,4 +1,4 @@
-package org.tact.features.seasons.component;
+package org.tact.features.temperature.component;
 
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
@@ -11,10 +11,12 @@ import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 public class TemperatureComponent implements Component<EntityStore> {
     private float currentTemperature = 20.0F;
     private float targetTemperature = 20.0F;
+
+    private float seasonalModifier = 0.0F;
+    private float environmentModifier = 0.0F;
+
     private boolean hasProtection = false;
     private float damageTimer = 0.0F;
-
-    private float environmentModifier = 0.0F;
 
     public static ComponentType<EntityStore, TemperatureComponent> TYPE;
 
@@ -73,6 +75,9 @@ public class TemperatureComponent implements Component<EntityStore> {
 
     public float getEnvironmentModifier() { return environmentModifier; }
     public void setEnvironmentModifier(float modifier) { this.environmentModifier = modifier; }
+
+    public float getSeasonalModifier() { return seasonalModifier; }
+    public void setSeasonalModifier(float mod) { this.seasonalModifier = mod; }
 
     @NullableDecl
     @Override

@@ -14,8 +14,8 @@
 @CenterPoint = @TubeStart + (@TubeWidth / 2);
 @IconLeft = @CenterPoint - (@IconHeight / 2);
 
+
 @Icon = "Textures/Season_SPRING.png";
-@Bar = "Textures/SeasonThermometerBar.png";
 
 Group {
   LayoutMode: Bottom;
@@ -27,18 +27,6 @@ Group {
       Background: @Icon;
       Visible: true;
     }
-    Group {
-      LayoutMode: Bottom;
-      Anchor: (Left: 0, Width: @ThermometerWidth, Height: @ThermometerHeight, Bottom: 0);
-      Background: "Textures/SeasonThermometerBg.png";
 
-      ProgressBar #TemperatureBar {
-        Anchor: (Width: 32, Height: 318);
-        BarTexturePath: @Bar;
-        Visible: true;
-        Alignment: Vertical;
-        Direction: Start;
-      }
-    }
   }
 }

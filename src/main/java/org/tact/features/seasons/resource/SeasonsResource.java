@@ -10,19 +10,19 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.tact.features.seasons.model.Season;
 
-public class SeasonResource implements Resource<EntityStore> {
-    public static ResourceType<EntityStore, SeasonResource> TYPE;
+public class SeasonsResource implements Resource<EntityStore> {
+    public static ResourceType<EntityStore, SeasonsResource> TYPE;
 
     private Season currentSeason = Season.SPRING;
     private float seasonTimer = 0.0f;
     private float seasonProgress = 0.0f;
 
-    public static final BuilderCodec<SeasonResource> CODEC;
+    public static final BuilderCodec<SeasonsResource> CODEC;
 
     static {
-        BuilderCodec.Builder<SeasonResource> builder = BuilderCodec.builder(
-                SeasonResource.class,
-                SeasonResource::new
+        BuilderCodec.Builder<SeasonsResource> builder = BuilderCodec.builder(
+                SeasonsResource.class,
+                SeasonsResource::new
         );
 
         builder.append(new KeyedCodec<>("CurrentSeason", Codec.STRING),
@@ -36,7 +36,7 @@ public class SeasonResource implements Resource<EntityStore> {
         );
 
         builder.append(new KeyedCodec<>("SeasonTimer", Codec.FLOAT),
-                SeasonResource::setSeasonTimer,
+                SeasonsResource::setSeasonTimer,
                 resource -> {
                     float timer = resource.getSeasonTimer();
                     System.out.println("[Seasons] SAVING Timer: " + timer + "s");
@@ -76,7 +76,7 @@ public class SeasonResource implements Resource<EntityStore> {
     @NullableDecl
     @Override
     public Resource<EntityStore> clone() {
-        SeasonResource cloned = new SeasonResource();
+        SeasonsResource cloned = new SeasonsResource();
         cloned.currentSeason = this.currentSeason;
         cloned.seasonTimer = this.seasonTimer;
         cloned.seasonProgress = this.seasonProgress;
