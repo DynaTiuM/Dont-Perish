@@ -122,13 +122,13 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
 
     private float getTimeModifier(Player player) {
 
+        if(player.getWorld() != null) {
+            return 0.0F;
+        }
+
         Store<EntityStore> store = player.getWorld().getEntityStore().getStore();
 
         WorldTimeResource timeResource = store.getResource(WorldTimeResource.getResourceType());
-
-        if (timeResource == null) {
-            return 0;
-        }
 
         LocalDateTime gameTime = timeResource.getGameDateTime();
 
@@ -167,6 +167,9 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
             Store<EntityStore> store = commandBuffer.getStore();
             EntityStatMap statMap = store.getComponent(entityRef, EntityStatMap.getComponentType());
             int staminaIdx = DefaultEntityStatTypes.getStamina();
+            if(statMap == null) {
+                throw new NullPointerException("[Temperature] statMap is null");
+            }
             statMap.subtractStatValue(staminaIdx, this.config.staminaDrainAmount);
         }
     }

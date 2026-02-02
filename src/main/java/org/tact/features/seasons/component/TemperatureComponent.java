@@ -26,11 +26,11 @@ public class TemperatureComponent implements Component<EntityStore> {
             TemperatureComponent::new
         );
 
-        builder.addField(new KeyedCodec<>("CurrentTemperature", Codec.FLOAT),
+        builder.append(new KeyedCodec<>("CurrentTemperature", Codec.FLOAT),
                 TemperatureComponent::setCurrentTemperature,
                 TemperatureComponent::getCurrentTemperature
         );
-        builder.addField(new KeyedCodec<>("DamageTimer", Codec.FLOAT),
+        builder.append(new KeyedCodec<>("DamageTimer", Codec.FLOAT),
                 (comp, value) -> comp.damageTimer = value,
                 TemperatureComponent::getDamageTimer
         );

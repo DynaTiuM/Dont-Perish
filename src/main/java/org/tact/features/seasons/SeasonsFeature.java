@@ -8,12 +8,9 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.api.Feature;
-import org.tact.common.environment.EnvironmentRegistry;
-import org.tact.common.environment.EnvironmentScannerSystem;
 import org.tact.common.ui.HudManager;
 import org.tact.features.seasons.component.TemperatureComponent;
 import org.tact.features.seasons.config.SeasonsConfig;
-import org.tact.features.seasons.handler.TemperatureEnvironmentHandler;
 import org.tact.features.seasons.resource.SeasonResource;
 import org.tact.features.seasons.system.SeasonCycleSystem;
 import org.tact.features.seasons.system.TemperatureSystem;
@@ -48,7 +45,6 @@ public class SeasonsFeature implements Feature {
     public void registerEvents(JavaPlugin plugin) {
         plugin.getEventRegistry().registerGlobal(PlayerReadyEvent.class, event -> {
             Player player = event.getPlayer();
-
             player.sendMessage(Message.raw("[Seasons] New Season Manager created"));
 
             setupPlayer(player);
@@ -58,6 +54,9 @@ public class SeasonsFeature implements Feature {
 
     private void setupPlayer(Player player) {
         Ref<EntityStore> playerRef = player.getReference();
+        if(playerRef == null) {
+            throw new NullPointerException("[Seasons] PlayerRef is null in player.getReference()");
+        }
         Store<EntityStore> store = playerRef.getStore();
 
         TemperatureComponent existingComp = store.getComponent(playerRef, TemperatureComponent.getComponentType());
@@ -66,6 +65,9 @@ public class SeasonsFeature implements Feature {
         }
 
         PlayerRef playerRef_ = store.getComponent(playerRef, PlayerRef.getComponentType());
+        if(playerRef_ == null) {
+            throw new NullPointerException("[Seasons] PlayerRef is null in store.getComponent()");
+        }
         HudManager.open(player, playerRef_, new SeasonHud(playerRef_), getId());
     }
 
