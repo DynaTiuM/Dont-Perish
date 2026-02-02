@@ -28,17 +28,14 @@ public class HungerSystem extends EntityTickingSystem<EntityStore> {
     private static final float LERP_SPEED = 5.0F;
     private static final float LERP_THRESHOLD = 0.1F;
 
-    private final ComponentType<EntityStore, HungerComponent> hungerComponentType;
     private final HungerConfig config;
 
     private DamageCause starvationDamageCause;
     private int hungerStatIndex = -1;
 
     public HungerSystem(
-            ComponentType<EntityStore, HungerComponent> hungerComponentType,
             HungerConfig config
     ) {
-        this.hungerComponentType = hungerComponentType;
         this.config = config;
 
         registerFoodConsumptionCallback();
@@ -53,7 +50,7 @@ public class HungerSystem extends EntityTickingSystem<EntityStore> {
             @Nonnull CommandBuffer<EntityStore> commandBuffer
     ) {
         Player player = chunk.getComponent(index, Player.getComponentType());
-        HungerComponent hunger = chunk.getComponent(index, hungerComponentType);
+        HungerComponent hunger = chunk.getComponent(index, HungerComponent.getComponentType());
         Ref<EntityStore> entityRef = chunk.getReferenceTo(index);
 
         EntityStatMap statMap = store.getComponent(entityRef, EntityStatMap.getComponentType());
@@ -236,6 +233,6 @@ public class HungerSystem extends EntityTickingSystem<EntityStore> {
     @NullableDecl
     @Override
     public Query<EntityStore> getQuery() {
-        return Query.and(Player.getComponentType(), hungerComponentType);
+        return Query.and(Player.getComponentType(), HungerComponent.getComponentType());
     }
 }

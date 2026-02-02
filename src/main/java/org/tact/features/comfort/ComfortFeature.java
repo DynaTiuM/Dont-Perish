@@ -1,4 +1,4 @@
-package org.tact.features.hunger;
+package org.tact.features.comfort;
 
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
@@ -8,32 +8,40 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.api.Feature;
+import org.tact.common.environment.EnvironmentRegistry;
 import org.tact.common.ui.HudManager;
-import org.tact.features.hunger.component.HungerComponent;
-import org.tact.features.hunger.config.HungerConfig;
-import org.tact.features.hunger.system.HungerSystem;
-import org.tact.features.hunger.ui.HungerHud;
+import org.tact.features.comfort.component.ComfortComponent;
+import org.tact.features.comfort.config.ComfortConfig;
+import org.tact.features.comfort.handler.ComfortEnvironmentHandler;
+import org.tact.features.comfort.system.ComfortSystem;
+import org.tact.features.comfort.ui.ComfortHud;
 
-public class HungerFeature implements Feature {
-    private final HungerConfig config;
+public class ComfortFeature implements Feature {
+    private final ComfortConfig config;
+    private final EnvironmentRegistry environmentRegistry;
 
-    public HungerFeature(HungerConfig config) {
+    public ComfortFeature(
+            ComfortConfig config,
+            EnvironmentRegistry environmentRegistry
+    ) {
         this.config = config;
+        this.environmentRegistry = environmentRegistry;
     }
 
     @Override
     public String getId() {
-        return "hunger";
+        return "comfort";
     }
 
     @Override
     public void registerComponents(JavaPlugin plugin) {
-        HungerComponent.TYPE = plugin.getEntityStoreRegistry()
-                .registerComponent(HungerComponent.class, HungerComponent::new);
+        ComfortComponent.TYPE = plugin.getEntityStoreRegistry()
+                .registerComponent(ComfortComponent.class, ComfortComponent::new);
     }
 
     @Override
     public void registerSystems(JavaPlugin plugin) {
+
     }
 
     @Override
@@ -43,20 +51,22 @@ public class HungerFeature implements Feature {
             Ref<EntityStore> ref = player.getReference();
             Store<EntityStore> store = ref.getStore();
 
-            store.addComponent(ref, HungerComponent.getComponentType());
+            store.addComponent(ref, ComfortComponent.getComponentType());
 
             PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
-            HudManager.open(player, playerRef, new HungerHud(playerRef), getId());
+            HudManager.open(player, playerRef, new ComfortHud(playerRef), getId());
         });
     }
 
     @Override
     public void enable(JavaPlugin plugin) {
-        plugin.getEntityStoreRegistry().registerSystem(new HungerSystem(config));
+        environmentRegistry.register("comfort", new ComfortEnvironmentHandler(config));
+        plugin.getEntityStoreRegistry().registerSystem(new ComfortSystem(config));
     }
 
     @Override
     public boolean isEnabled() {
         return config.enabled;
     }
+
 }
