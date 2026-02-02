@@ -45,7 +45,6 @@ public class SeasonsFeature implements Feature {
     public void registerEvents(JavaPlugin plugin) {
         plugin.getEventRegistry().registerGlobal(PlayerReadyEvent.class, event -> {
             Player player = event.getPlayer();
-
             player.sendMessage(Message.raw("[Seasons] New Season Manager created"));
 
             setupPlayer(player);
@@ -55,6 +54,9 @@ public class SeasonsFeature implements Feature {
 
     private void setupPlayer(Player player) {
         Ref<EntityStore> playerRef = player.getReference();
+        if(playerRef == null) {
+            throw new NullPointerException("[Seasons] PlayerRef is null in player.getReference()");
+        }
         Store<EntityStore> store = playerRef.getStore();
 
         TemperatureComponent existingComp = store.getComponent(playerRef, TemperatureComponent.getComponentType());
@@ -63,6 +65,9 @@ public class SeasonsFeature implements Feature {
         }
 
         PlayerRef playerRef_ = store.getComponent(playerRef, PlayerRef.getComponentType());
+        if(playerRef_ == null) {
+            throw new NullPointerException("[Seasons] PlayerRef is null in store.getComponent()");
+        }
         HudManager.open(player, playerRef_, new SeasonHud(playerRef_), getId());
     }
 

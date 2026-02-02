@@ -9,10 +9,12 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 public class TemperatureComponent implements Component<EntityStore> {
-    private float currentTemperature = 20.0f;
-    private float targetTemperature = 20.0f;
+    private float currentTemperature = 20.0F;
+    private float targetTemperature = 20.0F;
     private boolean hasProtection = false;
-    private float damageTimer = 0.0f;
+    private float damageTimer = 0.0F;
+
+    private float environmentModifier = 0.0F;
 
     public static ComponentType<EntityStore, TemperatureComponent> TYPE;
 
@@ -24,11 +26,11 @@ public class TemperatureComponent implements Component<EntityStore> {
             TemperatureComponent::new
         );
 
-        builder.addField(new KeyedCodec<>("CurrentTemperature", Codec.FLOAT),
+        builder.append(new KeyedCodec<>("CurrentTemperature", Codec.FLOAT),
                 TemperatureComponent::setCurrentTemperature,
                 TemperatureComponent::getCurrentTemperature
         );
-        builder.addField(new KeyedCodec<>("DamageTimer", Codec.FLOAT),
+        builder.append(new KeyedCodec<>("DamageTimer", Codec.FLOAT),
                 (comp, value) -> comp.damageTimer = value,
                 TemperatureComponent::getDamageTimer
         );
@@ -68,6 +70,9 @@ public class TemperatureComponent implements Component<EntityStore> {
     public void resetDamageTimer() {
         this.damageTimer = 0.0f;
     }
+
+    public float getEnvironmentModifier() { return environmentModifier; }
+    public void setEnvironmentModifier(float modifier) { this.environmentModifier = modifier; }
 
     @NullableDecl
     @Override

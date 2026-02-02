@@ -4,11 +4,14 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.util.Config;
 import org.tact.commands.BaxterCommand;
+import org.tact.common.environment.EnvironmentRegistry;
+import org.tact.common.environment.EnvironmentScannerSystem;
 import org.tact.core.config.ModConfig;
 import org.tact.core.registry.FeatureRegistry;
 import org.tact.features.baxter.BaxterFeature;
 import org.tact.features.hunger.HungerFeature;
 import org.tact.features.seasons.SeasonsFeature;
+import org.tact.features.seasons.handler.TemperatureEnvironmentHandler;
 
 import javax.annotation.Nonnull;
 import java.util.logging.Logger;
@@ -19,6 +22,7 @@ public class DontPerishPlugin extends JavaPlugin {
     private final Config<ModConfig> configWrapper;
     private ModConfig modConfig;
     private FeatureRegistry featureRegistry;
+    private EnvironmentRegistry environmentRegistry;
 
     public DontPerishPlugin(@Nonnull JavaPluginInit init) {
         super(init);
@@ -32,6 +36,8 @@ public class DontPerishPlugin extends JavaPlugin {
         modConfig = configWrapper.get();
 
         featureRegistry = new FeatureRegistry();
+        environmentRegistry = new EnvironmentRegistry();
+
         getCommandRegistry().registerCommand(new BaxterCommand(modConfig.baxter));
 
         registerFeatures();
@@ -42,6 +48,7 @@ public class DontPerishPlugin extends JavaPlugin {
             feature.registerEvents(this);
             feature.registerSystems(this);
         });
+
         this.configWrapper.save();
     }
 
@@ -54,6 +61,10 @@ public class DontPerishPlugin extends JavaPlugin {
             feature.enable(this);
         });
 
+        getEntityStoreRegistry().registerSystem(
+                new EnvironmentScannerSystem(4, 1.0f, environmentRegistry)
+        );
+
         LOGGER.info("DontPerish mod successfully started!");
     }
 
@@ -61,6 +72,8 @@ public class DontPerishPlugin extends JavaPlugin {
         featureRegistry.register(new HungerFeature(modConfig.hunger));
         featureRegistry.register(new BaxterFeature(modConfig.baxter));
         featureRegistry.register(new SeasonsFeature(modConfig.seasons));
+
+        environmentRegistry.register("temperature", new TemperatureEnvironmentHandler(modConfig.seasons));
     }
 
     public ModConfig getModConfig() {

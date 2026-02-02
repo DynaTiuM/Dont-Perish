@@ -42,6 +42,9 @@ public class SeasonsConfig {
     public float staminaDrainAmount = 5.0f;
 
     public Map<String, String> protectionItems = new HashMap<>();
+    public Map<String, Float> blockTemperatures = new HashMap<>();
+    public float maxBlockHeatBonus = 30.0f;
+    public float maxBlockColdBonus = -20.0f;
 
     // Meteo
     public boolean enableWeatherControl = true;
@@ -54,6 +57,7 @@ public class SeasonsConfig {
 
     public SeasonsConfig() {
         initDefaultProtectionItems();
+        initBlockTemperatures();
     }
 
     private void initDefaultProtectionItems() {
@@ -67,6 +71,20 @@ public class SeasonsConfig {
         protectionItems.put("WinterCoat", "WINTER");
         protectionItems.put("Item_Scarf", "WINTER");
         protectionItems.put("Item_Gloves", "WINTER");
+    }
+
+    private void initBlockTemperatures() {
+        blockTemperatures.put("*Bench_Campfire_State_Definitions_Processing", 5.0F);
+        blockTemperatures.put("Fluid_Lava", 5.0F);
+        blockTemperatures.put("Furniture_Crude_Torch", 2.0F);
+        blockTemperatures.put("Rock_Ice", -2.0F);
+        blockTemperatures.put("Rock_Ice_Permafrost", -2.0F);
+        blockTemperatures.put("Soil_Snow", -0.5F);
+        blockTemperatures.put("Soil_Snow_Half", -0.2F);
+    }
+
+    public float getBlockTemperature(String blockId) {
+        return blockTemperatures.getOrDefault(blockId, 0.0F);
     }
 
     public float getSeasonDuration(int seasonOrdinal) {
@@ -146,6 +164,13 @@ public class SeasonsConfig {
 
         b.append(new KeyedCodec<>("BaseNightDurationSeconds", Codec.INTEGER),
                 (cfg, v) -> cfg.baseNightDurationSeconds = v, cfg -> cfg.baseNightDurationSeconds);
+
+
+        b.append(new KeyedCodec<>("MaxBlockColdBonus", Codec.FLOAT),
+                (cfg, v) -> cfg.maxBlockColdBonus = v, cfg -> cfg.maxBlockColdBonus);
+
+        b.append(new KeyedCodec<>("MaxBlockHeatBonus", Codec.FLOAT),
+                (cfg, v) -> cfg.maxBlockHeatBonus = v, cfg -> cfg.maxBlockHeatBonus);
 
         CODEC = b.build();
     }

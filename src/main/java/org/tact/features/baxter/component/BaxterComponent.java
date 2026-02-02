@@ -23,7 +23,7 @@ public class BaxterComponent implements Component<EntityStore> {
                 BaxterComponent::new
         );
 
-        builder.addField(
+        builder.append(
                 new KeyedCodec<>("OwnerUUID", Codec.UUID_STRING),
                 (comp, uuid) -> comp.ownerUUID = uuid,
                 (comp) -> comp.ownerUUID

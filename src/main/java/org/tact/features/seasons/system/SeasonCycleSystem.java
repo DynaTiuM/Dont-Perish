@@ -36,9 +36,6 @@ public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
         SeasonResource data = store.getResource(SeasonResource.TYPE);
-        if(data == null) {
-            throw new NullPointerException("Season Component is null! (SeasonCycleSystem Class)");
-        }
         Season currentSeason = data.getCurrentSeason();
 
         // Progression of the Timer
@@ -59,8 +56,7 @@ public class SeasonCycleSystem extends EntityTickingSystem<EntityStore> {
             data.setSeasonTimer(currentTimer - seasonDuration);
             data.setSeasonProgress(0.0F);
             World world = commandBuffer.getExternalData().getWorld();
-            System.out.println("Daytime: " + world.getDaytimeDurationSeconds());
-            System.out.println("Nighttime: " + world.getNighttimeDurationSeconds());
+
             int baseDay = config.baseDayDurationSeconds;
             int baseNight = config.baseNightDurationSeconds;
 
