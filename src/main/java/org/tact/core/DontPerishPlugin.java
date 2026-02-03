@@ -76,7 +76,7 @@ public class DontPerishPlugin extends JavaPlugin {
         featureRegistry.register(new SeasonsFeature(modConfig.seasons));
 
         featureRegistry.register(new ComfortFeature(modConfig.comfort, environmentRegistry));
-        featureRegistry.register(new TemperatureFeature(modConfig.temperature, modConfig.seasons, environmentRegistry));
+        featureRegistry.register(new TemperatureFeature(modConfig.temperature, environmentRegistry));
     }
 
     public ModConfig getModConfig() {

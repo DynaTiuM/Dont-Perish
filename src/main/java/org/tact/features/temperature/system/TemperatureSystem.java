@@ -28,7 +28,6 @@ import org.tact.features.temperature.ui.TemperatureHud;
 import java.time.LocalDateTime;
 
 public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
-    private final SeasonsConfig seasonsConfig;
     private final TemperatureConfig config;
 
     private DamageCause heatDamageCause;
@@ -36,11 +35,9 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
 
 
     public TemperatureSystem(
-            TemperatureConfig config,
-            SeasonsConfig seasonsConfig
+            TemperatureConfig config
     ) {
         this.config = config;
-        this.seasonsConfig = seasonsConfig;
     }
 
     @Override
@@ -51,8 +48,6 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl Store<EntityStore> store,
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
-
-        SeasonsResource data = store.getResource(SeasonsResource.TYPE);
 
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
         TemperatureComponent temperatureComponent = archetypeChunk.getComponent(index, TemperatureComponent.getComponentType());
@@ -71,14 +66,10 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
 
         float currentTemp = temperatureStat.get();
 
-        Season currentSeason = data.getCurrentSeason();
-
-        float seasonalModifier = seasonsConfig.getSeasonTemperatureModifier(currentSeason.ordinal());
-
         float timeModifier = calculateTimeModifier(timeData);
 
         // Exterior temperature
-        float targetTemperature = calculateTargetTemperature(player, temperatureComponent, seasonalModifier, timeModifier);
+        float targetTemperature = calculateTargetTemperature(temperatureComponent, timeModifier);
         temperatureComponent.setTargetTemperature(targetTemperature);
 
         float tempDiff = targetTemperature - currentTemp;
@@ -91,7 +82,7 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         }
         temperatureComponent.setLerpedTemperature(newTemperature);
 
-        boolean hasProtection = checkProtection(player, store, currentSeason);
+        boolean hasProtection = checkProtection(player, store, newTemperature);
         temperatureComponent.setHasProtection(hasProtection);
 
         if(!hasProtection && isExtremeTemperature(newTemperature)) {
@@ -127,17 +118,17 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         });
     }
 
-    private float calculateTargetTemperature(Player player, TemperatureComponent temperatureComponent, float seasonalModifier, float timeModifier) {
+    private float calculateTargetTemperature(TemperatureComponent temperatureComponent, float timeModifier) {
 
         // Modifier 0: Base Temperature (without any influence)
         float baseTemperature = config.defaultBaseTemperature;
 
         // Modifier 1: Season (if feature activated)
-
+        float seasonal = temperatureComponent.getSeasonalModifier();
         // Modifier 2: Environment (blocks)
         float environment = temperatureComponent.getEnvironmentModifier();
 
-        float totalTemperature = baseTemperature + environment + seasonalModifier + timeModifier;
+        float totalTemperature = baseTemperature + environment + seasonal + timeModifier;
 
         return totalTemperature;
     }
@@ -158,7 +149,7 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     }
 
 
-    private boolean checkProtection(Player player, Store<EntityStore> store, Season season) {
+    private boolean checkProtection(Player player, Store<EntityStore> store, float temperature) {
         // TODO: Verify the inventory of the player and holding item
         return false;
     }

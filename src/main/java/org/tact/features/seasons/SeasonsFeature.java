@@ -12,6 +12,7 @@ import org.tact.common.ui.HudManager;
 import org.tact.features.seasons.config.SeasonsConfig;
 import org.tact.features.seasons.resource.SeasonsResource;
 import org.tact.features.seasons.system.SeasonsCycleSystem;
+import org.tact.features.seasons.system.SeasonsTemperatureBridgeSystem;
 import org.tact.features.seasons.ui.SeasonsHud;
 
 public class SeasonsFeature implements Feature {
@@ -36,6 +37,7 @@ public class SeasonsFeature implements Feature {
 
     @Override
     public void registerSystems(JavaPlugin plugin) {
+
     }
 
     @Override
@@ -55,9 +57,7 @@ public class SeasonsFeature implements Feature {
         Store<EntityStore> store = playerRef.getStore();
 
         PlayerRef pRef = store.getComponent(playerRef, PlayerRef.getComponentType());
-        if (pRef == null) {
-            throw new NullPointerException("[Seasons] PlayerRef is null in store.getComponent()");
-        }
+        if (pRef == null) return;
         HudManager.open(player, pRef, new SeasonsHud(pRef), getId());
     }
 
@@ -65,6 +65,9 @@ public class SeasonsFeature implements Feature {
     public void enable(JavaPlugin plugin) {
         plugin.getEntityStoreRegistry().registerSystem(
                 new SeasonsCycleSystem(config)
+        );
+        plugin.getEntityStoreRegistry().registerSystem(
+                new SeasonsTemperatureBridgeSystem(config)
         );
     }
 

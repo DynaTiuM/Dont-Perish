@@ -19,17 +19,14 @@ import org.tact.features.temperature.ui.TemperatureHud;
 
 public class TemperatureFeature implements Feature {
     private final TemperatureConfig config;
-    private final SeasonsConfig seasonsConfig;
 
     private final EnvironmentRegistry environmentRegistry;
 
     public TemperatureFeature(
         TemperatureConfig config,
-        SeasonsConfig seasonsConfig,
         EnvironmentRegistry environmentRegistry
     ) {
         this.config = config;
-        this.seasonsConfig = seasonsConfig;
         this.environmentRegistry = environmentRegistry;
     }
 
@@ -69,7 +66,7 @@ public class TemperatureFeature implements Feature {
         environmentRegistry.register("temperature", new TemperatureEnvironmentHandler(config));
 
         plugin.getEntityStoreRegistry().registerSystem(
-                new TemperatureSystem(config, seasonsConfig)
+                new TemperatureSystem(config)
         );
     }
 
