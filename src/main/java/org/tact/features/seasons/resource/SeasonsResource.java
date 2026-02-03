@@ -33,7 +33,7 @@ public class SeasonsResource implements Resource<EntityStore> {
                     System.out.println("[Seasons] SAVING Season: " + season);
                     return season;
                 }
-        );
+        ).add();
 
         builder.append(new KeyedCodec<>("SeasonTimer", Codec.FLOAT),
                 SeasonsResource::setSeasonTimer,
@@ -42,7 +42,7 @@ public class SeasonsResource implements Resource<EntityStore> {
                     System.out.println("[Seasons] SAVING Timer: " + timer + "s");
                     return timer;
                 }
-        );
+        ).add();
 
         builder.append(new KeyedCodec<>("SeasonProgress", Codec.FLOAT),
                 (resource, value) -> {
@@ -56,7 +56,7 @@ public class SeasonsResource implements Resource<EntityStore> {
                     System.out.println("[Seasons] SAVING Progress: " + progress);
                     return progress;
                 }
-        );
+        ).add();
 
         CODEC = builder.build();
     }

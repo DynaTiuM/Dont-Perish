@@ -21,6 +21,8 @@ public class TemperatureConfig {
     public float coldDamage = 1.5F;
     public float damageInterval = 3.0F;
 
+    public float dayNightTemperatureVariation = 12.0F;
+
 
     public boolean staminaLoss = true;
     public float staminaDrainAmount = 5.0f;
@@ -70,31 +72,31 @@ public class TemperatureConfig {
         );
 
         b.append(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
-                (cfg, v) -> cfg.enabled = v, cfg -> cfg.enabled);
+                (cfg, v) -> cfg.enabled = v, cfg -> cfg.enabled).add();
         b.append(new KeyedCodec<>("DefaultBaseTemperature", Codec.FLOAT),
-                (cfg, v) -> cfg.defaultBaseTemperature = v, cfg -> cfg.defaultBaseTemperature);
+                (cfg, v) -> cfg.defaultBaseTemperature = v, cfg -> cfg.defaultBaseTemperature).add();
         b.append(new KeyedCodec<>("TemperatureTransitionSpeed", Codec.FLOAT),
-                (cfg, v) -> cfg.temperatureTransitionSpeed = v, cfg -> cfg.temperatureTransitionSpeed);
+                (cfg, v) -> cfg.temperatureTransitionSpeed = v, cfg -> cfg.temperatureTransitionSpeed).add();
         b.append(new KeyedCodec<>("ExtremeTemperatureThreshold", Codec.FLOAT),
-                (cfg, v) -> cfg.extremeTemperatureThreshold = v, cfg -> cfg.extremeTemperatureThreshold);
+                (cfg, v) -> cfg.extremeTemperatureThreshold = v, cfg -> cfg.extremeTemperatureThreshold).add();
         b.append(new KeyedCodec<>("HeatDamage", Codec.FLOAT),
-                (cfg, v) -> cfg.heatDamage = v, cfg -> cfg.heatDamage);
+                (cfg, v) -> cfg.heatDamage = v, cfg -> cfg.heatDamage).add();
         b.append(new KeyedCodec<>("ColdDamage", Codec.FLOAT),
-                (cfg, v) -> cfg.coldDamage = v, cfg -> cfg.coldDamage);
+                (cfg, v) -> cfg.coldDamage = v, cfg -> cfg.coldDamage).add();
         b.append(new KeyedCodec<>("DamageInterval", Codec.FLOAT),
-                (cfg, v) -> cfg.damageInterval = v, cfg -> cfg.damageInterval);
+                (cfg, v) -> cfg.damageInterval = v, cfg -> cfg.damageInterval).add();
         b.append(new KeyedCodec<>("StaminaLoss", Codec.BOOLEAN),
-                (cfg, v) -> cfg.staminaLoss = v, cfg -> cfg.staminaLoss);
+                (cfg, v) -> cfg.staminaLoss = v, cfg -> cfg.staminaLoss).add();
         b.append(new KeyedCodec<>("StaminaDrainAmount", Codec.FLOAT),
-                (cfg, v) -> cfg.staminaDrainAmount = v, cfg -> cfg.staminaDrainAmount);
+                (cfg, v) -> cfg.staminaDrainAmount = v, cfg -> cfg.staminaDrainAmount).add();
         b.append(new KeyedCodec<>("ProtectionItems", new MapCodec<>(Codec.STRING, HashMap::new)),
-                (cfg, v) -> cfg.protectionItems = v, cfg -> cfg.protectionItems);
+                (cfg, v) -> cfg.protectionItems = v, cfg -> cfg.protectionItems).add();
         b.append(new KeyedCodec<>("BlockTemperatures", new MapCodec<>(Codec.FLOAT, HashMap::new)),
-                (cfg, v) -> cfg.blockTemperatures = v, cfg -> cfg.blockTemperatures);
+                (cfg, v) -> cfg.blockTemperatures = v, cfg -> cfg.blockTemperatures).add();
         b.append(new KeyedCodec<>("MaxBlockHeatBonus", Codec.FLOAT),
-                (cfg, v) -> cfg.maxBlockHeatBonus = v, cfg -> cfg.maxBlockHeatBonus);
+                (cfg, v) -> cfg.maxBlockHeatBonus = v, cfg -> cfg.maxBlockHeatBonus).add();
         b.append(new KeyedCodec<>("MaxBlockColdBonus", Codec.FLOAT),
-                (cfg, v) -> cfg.maxBlockColdBonus = v, cfg -> cfg.maxBlockColdBonus);
+                (cfg, v) -> cfg.maxBlockColdBonus = v, cfg -> cfg.maxBlockColdBonus).add();
 
         CODEC = b.build();
     }

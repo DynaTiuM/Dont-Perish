@@ -57,35 +57,35 @@ public class HungerConfig {
 
         b.append(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
                 (cfg, v) -> cfg.enabled = v,
-                cfg -> cfg.enabled);
+                cfg -> cfg.enabled).add();
 
         b.append(new KeyedCodec<>("FoodValues", new MapCodec<>(Codec.FLOAT, HashMap::new)),
                 (cfg, v) -> cfg.foodValues = v,
-                cfg -> cfg.foodValues);
+                cfg -> cfg.foodValues).add();
 
         b.append(new KeyedCodec<>("DefaultSaturation", Codec.FLOAT),
                 (cfg, v) -> cfg.defaultSaturation = v,
-                cfg -> cfg.defaultSaturation);
+                cfg -> cfg.defaultSaturation).add();
 
         b.append(new KeyedCodec<>("CreativeRegenSpeed", Codec.FLOAT),
                 (cfg, v) -> cfg.creativeRegenSpeed = v,
-                cfg -> cfg.creativeRegenSpeed);
+                cfg -> cfg.creativeRegenSpeed).add();
 
         b.append(new KeyedCodec<>("SaturationLossSpeed", Codec.FLOAT),
                 (cfg, v) -> cfg.saturationLossSpeed = v,
-                cfg -> cfg.saturationLossSpeed);
+                cfg -> cfg.saturationLossSpeed).add();
 
         b.append(new KeyedCodec<>("SaturationLossInterval", Codec.FLOAT),
                 (cfg, v) -> cfg.saturationLossInterval = v,
-                cfg -> cfg.saturationLossInterval);
+                cfg -> cfg.saturationLossInterval).add();
 
         b.append(new KeyedCodec<>("StarvingDamage", Codec.FLOAT),
                 (cfg, v) -> cfg.starvingDamage = v,
-                cfg -> cfg.starvingDamage);
+                cfg -> cfg.starvingDamage).add();
 
         b.append(new KeyedCodec<>("StarvingDamageInterval", Codec.FLOAT),
                 (cfg, v) -> cfg.starvingDamageInterval = v,
-                cfg -> cfg.starvingDamageInterval);
+                cfg -> cfg.starvingDamageInterval).add();
 
         CODEC = b.build();
     }

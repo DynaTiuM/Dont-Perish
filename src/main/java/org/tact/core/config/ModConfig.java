@@ -24,23 +24,23 @@ public class ModConfig {
 
         b.append(new KeyedCodec<>("Hunger", HungerConfig.CODEC),
                 (cfg, v) -> cfg.hunger = v,
-                cfg -> cfg.hunger);
+                cfg -> cfg.hunger).add();
 
         b.append(new KeyedCodec<>("Baxter", BaxterConfig.CODEC),
                 (cfg, v) -> cfg.baxter = v,
-                cfg -> cfg.baxter);
+                cfg -> cfg.baxter).add();
 
         b.append(new KeyedCodec<>("Seasons", SeasonsConfig.CODEC),
                 (cfg, v) -> cfg.seasons = v,
-                cfg -> cfg.seasons);
+                cfg -> cfg.seasons).add();
 
         b.append(new KeyedCodec<>("Temperature", TemperatureConfig.CODEC),
                 (cfg, v) -> cfg.temperature = v,
-                cfg -> cfg.temperature);
+                cfg -> cfg.temperature).add();
 
         b.append(new KeyedCodec<>("Comfort", ComfortConfig.CODEC),
                 (cfg, v) -> cfg.comfort = v,
-                cfg -> cfg.comfort);
+                cfg -> cfg.comfort).add();
 
 
         CODEC = b.build();

@@ -96,16 +96,16 @@ public class ComfortConfig {
 
         b.append(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
                 (cfg, v) -> cfg.enabled = v,
-                cfg -> cfg.enabled);
+                cfg -> cfg.enabled).add();
 
 
         b.append(new KeyedCodec<>("ComfortLossSpeed", Codec.FLOAT),
                 (cfg, v) -> cfg.comfortLossSpeed = v,
-                cfg -> cfg.comfortLossSpeed);
+                cfg -> cfg.comfortLossSpeed).add();
 
         b.append(new KeyedCodec<>("GlobalGainMultiplier", Codec.FLOAT),
                 (cfg, v) -> cfg.globalGainMultiplier = v,
-                cfg -> cfg.globalGainMultiplier);
+                cfg -> cfg.globalGainMultiplier).add();
 
         CODEC = b.build();
     }

@@ -25,9 +25,6 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 public class HungerSystem extends EntityTickingSystem<EntityStore> {
-    private static final float LERP_SPEED = 5.0F;
-    private static final float LERP_THRESHOLD = 0.1F;
-
     private final HungerConfig config;
 
     private DamageCause starvationDamageCause;
@@ -113,25 +110,10 @@ public class HungerSystem extends EntityTickingSystem<EntityStore> {
         }
     }
 
-    private float processCreativeMode(
-            EntityStatValue hungerStat,
-            float currentHunger,
-            float deltaTime
-    ) {
-        if (currentHunger < hungerStat.getMax()) {
-            return StatHelper.clamp(
-                    hungerStat,
-                    currentHunger + config.creativeRegenSpeed * deltaTime
-            );
-        }
-        return currentHunger;
-    }
-
     private void updateHud(Player player, EntityStatValue hungerStat) {
         float percentage = hungerStat.get() / hungerStat.getMax();
         HudManager.updateChild(player, "hunger", HungerHud.class, (hud, builder) -> {
             hud.render(builder, percentage);
-
         });
     }
 

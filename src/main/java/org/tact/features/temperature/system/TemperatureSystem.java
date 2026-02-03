@@ -3,6 +3,7 @@ package org.tact.features.temperature.system;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
+import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageCause;
@@ -27,7 +28,6 @@ import org.tact.features.temperature.ui.TemperatureHud;
 import java.time.LocalDateTime;
 
 public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
-
     private final TemperatureConfig config;
 
     private DamageCause heatDamageCause;
@@ -49,11 +49,10 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
 
-        SeasonsResource data = store.getResource(SeasonsResource.TYPE);
-
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
         TemperatureComponent temperatureComponent = archetypeChunk.getComponent(index, TemperatureComponent.getComponentType());
         Ref<EntityStore> entityRef = archetypeChunk.getReferenceTo(index);
+        WorldTimeResource timeData = store.getResource(WorldTimeResource.getResourceType());
 
         if(temperatureComponent == null) {
             return;
@@ -67,10 +66,10 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
 
         float currentTemp = temperatureStat.get();
 
-        Season currentSeason = data.getCurrentSeason();
+        float timeModifier = calculateTimeModifier(timeData);
 
         // Exterior temperature
-        float targetTemperature = calculateTargetTemperature(temperatureComponent);
+        float targetTemperature = calculateTargetTemperature(temperatureComponent, timeModifier);
         temperatureComponent.setTargetTemperature(targetTemperature);
 
         float tempDiff = targetTemperature - currentTemp;
@@ -83,7 +82,7 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         }
         temperatureComponent.setLerpedTemperature(newTemperature);
 
-        boolean hasProtection = checkProtection(player, store, currentSeason);
+        boolean hasProtection = checkProtection(player, store, newTemperature);
         temperatureComponent.setHasProtection(hasProtection);
 
         if(!hasProtection && isExtremeTemperature(newTemperature)) {
@@ -119,24 +118,38 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         });
     }
 
-    private float calculateTargetTemperature(TemperatureComponent temperatureComponent) {
+    private float calculateTargetTemperature(TemperatureComponent temperatureComponent, float timeModifier) {
 
         // Modifier 0: Base Temperature (without any influence)
         float baseTemperature = config.defaultBaseTemperature;
 
         // Modifier 1: Season (if feature activated)
         float seasonal = temperatureComponent.getSeasonalModifier();
-
         // Modifier 2: Environment (blocks)
         float environment = temperatureComponent.getEnvironmentModifier();
 
-        float totalTemperature = baseTemperature + environment + seasonal;
+        float totalTemperature = baseTemperature + environment + seasonal + timeModifier;
 
         return totalTemperature;
     }
 
+    private float calculateTimeModifier(WorldTimeResource timeResource) {
+        if (timeResource == null) {
+            return 0;
+        }
 
-    private boolean checkProtection(Player player, Store<EntityStore> store, Season season) {
+        LocalDateTime gameTime = timeResource.getGameDateTime();
+
+        int hour = gameTime.getHour();
+        int minute = gameTime.getMinute();
+
+        float preciseHour = hour + (minute / 60.0f);
+
+        return (float) Math.cos(((preciseHour - 14.0f) / 24.0f) * 2.0f * Math.PI) * config.dayNightTemperatureVariation;
+    }
+
+
+    private boolean checkProtection(Player player, Store<EntityStore> store, float temperature) {
         // TODO: Verify the inventory of the player and holding item
         return false;
     }

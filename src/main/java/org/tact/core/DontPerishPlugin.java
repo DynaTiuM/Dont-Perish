@@ -73,8 +73,9 @@ public class DontPerishPlugin extends JavaPlugin {
         featureRegistry.register(new HungerFeature(modConfig.hunger));
         featureRegistry.register(new BaxterFeature(modConfig.baxter));
 
+        featureRegistry.register(new SeasonsFeature(modConfig.seasons));
+
         featureRegistry.register(new ComfortFeature(modConfig.comfort, environmentRegistry));
-        featureRegistry.register(new SeasonsFeature(modConfig.seasons, environmentRegistry));
         featureRegistry.register(new TemperatureFeature(modConfig.temperature, environmentRegistry));
     }
 

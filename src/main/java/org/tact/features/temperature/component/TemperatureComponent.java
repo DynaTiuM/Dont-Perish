@@ -1,8 +1,5 @@
 package org.tact.features.temperature.component;
 
-import com.hypixel.hytale.codec.Codec;
-import com.hypixel.hytale.codec.KeyedCodec;
-import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -13,6 +10,7 @@ public class TemperatureComponent implements Component<EntityStore> {
     private float targetTemperature ;
 
     private float seasonalModifier;
+
     private float environmentModifier;
 
     private boolean hasProtection;
@@ -63,8 +61,13 @@ public class TemperatureComponent implements Component<EntityStore> {
     public float getEnvironmentModifier() { return environmentModifier; }
     public void setEnvironmentModifier(float modifier) { this.environmentModifier = modifier; }
 
-    public float getSeasonalModifier() { return seasonalModifier; }
-    public void setSeasonalModifier(float mod) { this.seasonalModifier = mod; }
+    public float getSeasonalModifier() {
+        return seasonalModifier;
+    }
+
+    public void setSeasonalModifier(float seasonalModifier) {
+        this.seasonalModifier = seasonalModifier;
+    }
 
     @NullableDecl
     @Override
@@ -72,6 +75,8 @@ public class TemperatureComponent implements Component<EntityStore> {
         TemperatureComponent cloned = new TemperatureComponent();
         cloned.lerpedTemperature = this.lerpedTemperature;
         cloned.targetTemperature = this.targetTemperature;
+        cloned.seasonalModifier = this.seasonalModifier;
+        cloned.environmentModifier = this.environmentModifier;
         cloned.hasProtection = this.hasProtection;
         cloned.damageTimer = this.damageTimer;
         return cloned;

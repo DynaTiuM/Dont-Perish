@@ -41,7 +41,7 @@ public class BaxterInventoryComponent implements Component<EntityStore> {
                 },
 
                 (comp) -> comp.inventory
-        );
+        ).add();;
 
         CODEC = builder.build();
     }
