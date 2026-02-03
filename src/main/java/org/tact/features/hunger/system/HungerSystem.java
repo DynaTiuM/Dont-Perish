@@ -28,17 +28,14 @@ public class HungerSystem extends EntityTickingSystem<EntityStore> {
     private static final float LERP_SPEED = 5.0F;
     private static final float LERP_THRESHOLD = 0.1F;
 
-    private final ComponentType<EntityStore, HungerComponent> hungerComponentType;
     private final HungerConfig config;
 
     private DamageCause starvationDamageCause;
     private int hungerStatIndex = -1;
 
     public HungerSystem(
-            ComponentType<EntityStore, HungerComponent> hungerComponentType,
             HungerConfig config
     ) {
-        this.hungerComponentType = hungerComponentType;
         this.config = config;
 
         registerFoodConsumptionCallback();
@@ -53,68 +50,47 @@ public class HungerSystem extends EntityTickingSystem<EntityStore> {
             @Nonnull CommandBuffer<EntityStore> commandBuffer
     ) {
         Player player = chunk.getComponent(index, Player.getComponentType());
-        HungerComponent hunger = chunk.getComponent(index, hungerComponentType);
+        HungerComponent hunger = chunk.getComponent(index, HungerComponent.getComponentType());
         Ref<EntityStore> entityRef = chunk.getReferenceTo(index);
 
         EntityStatMap statMap = store.getComponent(entityRef, EntityStatMap.getComponentType());
         EntityStatValue hungerStat = statMap.get(getHungerStatIndex());
 
         float currentHunger = hungerStat.get();
-        float updatedHunger;
 
-        if (player.getGameMode() == GameMode.Adventure) {
-            updatedHunger = processAdventureMode(
-                    hunger,
-                    hungerStat,
-                    currentHunger,
-                    deltaTime,
-                    entityRef,
-                    commandBuffer
-            );
+        float newHunger = currentHunger;
+
+        if (player.getGameMode() == GameMode.Creative) {
+            if (currentHunger < hungerStat.getMax()) {
+                float regenSpeed = config.creativeRegenSpeed > 0 ? config.creativeRegenSpeed : 50.0F;
+                newHunger = currentHunger + (regenSpeed * deltaTime);
+            }
         } else {
-            updatedHunger = processCreativeMode(hungerStat, currentHunger, deltaTime);
+            float lossPerSecond = config.saturationLossSpeed / config.saturationLossInterval;
+            float loss = lossPerSecond * deltaTime;
+
+            newHunger = currentHunger - loss;
+
+            if (newHunger <= hungerStat.getMin()) {
+                processStarvation(hunger, deltaTime, entityRef, commandBuffer);
+            } else {
+                hunger.resetStarvingElapsedTime();
+            }
         }
 
-        if (updatedHunger != currentHunger) {
-            statMap.setStatValue(getHungerStatIndex(), updatedHunger);
+        newHunger = StatHelper.clamp(hungerStat, newHunger);
+
+        if (Math.abs(newHunger - currentHunger) > 1e-5f) {
+            statMap.setStatValue(getHungerStatIndex(), newHunger);
         }
 
-        updateHungerDisplay(hunger, updatedHunger, hungerStat.getMax(), deltaTime);
-
-        updateHud(player, hunger, hungerStat);
-    }
-
-    private float processAdventureMode(
-            HungerComponent hunger,
-            EntityStatValue hungerStat,
-            float currentHunger,
-            float deltaTime,
-            Ref<EntityStore> entityRef,
-            CommandBuffer<EntityStore> commandBuffer
-    ) {
-        float updatedHunger = currentHunger;
-
-        hunger.addElapsedTime(deltaTime);
-        if (hunger.getElapsedTime() >= config.saturationLossInterval) {
-            hunger.resetElapsedTime();
-            updatedHunger = StatHelper.clamp(
-                    hungerStat,
-                    currentHunger - config.saturationLossSpeed
-            );
-        }
-
-        if (updatedHunger <= hungerStat.getMin()) {
-            processStarvation(
-                    hunger,
-                    deltaTime,
-                    entityRef,
-                    commandBuffer
-            );
+        if (newHunger <= hungerStat.getMin()) {
+            processStarvation(hunger, deltaTime, entityRef, commandBuffer);
         } else {
             hunger.resetStarvingElapsedTime();
         }
 
-        return updatedHunger;
+        updateHud(player, hungerStat);
     }
 
     private void processStarvation(
@@ -151,25 +127,8 @@ public class HungerSystem extends EntityTickingSystem<EntityStore> {
         return currentHunger;
     }
 
-    private void updateHungerDisplay(
-            HungerComponent hunger,
-            float targetHunger,
-            float maxHunger,
-            float deltaTime
-    ) {
-        float diff = targetHunger - hunger.getLerpedHunger();
-
-        if (Math.abs(diff) < LERP_THRESHOLD) {
-            hunger.setLerpedHunger(targetHunger);
-        } else {
-            float lerpedValue = hunger.getLerpedHunger() +
-                    diff * Math.min(deltaTime * LERP_SPEED, 1.0F);
-            hunger.setLerpedHunger(lerpedValue);
-        }
-    }
-
-    private void updateHud(Player player, HungerComponent hunger, EntityStatValue hungerStat) {
-        float percentage = hunger.getLerpedHunger() / hungerStat.getMax();
+    private void updateHud(Player player, EntityStatValue hungerStat) {
+        float percentage = hungerStat.get() / hungerStat.getMax();
         HudManager.updateChild(player, "hunger", HungerHud.class, (hud, builder) -> {
             hud.render(builder, percentage);
 
@@ -236,6 +195,6 @@ public class HungerSystem extends EntityTickingSystem<EntityStore> {
     @NullableDecl
     @Override
     public Query<EntityStore> getQuery() {
-        return Query.and(Player.getComponentType(), hungerComponentType);
+        return Query.and(Player.getComponentType(), HungerComponent.getComponentType());
     }
 }

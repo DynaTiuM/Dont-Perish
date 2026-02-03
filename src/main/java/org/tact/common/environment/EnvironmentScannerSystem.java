@@ -59,13 +59,12 @@ public class EnvironmentScannerSystem extends EntityTickingSystem<EntityStore> {
         if (cached.timeSinceLastScan >= scanInterval) {
             cached.timeSinceLastScan = 0.0f;
             cached.lastResult = scanBlocks(player, playerRef);
-        }
 
-        if (cached.lastResult != null) {
             for (EnvironmentHandler handler : registry.getAllHandlers().values()) {
                 handler.onEnvironmentScanned(player, playerRef, store, cached.lastResult, deltaTime);
             }
         }
+
     }
 
     private EnvironmentResult scanBlocks(Player player, Ref<EntityStore> playerRef) {

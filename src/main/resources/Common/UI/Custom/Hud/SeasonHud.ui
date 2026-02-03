@@ -27,6 +27,5 @@ Group {
       Background: @Icon;
       Visible: true;
     }
-
   }
 }

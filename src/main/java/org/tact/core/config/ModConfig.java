@@ -3,6 +3,7 @@ package org.tact.core.config;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import org.tact.features.baxter.config.BaxterConfig;
+import org.tact.features.comfort.config.ComfortConfig;
 import org.tact.features.hunger.config.HungerConfig;
 import org.tact.features.seasons.config.SeasonsConfig;
 import org.tact.features.temperature.config.TemperatureConfig;
@@ -14,6 +15,7 @@ public class ModConfig {
     public BaxterConfig baxter = new BaxterConfig();
     public SeasonsConfig seasons = new SeasonsConfig();
     public TemperatureConfig temperature = new TemperatureConfig();
+    public ComfortConfig comfort = new ComfortConfig();
 
     public ModConfig() {}
 
@@ -35,6 +37,11 @@ public class ModConfig {
         b.append(new KeyedCodec<>("Temperature", TemperatureConfig.CODEC),
                 (cfg, v) -> cfg.temperature = v,
                 cfg -> cfg.temperature);
+
+        b.append(new KeyedCodec<>("Comfort", ComfortConfig.CODEC),
+                (cfg, v) -> cfg.comfort = v,
+                cfg -> cfg.comfort);
+
 
         CODEC = b.build();
     }

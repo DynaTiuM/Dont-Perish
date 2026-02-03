@@ -36,7 +36,7 @@ public class SeasonsFeature implements Feature {
     @Override
     public void registerComponents(JavaPlugin plugin) {
         SeasonsResource.TYPE = plugin.getEntityStoreRegistry()
-                .registerResource(SeasonsResource.class,"season_resource", SeasonsResource.CODEC);
+                .registerResource(SeasonsResource.class, "season_resource", SeasonsResource.CODEC);
     }
 
     @Override
@@ -47,7 +47,6 @@ public class SeasonsFeature implements Feature {
     public void registerEvents(JavaPlugin plugin) {
         plugin.getEventRegistry().registerGlobal(PlayerReadyEvent.class, event -> {
             Player player = event.getPlayer();
-            player.sendMessage(Message.raw("[Seasons] New Season Manager created"));
 
             setupPlayer(player);
             player.sendMessage(Message.raw("[Seasons] Player set up"));
@@ -56,14 +55,12 @@ public class SeasonsFeature implements Feature {
 
     private void setupPlayer(Player player) {
         Ref<EntityStore> playerRef = player.getReference();
-        if(playerRef == null) {
-            throw new NullPointerException("[Seasons] PlayerRef is null in player.getReference()");
-        }
+        if (playerRef == null) return;
+
         Store<EntityStore> store = playerRef.getStore();
 
-
         PlayerRef pRef = store.getComponent(playerRef, PlayerRef.getComponentType());
-        if(pRef == null) {
+        if (pRef == null) {
             throw new NullPointerException("[Seasons] PlayerRef is null in store.getComponent()");
         }
         HudManager.open(player, pRef, new SeasonsHud(pRef), getId());

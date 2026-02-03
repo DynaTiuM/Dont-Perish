@@ -9,6 +9,7 @@ import org.tact.common.environment.EnvironmentScannerSystem;
 import org.tact.core.config.ModConfig;
 import org.tact.core.registry.FeatureRegistry;
 import org.tact.features.baxter.BaxterFeature;
+import org.tact.features.comfort.ComfortFeature;
 import org.tact.features.hunger.HungerFeature;
 import org.tact.features.seasons.SeasonsFeature;
 import org.tact.features.temperature.TemperatureFeature;
@@ -71,6 +72,8 @@ public class DontPerishPlugin extends JavaPlugin {
     private void registerFeatures() {
         featureRegistry.register(new HungerFeature(modConfig.hunger));
         featureRegistry.register(new BaxterFeature(modConfig.baxter));
+
+        featureRegistry.register(new ComfortFeature(modConfig.comfort, environmentRegistry));
         featureRegistry.register(new SeasonsFeature(modConfig.seasons, environmentRegistry));
         featureRegistry.register(new TemperatureFeature(modConfig.temperature, environmentRegistry));
     }

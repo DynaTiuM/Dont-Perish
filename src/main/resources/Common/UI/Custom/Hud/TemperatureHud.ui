@@ -9,7 +9,7 @@
 @IconBottom = @IconBottomMargin + @ThermometerHeight;
 @GlobalThermometerHeight = @IconBottom + @IconHeight;
 
-@Bar = "Textures/SeasonThermometerBar.png";
+@Bar = "Textures/ThermometerBar.png";
 
 Group {
   LayoutMode: Bottom;
@@ -19,7 +19,7 @@ Group {
     Group {
       LayoutMode: Bottom;
       Anchor: (Left: 0, Width: @ThermometerWidth, Height: @ThermometerHeight, Bottom: 0);
-      Background: "Textures/SeasonThermometerBg.png";
+      Background: "Textures/ThermometerBg.png";
 
       ProgressBar #TemperatureBar {
         Anchor: (Width: 32, Height: 318);

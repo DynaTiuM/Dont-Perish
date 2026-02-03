@@ -36,7 +36,7 @@ public class TemperatureFeature implements Feature {
     @Override
     public void registerComponents(JavaPlugin plugin) {
         TemperatureComponent.TYPE = plugin.getEntityStoreRegistry()
-                .registerComponent(TemperatureComponent.class, "temperature_component", TemperatureComponent.CODEC);
+                .registerComponent(TemperatureComponent.class, TemperatureComponent::new);
     }
 
     @Override

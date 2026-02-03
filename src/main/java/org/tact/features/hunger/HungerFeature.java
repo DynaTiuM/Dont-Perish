@@ -52,7 +52,7 @@ public class HungerFeature implements Feature {
 
     @Override
     public void enable(JavaPlugin plugin) {
-        plugin.getEntityStoreRegistry().registerSystem(new HungerSystem(HungerComponent.getComponentType(), config));
+        plugin.getEntityStoreRegistry().registerSystem(new HungerSystem(config));
     }
 
     @Override

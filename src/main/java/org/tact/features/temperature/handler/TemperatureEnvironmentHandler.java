@@ -40,7 +40,6 @@ public class TemperatureEnvironmentHandler implements EnvironmentHandler {
             float heatValue = config.getBlockTemperature(blockId);
 
             if (heatValue != 0.0F) {
-                player.sendMessage(Message.raw("[Environment] Block " + blockId + " found in proximity."));
                 temperatureBonus += (float) Math.log1p(count) * heatValue;
             }
         }

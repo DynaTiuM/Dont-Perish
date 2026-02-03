@@ -8,7 +8,9 @@ import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageCause;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageSystems;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
+import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
 import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
+import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
 import com.hypixel.hytale.server.core.modules.time.WorldTimeResource;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
@@ -31,6 +33,7 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     private DamageCause heatDamageCause;
     private DamageCause coldDamageCause;
 
+
     public TemperatureSystem(
             TemperatureConfig config
     ) {
@@ -50,25 +53,35 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
 
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
         TemperatureComponent temperatureComponent = archetypeChunk.getComponent(index, TemperatureComponent.getComponentType());
+        Ref<EntityStore> entityRef = archetypeChunk.getReferenceTo(index);
 
         if(temperatureComponent == null) {
             return;
         }
 
-        Ref<EntityStore> entityRef = archetypeChunk.getReferenceTo(index);
+        EntityStatMap statMap = store.getComponent(entityRef, EntityStatMap.getComponentType());
+        if (statMap == null) return;
+
+        EntityStatValue temperatureStat = statMap.get(getTemperatureStatIndex());
+        if (temperatureStat == null) return;
+
+        float currentTemp = temperatureStat.get();
 
         Season currentSeason = data.getCurrentSeason();
 
         // Exterior temperature
-        float targetTemperature = calculateTargetTemperature(currentSeason, player, temperatureComponent);
+        float targetTemperature = calculateTargetTemperature(temperatureComponent);
         temperatureComponent.setTargetTemperature(targetTemperature);
 
-        float currentTemp = temperatureComponent.getCurrentTemperature();
         float tempDiff = targetTemperature - currentTemp;
 
         // Temperature of the player
         float newTemperature = currentTemp + tempDiff * Math.min(deltaTime * config.temperatureTransitionSpeed, 1.0F);
-        temperatureComponent.setCurrentTemperature(newTemperature);
+
+        if (newTemperature != currentTemp) {
+            statMap.setStatValue(getTemperatureStatIndex(), newTemperature);
+        }
+        temperatureComponent.setLerpedTemperature(newTemperature);
 
         boolean hasProtection = checkProtection(player, store, currentSeason);
         temperatureComponent.setHasProtection(hasProtection);
@@ -88,17 +101,25 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         updateHud(player, temperatureComponent);
     }
 
+    private int temperatureStatIndex = -1;
+    private int getTemperatureStatIndex() {
+        if (temperatureStatIndex == -1) {
+            temperatureStatIndex = EntityStatType.getAssetMap().getIndex("Temperature");
+        }
+        return temperatureStatIndex;
+    }
+
     private void updateHud(
             Player player,
             TemperatureComponent temperatureComponent
     ) {
 
         HudManager.updateChild(player, "temperature", TemperatureHud.class, (hud, builder) -> {
-            hud.render(builder, temperatureComponent.getCurrentTemperature());
+            hud.render(builder, temperatureComponent.getLerpedTemperature());
         });
     }
 
-    private float calculateTargetTemperature(Season season, Player player, TemperatureComponent temperatureComponent) {
+    private float calculateTargetTemperature(TemperatureComponent temperatureComponent) {
 
         // Modifier 0: Base Temperature (without any influence)
         float baseTemperature = config.defaultBaseTemperature;

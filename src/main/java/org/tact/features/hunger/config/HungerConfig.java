@@ -17,8 +17,8 @@ public class HungerConfig {
     public float defaultSaturation = 10.0F;
 
     public float creativeRegenSpeed = 100.0F;
-    public float saturationLossSpeed = 1.5F;
-    public float saturationLossInterval = 20.0F;
+    public float saturationLossSpeed = 1.0F;
+    public float saturationLossInterval = 10.0F;
 
     public float starvingDamage = 2.0F;
     public float starvingDamageInterval = 4.0F;
