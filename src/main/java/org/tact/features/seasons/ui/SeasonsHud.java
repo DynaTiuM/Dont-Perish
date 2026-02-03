@@ -13,9 +13,11 @@ public class SeasonsHud extends CustomUIHud {
         super(playerRef);
     }
 
-    public void render(UICommandBuilder builder, Season season) {
+    public void render(UICommandBuilder builder, Season season, float progress, int globalDay) {
 
-        builder.set("#SeasonIcon.Background", "Hud/Textures/Season_" + season.name() + ".png");
+        builder.set("#SeasonIcon.Background", "Hud/Textures/Season_" + season.name() + ".png")
+                .set("#SeasonProgressBar.Value", progress)
+                .set("#DayLabel.Text", "Day: " + globalDay);
     }
     @Override
     protected void build(@Nonnull UICommandBuilder builder) {

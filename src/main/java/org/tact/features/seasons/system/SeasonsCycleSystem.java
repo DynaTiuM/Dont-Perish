@@ -7,6 +7,7 @@ import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.modules.time.WorldTimeResource;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.WorldConfig;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -17,9 +18,10 @@ import org.tact.features.seasons.config.SeasonsConfig;
 import org.tact.features.seasons.model.Season;
 import org.tact.features.seasons.resource.SeasonsResource;
 import org.tact.features.seasons.ui.SeasonsHud;
-import org.tact.features.temperature.component.TemperatureComponent;
 
 import java.lang.reflect.Field;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 public class SeasonsCycleSystem extends EntityTickingSystem<EntityStore> {
     private final SeasonsConfig config;
@@ -41,6 +43,7 @@ public class SeasonsCycleSystem extends EntityTickingSystem<EntityStore> {
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
         SeasonsResource data = store.getResource(SeasonsResource.TYPE);
         Season currentSeason = data.getCurrentSeason();
+        World world = player.getWorld();
 
         // Progression of the Timer
         data.addSeasonTimer(deltaTime);
@@ -55,7 +58,8 @@ public class SeasonsCycleSystem extends EntityTickingSystem<EntityStore> {
             changeSeason(data, currentSeason, seasonDuration, commandBuffer, store);
         }
 
-        updateHud(player, currentSeason, progress);
+        int globalDay = calculateGlobalDay(store);
+        updateHud(player, currentSeason, progress, globalDay);
     }
 
     private void changeSeason(
@@ -77,7 +81,6 @@ public class SeasonsCycleSystem extends EntityTickingSystem<EntityStore> {
         applyDayNightCycle(world, nextSeason);
 
         store.saveAllResources();
-
         world.getPlayerRefs().forEach(playerRef -> {
             Player player = commandBuffer.getComponent(playerRef.getReference(), Player.getComponentType());
             // TODO: add progress?
@@ -103,14 +106,27 @@ public class SeasonsCycleSystem extends EntityTickingSystem<EntityStore> {
         }
     }
 
+    public int calculateGlobalDay(Store<EntityStore> store) {
+        WorldTimeResource timeResource = store.getResource(WorldTimeResource.getResourceType());
+
+        if (timeResource == null) return 1;
+
+        Instant currentTime = timeResource.getGameTime();
+
+        long daysSinceBeginning = ChronoUnit.DAYS.between(WorldTimeResource.ZERO_YEAR, currentTime);
+
+        return (int) daysSinceBeginning + 1;
+    }
+
     private void updateHud(
             Player player,
             Season season,
-            float progress
+            float progress,
+            int globalDay
     ) {
 
         HudManager.updateChild(player, "seasons", SeasonsHud.class, (hud, builder) -> {
-            hud.render(builder, season);
+            hud.render(builder, season, progress, globalDay);
         });
     }
 
