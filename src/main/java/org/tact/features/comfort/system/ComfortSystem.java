@@ -38,49 +38,47 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
-        ComfortComponent comfort = archetypeChunk.getComponent(index, ComfortComponent.getComponentType());
+        ComfortComponent comfortComponent = archetypeChunk.getComponent(index, ComfortComponent.getComponentType());
         Ref<EntityStore> entityRef = archetypeChunk.getReferenceTo(index);
 
         EntityStatMap statMap = store.getComponent(entityRef, EntityStatMap.getComponentType());
-
         EntityStatValue comfortStat = statMap.get(getComfortStatIndex());
+
         float currentComfort = comfortStat.get();
 
         float newComfort = currentComfort - (config.comfortLossSpeed * deltaTime);
-        newComfort += comfort.getEnvironmentalGain() * deltaTime;
+        float gain = comfortComponent.getEnvironmentalGain() * config.globalGainMultiplier;
+
+        newComfort += gain * deltaTime;
 
         newComfort = StatHelper.clamp(comfortStat, newComfort);
 
-        if (newComfort != currentComfort) {
+        if (Math.abs(newComfort - currentComfort) > 0.005F) {
             statMap.setStatValue(getComfortStatIndex(), newComfort);
         }
+        float comfortRatio = newComfort / comfortStat.getMax();
 
-        float diff = newComfort - comfort.getLerpedComfort();
-        float lerp = comfort.getLerpedComfort() + diff * Math.min(deltaTime * config.lerpSpeed, 1.0f);
-        comfort.setLerpedComfort(lerp);
-
-
-        float comfortRatio = comfort.getLerpedComfort() / comfortStat.getMax();
         HudManager.updateChild(player, "comfort", ComfortHud.class, (hud, builder) -> {
             hud.render(builder, comfortRatio);
         });
 
-        handleMaxStaminaBonus(statMap, comfortRatio, comfort);
+        handleMaxStaminaBonus(statMap, comfortRatio, comfortComponent);
+
     }
 
-    private void handleMaxStaminaBonus(EntityStatMap statMap, float comfortRatio, ComfortComponent comfort) {
+    private void handleMaxStaminaBonus(EntityStatMap statMap, float comfortRatio, ComfortComponent comfortComponent) {
         int staminaIdx = DefaultEntityStatTypes.getStamina();
 
-        float effectiveRatio = (float) Math.log1p(comfortRatio);
-        float maxBonusPercent = 0.8F;
-        float finalBonus = effectiveRatio * maxBonusPercent;
+        float finalBonus = comfortRatio *
+                (config.maxStaminaBonusPercent + config.maxStaminaPenaltyPercent) - config.maxStaminaPenaltyPercent;
 
-        if (Math.abs(finalBonus - comfort.getLastAppliedBonus()) < 0.005F) {
+        if (Math.abs(finalBonus - comfortComponent.getLastAppliedBonus()) < 0.005F) {
             return;
         }
-        comfort.setLastAppliedBonus(finalBonus);
 
-        if (finalBonus < 0.01F) {
+        comfortComponent.setLastAppliedBonus(finalBonus);
+
+        if (Math.abs(finalBonus) < 0.01F) {
             statMap.removeModifier(staminaIdx, "comfort_max_stamina");
             return;
         }

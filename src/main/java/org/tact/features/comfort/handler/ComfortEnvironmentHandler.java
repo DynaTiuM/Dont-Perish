@@ -2,7 +2,6 @@ package org.tact.features.comfort.handler;
 
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
-import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.common.environment.EnvironmentHandler;
@@ -39,7 +38,6 @@ public class ComfortEnvironmentHandler implements EnvironmentHandler {
             float comfortValue = config.getBlockComfort(blockId);
 
             if(comfortValue != 0.0F) {
-                player.sendMessage(Message.raw("[Comfort] Block " + blockId + " found in proximity."));
                 totalGain += (float) Math.log1p(count) * comfortValue;
             }
         }

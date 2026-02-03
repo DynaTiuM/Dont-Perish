@@ -15,7 +15,7 @@ public class HungerComponent implements Component<EntityStore> {
     public static ComponentType<EntityStore, HungerComponent> TYPE;
 
     public HungerComponent() {
-        this.lerpedHunger = 100.0F;
+        this.lerpedHunger = 0.0F;
         this.elapsedTime = 0.0F;
         this.starvingElapsedTime = 0.0F;
     }

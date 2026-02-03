@@ -13,6 +13,7 @@ import org.tact.common.ui.HudManager;
 import org.tact.features.comfort.component.ComfortComponent;
 import org.tact.features.comfort.config.ComfortConfig;
 import org.tact.features.comfort.handler.ComfortEnvironmentHandler;
+import org.tact.features.comfort.system.ComfortDamageSystem;
 import org.tact.features.comfort.system.ComfortSystem;
 import org.tact.features.comfort.ui.ComfortHud;
 
@@ -64,6 +65,7 @@ public class ComfortFeature implements Feature {
     public void enable(JavaPlugin plugin) {
         environmentRegistry.register("comfort", new ComfortEnvironmentHandler(config));
         plugin.getEntityStoreRegistry().registerSystem(new ComfortSystem(config));
+        plugin.getEntityStoreRegistry().registerSystem(new ComfortDamageSystem(config));
     }
 
     @Override
