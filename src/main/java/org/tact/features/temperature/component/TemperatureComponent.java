@@ -9,44 +9,31 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 public class TemperatureComponent implements Component<EntityStore> {
-    private float currentTemperature = 20.0F;
-    private float targetTemperature = 20.0F;
+    private float lerpedTemperature;
+    private float targetTemperature ;
 
-    private float seasonalModifier = 0.0F;
-    private float environmentModifier = 0.0F;
+    private float seasonalModifier;
+    private float environmentModifier;
 
-    private boolean hasProtection = false;
-    private float damageTimer = 0.0F;
+    private boolean hasProtection;
+    private float damageTimer;
 
     public static ComponentType<EntityStore, TemperatureComponent> TYPE;
 
-    public static final BuilderCodec<TemperatureComponent> CODEC;
-
-    static {
-        BuilderCodec.Builder<TemperatureComponent> builder = BuilderCodec.builder(
-            TemperatureComponent.class,
-            TemperatureComponent::new
-        );
-
-        builder.append(new KeyedCodec<>("CurrentTemperature", Codec.FLOAT),
-                TemperatureComponent::setCurrentTemperature,
-                TemperatureComponent::getCurrentTemperature
-        );
-        builder.append(new KeyedCodec<>("DamageTimer", Codec.FLOAT),
-                (comp, value) -> comp.damageTimer = value,
-                TemperatureComponent::getDamageTimer
-        );
-
-        CODEC = builder.build();
+    public TemperatureComponent() {
+        this.lerpedTemperature = 20.0F;
+        this.targetTemperature = 20.0F;
+        this.seasonalModifier = 0.0F;
+        this.environmentModifier = 0.0F;
+        this.hasProtection = false;
+        this.damageTimer = 0.0F;
     }
 
-    public TemperatureComponent() { }
-
-    public float getCurrentTemperature() {
-        return this.currentTemperature;
+    public float getLerpedTemperature() {
+        return this.lerpedTemperature;
     }
-    public void setCurrentTemperature(float temperature) {
-        this.currentTemperature = temperature;
+    public void setLerpedTemperature(float temperature) {
+        this.lerpedTemperature = temperature;
     }
 
     public float getTargetTemperature() {
@@ -83,7 +70,7 @@ public class TemperatureComponent implements Component<EntityStore> {
     @Override
     public Component<EntityStore> clone() {
         TemperatureComponent cloned = new TemperatureComponent();
-        cloned.currentTemperature = this.currentTemperature;
+        cloned.lerpedTemperature = this.lerpedTemperature;
         cloned.targetTemperature = this.targetTemperature;
         cloned.hasProtection = this.hasProtection;
         cloned.damageTimer = this.damageTimer;

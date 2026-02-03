@@ -51,7 +51,9 @@ public class ComfortFeature implements Feature {
             Ref<EntityStore> ref = player.getReference();
             Store<EntityStore> store = ref.getStore();
 
-            store.addComponent(ref, ComfortComponent.getComponentType());
+            if (store.getComponent(ref, ComfortComponent.getComponentType()) == null) {
+                store.addComponent(ref, ComfortComponent.getComponentType());
+            }
 
             PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
             HudManager.open(player, playerRef, new ComfortHud(playerRef), getId());

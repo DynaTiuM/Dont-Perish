@@ -1,0 +1,7 @@
+{
+  "InitialValue": 50,
+  "Min": 0,
+  "Max": 100,
+  "Shared": false,
+  "ResetType": "MaxValue"
+}

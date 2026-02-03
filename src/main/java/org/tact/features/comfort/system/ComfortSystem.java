@@ -6,7 +6,6 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
-import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
@@ -18,6 +17,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.tact.common.ui.HudManager;
+import org.tact.common.utils.StatHelper;
 import org.tact.features.comfort.component.ComfortComponent;
 import org.tact.features.comfort.config.ComfortConfig;
 import org.tact.features.comfort.ui.ComfortHud;
@@ -38,39 +38,68 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
-        ComfortComponent comfortComponent = archetypeChunk.getComponent(index, ComfortComponent.getComponentType());
-        Ref<EntityStore> playerRef = archetypeChunk.getReferenceTo(index);
+        ComfortComponent comfort = archetypeChunk.getComponent(index, ComfortComponent.getComponentType());
+        Ref<EntityStore> entityRef = archetypeChunk.getReferenceTo(index);
 
-        float newComfort = comfortComponent.getCurrentComfort() - (config.comfortLossSpeed * deltaTime);
-        newComfort += comfortComponent.getEnvironmentalGain() * deltaTime;
-        newComfort = Math.max(0, Math.min(newComfort, config.maxComfort));
-        comfortComponent.setCurrentComfort(newComfort);
+        EntityStatMap statMap = store.getComponent(entityRef, EntityStatMap.getComponentType());
 
-        float diff = comfortComponent.getCurrentComfort() - comfortComponent.getLerpedComfort();
-        float lerp = comfortComponent.getLerpedComfort() + diff * Math.min(deltaTime * config.lerpSpeed, 1.0F);
+        EntityStatValue comfortStat = statMap.get(getComfortStatIndex());
+        float currentComfort = comfortStat.get();
 
-        comfortComponent.setLerpedComfort(lerp);
+        float newComfort = currentComfort - (config.comfortLossSpeed * deltaTime);
+        newComfort += comfort.getEnvironmentalGain() * deltaTime;
 
-        float comfortRatio = comfortComponent.getLerpedComfort() / config.maxComfort;
+        newComfort = StatHelper.clamp(comfortStat, newComfort);
 
-        EntityStatMap statMap = archetypeChunk.getComponent(index, EntityStatMap.getComponentType());
-        this.handleStaminaRegen(statMap, comfortRatio, deltaTime);
-        HudManager.updateChild(player, "comfort", ComfortHud.class, (hud, uiBuilder) -> {
-            hud.render(uiBuilder, comfortRatio);
+        if (newComfort != currentComfort) {
+            statMap.setStatValue(getComfortStatIndex(), newComfort);
+        }
+
+        float diff = newComfort - comfort.getLerpedComfort();
+        float lerp = comfort.getLerpedComfort() + diff * Math.min(deltaTime * config.lerpSpeed, 1.0f);
+        comfort.setLerpedComfort(lerp);
+
+
+        float comfortRatio = comfort.getLerpedComfort() / comfortStat.getMax();
+        HudManager.updateChild(player, "comfort", ComfortHud.class, (hud, builder) -> {
+            hud.render(builder, comfortRatio);
         });
+
+        handleMaxStaminaBonus(statMap, comfortRatio, comfort);
     }
 
-    private void handleStaminaRegen(EntityStatMap statMap, float comfortRatio, float deltaTime) {
+    private void handleMaxStaminaBonus(EntityStatMap statMap, float comfortRatio, ComfortComponent comfort) {
         int staminaIdx = DefaultEntityStatTypes.getStamina();
-        EntityStatValue stamina = statMap.get(staminaIdx);
 
-        if (stamina != null && stamina.get() < stamina.getMax()) {
-            float bonusPerSecond = (float) Math.log1p(1.7F * comfortRatio);
+        float effectiveRatio = (float) Math.log1p(comfortRatio);
+        float maxBonusPercent = 0.8F;
+        float finalBonus = effectiveRatio * maxBonusPercent;
 
-            float amountToAdd = bonusPerSecond * deltaTime;
-
-            statMap.addStatValue(staminaIdx, amountToAdd);
+        if (Math.abs(finalBonus - comfort.getLastAppliedBonus()) < 0.005F) {
+            return;
         }
+        comfort.setLastAppliedBonus(finalBonus);
+
+        if (finalBonus < 0.01F) {
+            statMap.removeModifier(staminaIdx, "comfort_max_stamina");
+            return;
+        }
+
+        Modifier comfortModifier = new StaticModifier(
+                Modifier.ModifierTarget.MAX,
+                StaticModifier.CalculationType.MULTIPLICATIVE,
+                1.0F + finalBonus
+        );
+
+        statMap.putModifier(EntityStatMap.Predictable.SELF, staminaIdx, "comfort_max_stamina", comfortModifier);
+    }
+
+    private int comfortStatIndex = -1;
+    private int getComfortStatIndex() {
+        if (comfortStatIndex == -1) {
+            comfortStatIndex = EntityStatType.getAssetMap().getIndex("Comfort");
+        }
+        return comfortStatIndex;
     }
 
     @NullableDecl

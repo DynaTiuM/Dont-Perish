@@ -1,5 +1,8 @@
 package org.tact.features.comfort.component;
 
+import com.hypixel.hytale.codec.Codec;
+import com.hypixel.hytale.codec.KeyedCodec;
+import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -7,28 +10,28 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import javax.annotation.Nullable;
 
 public class ComfortComponent implements Component<EntityStore>{
-    private float currentComfort;
     private float lerpedComfort;
     private float environmentalGain;
     private float elapsedTime;
 
     public static ComponentType<EntityStore, ComfortComponent> TYPE;
 
+    private transient float lastAppliedBonus = -1.0f;
+
     public ComfortComponent() {
-        this.currentComfort = 0.0F;
-        this.lerpedComfort = 100.0F;
+        this.lerpedComfort = 0.0F;
         this.environmentalGain = 0.0F;
         this.elapsedTime = 0.0F;
     }
 
-    public ComfortComponent(ComfortComponent comfortComponent) {
-        this.lerpedComfort = comfortComponent.lerpedComfort;
-        this.elapsedTime = comfortComponent.elapsedTime;
-    }
-
     @Nullable
+    @Override
     public Component<EntityStore> clone() {
-        return new ComfortComponent(this);
+        ComfortComponent cloned = new ComfortComponent();
+        cloned.lerpedComfort = this.lerpedComfort;
+        cloned.environmentalGain = this.environmentalGain;
+        cloned.elapsedTime = this.elapsedTime;
+        return cloned;
     }
 
     public float getLerpedComfort() {
@@ -39,9 +42,6 @@ public class ComfortComponent implements Component<EntityStore>{
         this.lerpedComfort = value;
     }
 
-    public float getCurrentComfort() { return currentComfort; }
-    public void setCurrentComfort(float value) { this.currentComfort = value; }
-
     public float getEnvironmentalGain() {
         return this.environmentalGain;
     }
@@ -49,6 +49,8 @@ public class ComfortComponent implements Component<EntityStore>{
         this.environmentalGain = gain;
     }
 
+    public float getLastAppliedBonus() { return lastAppliedBonus; }
+    public void setLastAppliedBonus(float v) { this.lastAppliedBonus = v; }
 
     public static ComponentType<EntityStore, ComfortComponent> getComponentType() {
         return TYPE;
