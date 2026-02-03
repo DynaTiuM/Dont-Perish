@@ -38,6 +38,7 @@ public class SeasonsCycleSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl Store<EntityStore> store,
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
+        Player player = archetypeChunk.getComponent(index, Player.getComponentType());
         SeasonsResource data = store.getResource(SeasonsResource.TYPE);
         Season currentSeason = data.getCurrentSeason();
 
@@ -51,9 +52,10 @@ public class SeasonsCycleSystem extends EntityTickingSystem<EntityStore> {
         data.setSeasonProgress(progress);
 
         if(data.getSeasonTimer() >= seasonDuration) {
-
             changeSeason(data, currentSeason, seasonDuration, commandBuffer, store);
         }
+
+        updateHud(player, currentSeason, progress);
     }
 
     private void changeSeason(
@@ -79,8 +81,6 @@ public class SeasonsCycleSystem extends EntityTickingSystem<EntityStore> {
         world.getPlayerRefs().forEach(playerRef -> {
             Player player = commandBuffer.getComponent(playerRef.getReference(), Player.getComponentType());
             // TODO: add progress?
-            updateHud(player, nextSeason, 0.0F);
-
             player.sendMessage(Message.raw("Season changed to: " + nextSeason.getDisplayName()));
 
         });
