@@ -6,6 +6,7 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
+import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
@@ -45,15 +46,24 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
         EntityStatValue comfortStat = statMap.get(getComfortStatIndex());
 
         float currentComfort = comfortStat.get();
+        float newComfort = currentComfort;
+        if (player.getGameMode() == GameMode.Creative) {
+            if (currentComfort < comfortStat.getMax()) {
+                float regenSpeed = config.creativeRegenSpeed > 0 ? config.creativeRegenSpeed : 50.0F;
+                newComfort = currentComfort + (regenSpeed * deltaTime);
+            }
+        }
+        else {
+            newComfort = currentComfort - (config.comfortLossSpeed * deltaTime);
+            float gain = comfortComponent.getEnvironmentalGain() * config.globalGainMultiplier;
 
-        float newComfort = currentComfort - (config.comfortLossSpeed * deltaTime);
-        float gain = comfortComponent.getEnvironmentalGain() * config.globalGainMultiplier;
+            newComfort += gain * deltaTime;
 
-        newComfort += gain * deltaTime;
+        }
 
         newComfort = StatHelper.clamp(comfortStat, newComfort);
 
-        if (Math.abs(newComfort - currentComfort) > 0.005F) {
+        if (Math.abs(newComfort - currentComfort) > 1e-5f) {
             statMap.setStatValue(getComfortStatIndex(), newComfort);
         }
         float comfortRatio = newComfort / comfortStat.getMax();

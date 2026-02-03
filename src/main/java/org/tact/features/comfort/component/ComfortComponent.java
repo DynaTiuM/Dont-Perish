@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 
 public class ComfortComponent implements Component<EntityStore>{
     private float environmentalGain;
-    private float elapsedTime;
 
     public static ComponentType<EntityStore, ComfortComponent> TYPE;
 
@@ -16,7 +15,6 @@ public class ComfortComponent implements Component<EntityStore>{
 
     public ComfortComponent() {
         this.environmentalGain = 0.0F;
-        this.elapsedTime = 0.0F;
     }
 
     @Nullable
@@ -24,7 +22,6 @@ public class ComfortComponent implements Component<EntityStore>{
     public Component<EntityStore> clone() {
         ComfortComponent cloned = new ComfortComponent();
         cloned.environmentalGain = this.environmentalGain;
-        cloned.elapsedTime = this.elapsedTime;
         return cloned;
     }
 

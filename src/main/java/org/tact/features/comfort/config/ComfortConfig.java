@@ -14,11 +14,13 @@ public class ComfortConfig {
 
     public float globalGainMultiplier = 0.3F;
 
-    public float maxStaminaPenaltyPercent = 0.2F;
+    public float maxStaminaPenaltyPercent = 0.15F;
     public float maxStaminaBonusPercent = 0.8F;
 
-    public float maxDamagePenaltyPercent = 0.2F;
-    public float maxDamageBonusPercent = 0.8F;
+    public float maxDamagePenaltyPercent = 0.15F;
+    public float maxDamageBonusPercent = 0.5F;
+
+    public float creativeRegenSpeed = 50.0F;
 
     public Map<String, Float> comfortValues = new HashMap<>();
 
