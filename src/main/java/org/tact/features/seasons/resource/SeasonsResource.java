@@ -25,7 +25,7 @@ public class SeasonsResource implements Resource<EntityStore> {
                 SeasonsResource::new
         );
 
-        builder.append(new KeyedCodec<>("CurrentSeason", Codec.STRING),
+        builder.addField(new KeyedCodec<>("CurrentSeason", Codec.STRING),
                 (resource, value) ->
                     resource.setCurrentSeason(Season.valueOf(value)),
                 resource -> {
@@ -35,7 +35,7 @@ public class SeasonsResource implements Resource<EntityStore> {
                 }
         );
 
-        builder.append(new KeyedCodec<>("SeasonTimer", Codec.FLOAT),
+        builder.addField(new KeyedCodec<>("SeasonTimer", Codec.FLOAT),
                 SeasonsResource::setSeasonTimer,
                 resource -> {
                     float timer = resource.getSeasonTimer();
@@ -44,7 +44,7 @@ public class SeasonsResource implements Resource<EntityStore> {
                 }
         );
 
-        builder.append(new KeyedCodec<>("SeasonProgress", Codec.FLOAT),
+        builder.addField(new KeyedCodec<>("SeasonProgress", Codec.FLOAT),
                 (resource, value) -> {
                     if (value != null) {
                         resource.setSeasonProgress(value);

@@ -55,35 +55,35 @@ public class HungerConfig {
                 HungerConfig::new
         );
 
-        b.append(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
+        b.addField(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
                 (cfg, v) -> cfg.enabled = v,
                 cfg -> cfg.enabled);
 
-        b.append(new KeyedCodec<>("FoodValues", new MapCodec<>(Codec.FLOAT, HashMap::new)),
+        b.addField(new KeyedCodec<>("FoodValues", new MapCodec<>(Codec.FLOAT, HashMap::new)),
                 (cfg, v) -> cfg.foodValues = v,
                 cfg -> cfg.foodValues);
 
-        b.append(new KeyedCodec<>("DefaultSaturation", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("DefaultSaturation", Codec.FLOAT),
                 (cfg, v) -> cfg.defaultSaturation = v,
                 cfg -> cfg.defaultSaturation);
 
-        b.append(new KeyedCodec<>("CreativeRegenSpeed", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("CreativeRegenSpeed", Codec.FLOAT),
                 (cfg, v) -> cfg.creativeRegenSpeed = v,
                 cfg -> cfg.creativeRegenSpeed);
 
-        b.append(new KeyedCodec<>("SaturationLossSpeed", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("SaturationLossSpeed", Codec.FLOAT),
                 (cfg, v) -> cfg.saturationLossSpeed = v,
                 cfg -> cfg.saturationLossSpeed);
 
-        b.append(new KeyedCodec<>("SaturationLossInterval", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("SaturationLossInterval", Codec.FLOAT),
                 (cfg, v) -> cfg.saturationLossInterval = v,
                 cfg -> cfg.saturationLossInterval);
 
-        b.append(new KeyedCodec<>("StarvingDamage", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("StarvingDamage", Codec.FLOAT),
                 (cfg, v) -> cfg.starvingDamage = v,
                 cfg -> cfg.starvingDamage);
 
-        b.append(new KeyedCodec<>("StarvingDamageInterval", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("StarvingDamageInterval", Codec.FLOAT),
                 (cfg, v) -> cfg.starvingDamageInterval = v,
                 cfg -> cfg.starvingDamageInterval);
 

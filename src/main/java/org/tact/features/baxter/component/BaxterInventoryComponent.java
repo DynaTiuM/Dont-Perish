@@ -22,7 +22,7 @@ public class BaxterInventoryComponent implements Component<EntityStore> {
                 () -> new BaxterInventoryComponent(27)
         );
 
-        builder.append(
+        builder.addField(
                 new KeyedCodec<>("Inventory", SimpleItemContainer.CODEC),
 
                 (comp, loadedContainer) -> {

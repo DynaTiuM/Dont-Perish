@@ -72,36 +72,36 @@ public class SeasonsConfig {
                 SeasonsConfig::new
         );
 
-        b.append(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
+        b.addField(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
                 (cfg, v) -> cfg.enabled = v, cfg -> cfg.enabled);
 
-        b.append(new KeyedCodec<>("SpringDuration", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("SpringDuration", Codec.FLOAT),
                 (cfg, v) -> cfg.springDuration = v, cfg -> cfg.springDuration);
-        b.append(new KeyedCodec<>("SummerDuration", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("SummerDuration", Codec.FLOAT),
                 (cfg, v) -> cfg.summerDuration = v, cfg -> cfg.summerDuration);
-        b.append(new KeyedCodec<>("AutumnDuration", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("AutumnDuration", Codec.FLOAT),
                 (cfg, v) -> cfg.autumnDuration = v, cfg -> cfg.autumnDuration);
-        b.append(new KeyedCodec<>("WinterDuration", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("WinterDuration", Codec.FLOAT),
                 (cfg, v) -> cfg.winterDuration = v, cfg -> cfg.winterDuration);
 
-        b.append(new KeyedCodec<>("EnableWeatherControl", Codec.BOOLEAN),
+        b.addField(new KeyedCodec<>("EnableWeatherControl", Codec.BOOLEAN),
                 (cfg, v) -> cfg.enableWeatherControl = v, cfg -> cfg.enableWeatherControl);
-        b.append(new KeyedCodec<>("SpringRainDuration", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("SpringRainDuration", Codec.FLOAT),
                 (cfg, v) -> cfg.springRainDuration = v, cfg -> cfg.springRainDuration);
 
-        b.append(new KeyedCodec<>("SpringBaseTemperature", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("SpringBaseTemperature", Codec.FLOAT),
                 (cfg, v) -> cfg.springTemperatureModifier = v, cfg -> cfg.springTemperatureModifier);
-        b.append(new KeyedCodec<>("SummerBaseTemperature", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("SummerBaseTemperature", Codec.FLOAT),
                 (cfg, v) -> cfg.summerTemperatureModifier = v, cfg -> cfg.summerTemperatureModifier);
-        b.append(new KeyedCodec<>("AutumnBaseTemperature", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("AutumnBaseTemperature", Codec.FLOAT),
                 (cfg, v) -> cfg.autumnTemperatureModifier = v, cfg -> cfg.autumnTemperatureModifier);
-        b.append(new KeyedCodec<>("WinterBaseTemperature", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("WinterBaseTemperature", Codec.FLOAT),
                 (cfg, v) -> cfg.winterTemperatureModifier = v, cfg -> cfg.winterTemperatureModifier);
 
-        b.append(new KeyedCodec<>("BaseDayDurationSeconds", Codec.INTEGER),
+        b.addField(new KeyedCodec<>("BaseDayDurationSeconds", Codec.INTEGER),
                 (cfg, v) -> cfg.baseDayDurationSeconds = v, cfg -> cfg.baseDayDurationSeconds);
 
-        b.append(new KeyedCodec<>("BaseNightDurationSeconds", Codec.INTEGER),
+        b.addField(new KeyedCodec<>("BaseNightDurationSeconds", Codec.INTEGER),
                 (cfg, v) -> cfg.baseNightDurationSeconds = v, cfg -> cfg.baseNightDurationSeconds);
 
 

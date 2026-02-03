@@ -22,31 +22,31 @@ public class BaxterConfig {
     static {
         BuilderCodec.Builder<BaxterConfig> b = BuilderCodec.builder(BaxterConfig.class, BaxterConfig::new);
 
-        b.append(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
+        b.addField(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
                 (cfg, v) -> cfg.enabled = v,
                 cfg -> cfg.enabled);
 
-        b.append(new KeyedCodec<>("MovementSpeed", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("MovementSpeed", Codec.FLOAT),
                 (cfg, v) -> cfg.movementSpeed = v,
                 cfg -> cfg.movementSpeed);
 
-        b.append(new KeyedCodec<>("MinFollowDistance", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("MinFollowDistance", Codec.FLOAT),
                 (cfg, v) -> cfg.minFollowDistance = v,
                 cfg -> cfg.minFollowDistance);
 
-        b.append(new KeyedCodec<>("TeleportThreshold", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("TeleportThreshold", Codec.FLOAT),
                 (cfg, v) -> cfg.teleportThreshold = v,
                 cfg -> cfg.teleportThreshold);
 
-        b.append(new KeyedCodec<>("FlySpeed", Codec.FLOAT),
+        b.addField(new KeyedCodec<>("FlySpeed", Codec.FLOAT),
                 (cfg, v) -> cfg.flySpeed = v,
                 cfg -> cfg.flySpeed);
 
-        b.append(new KeyedCodec<>("InventorySize", Codec.INTEGER),
+        b.addField(new KeyedCodec<>("InventorySize", Codec.INTEGER),
                 (cfg, v) -> cfg.inventorySize = v,
                 cfg -> cfg.inventorySize);
 
-        b.append(new KeyedCodec<>("InventoryTitle", Codec.STRING),
+        b.addField(new KeyedCodec<>("InventoryTitle", Codec.STRING),
                 (cfg, v) -> cfg.inventoryTitle = v,
                 cfg -> cfg.inventoryTitle);
 
