@@ -57,7 +57,7 @@ public class ComfortDamageSystem extends DamageEventSystem {
         float finalBonus = comfortRatio *
                 (config.maxDamageBonusPercent + config.maxDamagePenaltyPercent) - config.maxDamagePenaltyPercent;
 
-        float newAmount = damage.getAmount() * ( 1 + finalBonus);
+        float newAmount = damage.getAmount() * (1.0F + finalBonus);
         if (newAmount < 0) newAmount = 0;
 
         damage.setAmount(newAmount);

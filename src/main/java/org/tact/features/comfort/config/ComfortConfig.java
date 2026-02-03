@@ -20,6 +20,9 @@ public class ComfortConfig {
     public float maxDamagePenaltyPercent = 0.15F;
     public float maxDamageBonusPercent = 0.5F;
 
+    public float maxBlockPenaltyPercent = 0.10F;
+    public float maxBlockBonusPercent = 0.3F;
+
     public float creativeRegenSpeed = 50.0F;
 
     public Map<String, Float> comfortValues = new HashMap<>();
