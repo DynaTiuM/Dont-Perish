@@ -22,33 +22,33 @@ public class BaxterConfig {
     static {
         BuilderCodec.Builder<BaxterConfig> b = BuilderCodec.builder(BaxterConfig.class, BaxterConfig::new);
 
-        b.addField(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
+        b.append(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
                 (cfg, v) -> cfg.enabled = v,
-                cfg -> cfg.enabled);
+                cfg -> cfg.enabled).add();
 
-        b.addField(new KeyedCodec<>("MovementSpeed", Codec.FLOAT),
+        b.append(new KeyedCodec<>("MovementSpeed", Codec.FLOAT),
                 (cfg, v) -> cfg.movementSpeed = v,
-                cfg -> cfg.movementSpeed);
+                cfg -> cfg.movementSpeed).add();
 
-        b.addField(new KeyedCodec<>("MinFollowDistance", Codec.FLOAT),
+        b.append(new KeyedCodec<>("MinFollowDistance", Codec.FLOAT),
                 (cfg, v) -> cfg.minFollowDistance = v,
-                cfg -> cfg.minFollowDistance);
+                cfg -> cfg.minFollowDistance).add();
 
-        b.addField(new KeyedCodec<>("TeleportThreshold", Codec.FLOAT),
+        b.append(new KeyedCodec<>("TeleportThreshold", Codec.FLOAT),
                 (cfg, v) -> cfg.teleportThreshold = v,
-                cfg -> cfg.teleportThreshold);
+                cfg -> cfg.teleportThreshold).add();
 
-        b.addField(new KeyedCodec<>("FlySpeed", Codec.FLOAT),
+        b.append(new KeyedCodec<>("FlySpeed", Codec.FLOAT),
                 (cfg, v) -> cfg.flySpeed = v,
-                cfg -> cfg.flySpeed);
+                cfg -> cfg.flySpeed).add();
 
-        b.addField(new KeyedCodec<>("InventorySize", Codec.INTEGER),
+        b.append(new KeyedCodec<>("InventorySize", Codec.INTEGER),
                 (cfg, v) -> cfg.inventorySize = v,
-                cfg -> cfg.inventorySize);
+                cfg -> cfg.inventorySize).add();
 
-        b.addField(new KeyedCodec<>("InventoryTitle", Codec.STRING),
+        b.append(new KeyedCodec<>("InventoryTitle", Codec.STRING),
                 (cfg, v) -> cfg.inventoryTitle = v,
-                cfg -> cfg.inventoryTitle);
+                cfg -> cfg.inventoryTitle).add();
 
         CODEC = b.build();
     }

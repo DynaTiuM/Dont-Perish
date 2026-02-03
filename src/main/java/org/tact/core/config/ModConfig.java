@@ -22,25 +22,25 @@ public class ModConfig {
     static {
         BuilderCodec.Builder<ModConfig> b = BuilderCodec.builder(ModConfig.class, ModConfig::new);
 
-        b.addField(new KeyedCodec<>("Hunger", HungerConfig.CODEC),
+        b.append(new KeyedCodec<>("Hunger", HungerConfig.CODEC),
                 (cfg, v) -> cfg.hunger = v,
-                cfg -> cfg.hunger);
+                cfg -> cfg.hunger).add();
 
-        b.addField(new KeyedCodec<>("Baxter", BaxterConfig.CODEC),
+        b.append(new KeyedCodec<>("Baxter", BaxterConfig.CODEC),
                 (cfg, v) -> cfg.baxter = v,
-                cfg -> cfg.baxter);
+                cfg -> cfg.baxter).add();
 
-        b.addField(new KeyedCodec<>("Seasons", SeasonsConfig.CODEC),
+        b.append(new KeyedCodec<>("Seasons", SeasonsConfig.CODEC),
                 (cfg, v) -> cfg.seasons = v,
-                cfg -> cfg.seasons);
+                cfg -> cfg.seasons).add();
 
-        b.addField(new KeyedCodec<>("Temperature", TemperatureConfig.CODEC),
+        b.append(new KeyedCodec<>("Temperature", TemperatureConfig.CODEC),
                 (cfg, v) -> cfg.temperature = v,
-                cfg -> cfg.temperature);
+                cfg -> cfg.temperature).add();
 
-        b.addField(new KeyedCodec<>("Comfort", ComfortConfig.CODEC),
+        b.append(new KeyedCodec<>("Comfort", ComfortConfig.CODEC),
                 (cfg, v) -> cfg.comfort = v,
-                cfg -> cfg.comfort);
+                cfg -> cfg.comfort).add();
 
 
         CODEC = b.build();

@@ -25,7 +25,7 @@ public class SeasonsResource implements Resource<EntityStore> {
                 SeasonsResource::new
         );
 
-        builder.addField(new KeyedCodec<>("CurrentSeason", Codec.STRING),
+        builder.append(new KeyedCodec<>("CurrentSeason", Codec.STRING),
                 (resource, value) ->
                     resource.setCurrentSeason(Season.valueOf(value)),
                 resource -> {
@@ -33,18 +33,18 @@ public class SeasonsResource implements Resource<EntityStore> {
                     System.out.println("[Seasons] SAVING Season: " + season);
                     return season;
                 }
-        );
+        ).add();
 
-        builder.addField(new KeyedCodec<>("SeasonTimer", Codec.FLOAT),
+        builder.append(new KeyedCodec<>("SeasonTimer", Codec.FLOAT),
                 SeasonsResource::setSeasonTimer,
                 resource -> {
                     float timer = resource.getSeasonTimer();
                     System.out.println("[Seasons] SAVING Timer: " + timer + "s");
                     return timer;
                 }
-        );
+        ).add();
 
-        builder.addField(new KeyedCodec<>("SeasonProgress", Codec.FLOAT),
+        builder.append(new KeyedCodec<>("SeasonProgress", Codec.FLOAT),
                 (resource, value) -> {
                     if (value != null) {
                         resource.setSeasonProgress(value);
@@ -56,7 +56,7 @@ public class SeasonsResource implements Resource<EntityStore> {
                     System.out.println("[Seasons] SAVING Progress: " + progress);
                     return progress;
                 }
-        );
+        ).add();
 
         CODEC = builder.build();
     }

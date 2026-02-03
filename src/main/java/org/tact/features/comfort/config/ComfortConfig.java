@@ -94,18 +94,18 @@ public class ComfortConfig {
                 ComfortConfig::new
         );
 
-        b.addField(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
+        b.append(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
                 (cfg, v) -> cfg.enabled = v,
-                cfg -> cfg.enabled);
+                cfg -> cfg.enabled).add();
 
 
-        b.addField(new KeyedCodec<>("ComfortLossSpeed", Codec.FLOAT),
+        b.append(new KeyedCodec<>("ComfortLossSpeed", Codec.FLOAT),
                 (cfg, v) -> cfg.comfortLossSpeed = v,
-                cfg -> cfg.comfortLossSpeed);
+                cfg -> cfg.comfortLossSpeed).add();
 
-        b.addField(new KeyedCodec<>("GlobalGainMultiplier", Codec.FLOAT),
+        b.append(new KeyedCodec<>("GlobalGainMultiplier", Codec.FLOAT),
                 (cfg, v) -> cfg.globalGainMultiplier = v,
-                cfg -> cfg.globalGainMultiplier);
+                cfg -> cfg.globalGainMultiplier).add();
 
         CODEC = b.build();
     }
