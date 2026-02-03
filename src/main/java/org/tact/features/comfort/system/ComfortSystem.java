@@ -54,10 +54,12 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
             }
         }
         else {
-            newComfort = currentComfort - (config.comfortLossSpeed * deltaTime);
-            float gain = comfortComponent.getEnvironmentalGain() * config.globalGainMultiplier;
+            float lossPerSecond = config.comfortLossSpeed / config.comfortLossInterval;
+            float loss = lossPerSecond * deltaTime;
 
-            newComfort += gain * deltaTime;
+            float gain = comfortComponent.getEnvironmentalGain() * config.globalGainMultiplier * deltaTime;
+
+            newComfort = currentComfort - loss + gain;
 
         }
 

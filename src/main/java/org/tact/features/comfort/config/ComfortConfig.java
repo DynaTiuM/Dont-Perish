@@ -10,20 +10,21 @@ import java.util.Map;
 public class ComfortConfig {
     public static final BuilderCodec<ComfortConfig> CODEC;
     public boolean enabled = true;
-    public float comfortLossSpeed = 0.5f;
+    public float comfortLossSpeed = 0.15f;
+    public float comfortLossInterval = 1.0F;
 
     public float globalGainMultiplier = 0.3F;
 
     public float maxStaminaPenaltyPercent = 0.15F;
-    public float maxStaminaBonusPercent = 0.8F;
+    public float maxStaminaBonusPercent = 0.5F;
 
     public float maxDamagePenaltyPercent = 0.15F;
-    public float maxDamageBonusPercent = 0.5F;
+    public float maxDamageBonusPercent = 0.15F;
 
     public float maxBlockPenaltyPercent = 0.10F;
-    public float maxBlockBonusPercent = 0.3F;
+    public float maxBlockBonusPercent = 0.15F;
 
-    public float creativeRegenSpeed = 50.0F;
+    public float creativeRegenSpeed = 100.0F;
 
     public Map<String, Float> comfortValues = new HashMap<>();
 
