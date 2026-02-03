@@ -10,6 +10,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.api.Feature;
 import org.tact.common.environment.EnvironmentRegistry;
 import org.tact.common.ui.HudManager;
+import org.tact.features.seasons.config.SeasonsConfig;
 import org.tact.features.temperature.component.TemperatureComponent;
 import org.tact.features.temperature.config.TemperatureConfig;
 import org.tact.features.temperature.handler.TemperatureEnvironmentHandler;
@@ -18,13 +19,17 @@ import org.tact.features.temperature.ui.TemperatureHud;
 
 public class TemperatureFeature implements Feature {
     private final TemperatureConfig config;
+    private final SeasonsConfig seasonsConfig;
+
     private final EnvironmentRegistry environmentRegistry;
 
     public TemperatureFeature(
         TemperatureConfig config,
+        SeasonsConfig seasonsConfig,
         EnvironmentRegistry environmentRegistry
     ) {
         this.config = config;
+        this.seasonsConfig = seasonsConfig;
         this.environmentRegistry = environmentRegistry;
     }
 
@@ -64,7 +69,7 @@ public class TemperatureFeature implements Feature {
         environmentRegistry.register("temperature", new TemperatureEnvironmentHandler(config));
 
         plugin.getEntityStoreRegistry().registerSystem(
-                new TemperatureSystem(config)
+                new TemperatureSystem(config, seasonsConfig)
         );
     }
 

@@ -21,6 +21,8 @@ public class TemperatureConfig {
     public float coldDamage = 1.5F;
     public float damageInterval = 3.0F;
 
+    public float dayNightTemperatureVariation = 12.0F;
+
 
     public boolean staminaLoss = true;
     public float staminaDrainAmount = 5.0f;

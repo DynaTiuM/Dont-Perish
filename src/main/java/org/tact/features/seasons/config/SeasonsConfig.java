@@ -14,16 +14,23 @@ public class SeasonsConfig {
     public boolean enabled = true;
 
     // Duration of the seasons (in seconds)
+    /*
     public float springDuration = 14_400.0F; // 5 days
     public float summerDuration = 11_520.0F; // 4 days
     public float autumnDuration = 14_400.0F; // 5 days
     public float winterDuration = 11_520.0F; // 4 days
 
+     */
+    public float springDuration = 30.0F; // 5 days
+    public float summerDuration = 11_520F; // 4 days
+    public float autumnDuration = 30.0F; // 5 days
+    public float winterDuration = 30.0F; // 4 days
+
     // Temperature mechanics
-    public float springBaseTemperature = 15.0F;
-    public float summerBaseTemperature = 35.0F;
-    public float autumnBaseTemperature = 10.0F;
-    public float winterBaseTemperature = 0.0F;
+    public float springTemperatureModifier = -5.0F;
+    public float summerTemperatureModifier = 15.0F;
+    public float autumnTemperatureModifier = -10.0F;
+    public float winterTemperatureModifier = -20.0F;
 
 
     // Weather
@@ -48,13 +55,13 @@ public class SeasonsConfig {
         };
     }
 
-    public float getSeasonBaseTemp(int seasonOrdinal) {
+    public float getSeasonTemperatureModifier(int seasonOrdinal) {
         return switch(seasonOrdinal) {
-            case 0 -> springBaseTemperature;
-            case 1 -> summerBaseTemperature;
-            case 2 -> autumnBaseTemperature;
-            case 3 -> winterBaseTemperature;
-            default -> 20.0F;
+            case 0 -> springTemperatureModifier;
+            case 1 -> summerTemperatureModifier;
+            case 2 -> autumnTemperatureModifier;
+            case 3 -> winterTemperatureModifier;
+            default -> 0.0F;
         };
     }
 
@@ -83,13 +90,13 @@ public class SeasonsConfig {
                 (cfg, v) -> cfg.springRainDuration = v, cfg -> cfg.springRainDuration);
 
         b.append(new KeyedCodec<>("SpringBaseTemperature", Codec.FLOAT),
-                (cfg, v) -> cfg.springBaseTemperature = v, cfg -> cfg.springBaseTemperature);
+                (cfg, v) -> cfg.springTemperatureModifier = v, cfg -> cfg.springTemperatureModifier);
         b.append(new KeyedCodec<>("SummerBaseTemperature", Codec.FLOAT),
-                (cfg, v) -> cfg.summerBaseTemperature = v, cfg -> cfg.summerBaseTemperature);
+                (cfg, v) -> cfg.summerTemperatureModifier = v, cfg -> cfg.summerTemperatureModifier);
         b.append(new KeyedCodec<>("AutumnBaseTemperature", Codec.FLOAT),
-                (cfg, v) -> cfg.autumnBaseTemperature = v, cfg -> cfg.autumnBaseTemperature);
+                (cfg, v) -> cfg.autumnTemperatureModifier = v, cfg -> cfg.autumnTemperatureModifier);
         b.append(new KeyedCodec<>("WinterBaseTemperature", Codec.FLOAT),
-                (cfg, v) -> cfg.winterBaseTemperature = v, cfg -> cfg.winterBaseTemperature);
+                (cfg, v) -> cfg.winterTemperatureModifier = v, cfg -> cfg.winterTemperatureModifier);
 
         b.append(new KeyedCodec<>("BaseDayDurationSeconds", Codec.INTEGER),
                 (cfg, v) -> cfg.baseDayDurationSeconds = v, cfg -> cfg.baseDayDurationSeconds);

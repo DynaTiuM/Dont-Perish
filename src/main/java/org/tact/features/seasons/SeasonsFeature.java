@@ -8,9 +8,7 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.api.Feature;
-import org.tact.common.environment.EnvironmentRegistry;
 import org.tact.common.ui.HudManager;
-import org.tact.features.seasons.handler.SeasonsTemperatureHandler;
 import org.tact.features.seasons.config.SeasonsConfig;
 import org.tact.features.seasons.resource.SeasonsResource;
 import org.tact.features.seasons.system.SeasonsCycleSystem;
@@ -18,14 +16,11 @@ import org.tact.features.seasons.ui.SeasonsHud;
 
 public class SeasonsFeature implements Feature {
     private final SeasonsConfig config;
-    private final EnvironmentRegistry environmentRegistry;
 
     public SeasonsFeature(
-            SeasonsConfig config,
-            EnvironmentRegistry environmentRegistry
+            SeasonsConfig config
     ) {
         this.config = config;
-        this.environmentRegistry = environmentRegistry;
     }
 
     @Override
@@ -68,8 +63,6 @@ public class SeasonsFeature implements Feature {
 
     @Override
     public void enable(JavaPlugin plugin) {
-        environmentRegistry.register("seasons_ambient", new SeasonsTemperatureHandler(config));
-
         plugin.getEntityStoreRegistry().registerSystem(
                 new SeasonsCycleSystem(config)
         );
