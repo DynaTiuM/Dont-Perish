@@ -1,5 +1,5 @@
 @BottomMargin = 300;
-@RightMargin = 42;
+@RightMargin = 20;
 @IconBottomMargin = 6;
 @ThermometerHeight = 318;
 @ThermometerWidth = 32;
