@@ -38,7 +38,7 @@ public class ComfortFeature implements Feature {
     @Override
     public void registerComponents(JavaPlugin plugin) {
         ComfortComponent.TYPE = plugin.getEntityStoreRegistry()
-                .registerComponent(ComfortComponent.class, ComfortComponent::new);
+                .registerComponent(ComfortComponent.class, "comfort_component", ComfortComponent.CODEC);
     }
 
     @Override

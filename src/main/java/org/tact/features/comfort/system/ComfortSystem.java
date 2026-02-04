@@ -39,43 +39,64 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
-        ComfortComponent comfortComponent = archetypeChunk.getComponent(index, ComfortComponent.getComponentType());
+        ComfortComponent comfortComp = archetypeChunk.getComponent(index, ComfortComponent.getComponentType());
         Ref<EntityStore> entityRef = archetypeChunk.getReferenceTo(index);
 
         EntityStatMap statMap = store.getComponent(entityRef, EntityStatMap.getComponentType());
         EntityStatValue comfortStat = statMap.get(getComfortStatIndex());
 
         float currentComfort = comfortStat.get();
-        float newComfort = currentComfort;
+        float pendingComfort = currentComfort;
+
+        pendingComfort = applyComfortAnimation(comfortComp, pendingComfort, deltaTime);
+        pendingComfort = applyComfortLogic(player, comfortComp, comfortStat, pendingComfort, deltaTime);
+
+        float finalComfort = StatHelper.clamp(comfortStat, pendingComfort);
+        updateStatIfChanged(statMap, currentComfort, finalComfort);
+
+        float comfortRatio = finalComfort / comfortStat.getMax();
+        updateComfortHud(player, comfortRatio);
+        handleMaxStaminaBonus(statMap, comfortRatio, comfortComp);
+    }
+
+    private float applyComfortAnimation(ComfortComponent comp, float pendingComfort, float deltaTime) {
+        if (comp.getComfortBuffer() <= 0) return pendingComfort;
+
+        float percentageToTransfer = Math.min(1.0F, 5.0F * deltaTime);
+        float amountToTransfer = comp.getComfortBuffer() * percentageToTransfer;
+
+        if (comp.getComfortBuffer() < 0.05F) {
+            amountToTransfer = comp.getComfortBuffer();
+        }
+
+        comp.reduceComfortBuffer(amountToTransfer);
+        return pendingComfort + amountToTransfer;
+    }
+
+    private float applyComfortLogic(Player player, ComfortComponent comp, EntityStatValue stat, float pendingComfort, float deltaTime) {
         if (player.getGameMode() == GameMode.Creative) {
-            if (currentComfort < comfortStat.getMax()) {
+            if (pendingComfort < stat.getMax()) {
                 float regenSpeed = config.creativeRegenSpeed > 0 ? config.creativeRegenSpeed : 50.0F;
-                newComfort = currentComfort + (regenSpeed * deltaTime);
+                return pendingComfort + (regenSpeed * deltaTime);
             }
+        } else {
+            float loss = (config.comfortLossSpeed / config.comfortLossInterval) * deltaTime;
+            float gain = comp.getEnvironmentalGain() * config.globalGainMultiplier * deltaTime;
+            return pendingComfort - loss + gain;
         }
-        else {
-            float lossPerSecond = config.comfortLossSpeed / config.comfortLossInterval;
-            float loss = lossPerSecond * deltaTime;
+        return pendingComfort;
+    }
 
-            float gain = comfortComponent.getEnvironmentalGain() * config.globalGainMultiplier * deltaTime;
-
-            newComfort = currentComfort - loss + gain;
-
+    private void updateStatIfChanged(EntityStatMap statMap, float oldVal, float newVal) {
+        if (Math.abs(newVal - oldVal) > 1e-5f) {
+            statMap.setStatValue(getComfortStatIndex(), newVal);
         }
+    }
 
-        newComfort = StatHelper.clamp(comfortStat, newComfort);
-
-        if (Math.abs(newComfort - currentComfort) > 1e-5f) {
-            statMap.setStatValue(getComfortStatIndex(), newComfort);
-        }
-        float comfortRatio = newComfort / comfortStat.getMax();
-
+    private void updateComfortHud(Player player, float ratio) {
         HudManager.updateChild(player, "comfort", ComfortHud.class, (hud, builder) -> {
-            hud.render(builder, comfortRatio);
+            hud.render(builder, ratio);
         });
-
-        handleMaxStaminaBonus(statMap, comfortRatio, comfortComponent);
-
     }
 
     private void handleMaxStaminaBonus(EntityStatMap statMap, float comfortRatio, ComfortComponent comfortComponent) {
