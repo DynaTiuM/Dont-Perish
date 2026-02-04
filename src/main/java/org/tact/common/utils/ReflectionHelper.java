@@ -6,10 +6,15 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Utilitaires de réflexion avec cache pour améliorer les performances
+ */
 public class ReflectionHelper {
     private static final Map<String, Method> METHOD_CACHE = new HashMap<>();
 
-
+    /**
+     * Invoque une méthode sur un objet (avec cache)
+     */
     public static <T> T invokeMethod(Object target, String methodName, Object... args) {
         if (target == null) {
             throw new IllegalArgumentException("Target cannot be null");
@@ -37,6 +42,9 @@ public class ReflectionHelper {
         }
     }
 
+    /**
+     * Recherche une méthode dans la hiérarchie de classes
+     */
     private static Method findMethod(Class<?> clazz, String methodName, Class<?>[] argTypes) {
         Class<?> currentClass = clazz;
 
@@ -53,11 +61,16 @@ public class ReflectionHelper {
         );
     }
 
+    /**
+     * Construit une clé de cache pour une méthode
+     */
     private static String buildCacheKey(Class<?> clazz, String methodName) {
         return clazz.getName() + "#" + methodName;
     }
 
-
+    /**
+     * Convertit des arguments en types de classes
+     */
     private static Class<?>[] getArgumentTypes(Object... args) {
         Class<?>[] types = new Class<?>[args.length];
         for (int i = 0; i < args.length; i++) {
@@ -66,6 +79,9 @@ public class ReflectionHelper {
         return types;
     }
 
+    /**
+     * Détermine le type primitif correct pour un argument
+     */
     private static Class<?> getArgumentType(Object arg) {
         if (arg == null) {
             return Object.class;
@@ -82,5 +98,36 @@ public class ReflectionHelper {
             case Character c -> Character.TYPE;
             default -> arg.getClass();
         };
+    }
+
+    /**
+     * Vide le cache de méthodes (utile pour les tests)
+     */
+    public static void clearCache() {
+        METHOD_CACHE.clear();
+    }
+
+    /**
+     * Vérifie si une classe existe
+     */
+    public static boolean classExists(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Vérifie si une méthode existe sur une classe
+     */
+    public static boolean methodExists(Class<?> clazz, String methodName, Class<?>... paramTypes) {
+        try {
+            findMethod(clazz, methodName, paramTypes);
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 }

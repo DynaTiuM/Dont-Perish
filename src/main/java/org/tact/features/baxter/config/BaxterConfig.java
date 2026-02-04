@@ -24,31 +24,31 @@ public class BaxterConfig {
 
         b.append(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
                 (cfg, v) -> cfg.enabled = v,
-                cfg -> cfg.enabled).add();
+                cfg -> cfg.enabled);
 
         b.append(new KeyedCodec<>("MovementSpeed", Codec.FLOAT),
                 (cfg, v) -> cfg.movementSpeed = v,
-                cfg -> cfg.movementSpeed).add();
+                cfg -> cfg.movementSpeed);
 
         b.append(new KeyedCodec<>("MinFollowDistance", Codec.FLOAT),
                 (cfg, v) -> cfg.minFollowDistance = v,
-                cfg -> cfg.minFollowDistance).add();
+                cfg -> cfg.minFollowDistance);
 
         b.append(new KeyedCodec<>("TeleportThreshold", Codec.FLOAT),
                 (cfg, v) -> cfg.teleportThreshold = v,
-                cfg -> cfg.teleportThreshold).add();
+                cfg -> cfg.teleportThreshold);
 
         b.append(new KeyedCodec<>("FlySpeed", Codec.FLOAT),
                 (cfg, v) -> cfg.flySpeed = v,
-                cfg -> cfg.flySpeed).add();
+                cfg -> cfg.flySpeed);
 
         b.append(new KeyedCodec<>("InventorySize", Codec.INTEGER),
                 (cfg, v) -> cfg.inventorySize = v,
-                cfg -> cfg.inventorySize).add();
+                cfg -> cfg.inventorySize);
 
         b.append(new KeyedCodec<>("InventoryTitle", Codec.STRING),
                 (cfg, v) -> cfg.inventoryTitle = v,
-                cfg -> cfg.inventoryTitle).add();
+                cfg -> cfg.inventoryTitle);
 
         CODEC = b.build();
     }

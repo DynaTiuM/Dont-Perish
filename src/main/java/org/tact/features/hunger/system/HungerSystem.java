@@ -21,17 +21,27 @@ import org.tact.features.hunger.config.HungerConfig;
 import org.tact.features.hunger.ui.HungerHud;
 
 import javax.annotation.Nonnull;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 public class HungerSystem extends EntityTickingSystem<EntityStore> {
+    private static final float LERP_SPEED = 5.0F;
+    private static final float LERP_THRESHOLD = 0.1F;
+
+    private final ComponentType<EntityStore, HungerComponent> hungerComponentType;
     private final HungerConfig config;
 
     private DamageCause starvationDamageCause;
     private int hungerStatIndex = -1;
 
     public HungerSystem(
+            ComponentType<EntityStore, HungerComponent> hungerComponentType,
             HungerConfig config
     ) {
+        this.hungerComponentType = hungerComponentType;
         this.config = config;
+
+        registerFoodConsumptionCallback();
     }
 
     @Override
@@ -43,70 +53,68 @@ public class HungerSystem extends EntityTickingSystem<EntityStore> {
             @Nonnull CommandBuffer<EntityStore> commandBuffer
     ) {
         Player player = chunk.getComponent(index, Player.getComponentType());
-        HungerComponent hungerComponent = chunk.getComponent(index, HungerComponent.getComponentType());
+        HungerComponent hunger = chunk.getComponent(index, hungerComponentType);
         Ref<EntityStore> entityRef = chunk.getReferenceTo(index);
 
         EntityStatMap statMap = store.getComponent(entityRef, EntityStatMap.getComponentType());
         EntityStatValue hungerStat = statMap.get(getHungerStatIndex());
 
         float currentHunger = hungerStat.get();
+        float updatedHunger;
 
-        float pendingHunger = currentHunger;
-        pendingHunger = applyDigestion(hungerComponent, pendingHunger, deltaTime);
-        pendingHunger = applyGamemodeLogic(player, hungerStat, pendingHunger, deltaTime);
-
-        float clampedHunger = StatHelper.clamp(hungerStat, pendingHunger);
-        updateStatIfChanged(statMap, currentHunger, clampedHunger);
-
-        handleStarvationLogic(hungerComponent, clampedHunger, hungerStat.getMin(), entityRef, deltaTime, commandBuffer);
-        handleVisualUpdates(player, hungerComponent, hungerStat, currentHunger, clampedHunger);
-    }
-
-    private float applyDigestion(HungerComponent hunger, float pendingHunger, float deltaTime) {
-        if (hunger.getDigestionBuffer() <= 0) return pendingHunger;
-
-        float percentageToTransfer = Math.min(1.0F, 5.0F * deltaTime);
-        float amountToTransfer = hunger.getDigestionBuffer() * percentageToTransfer;
-
-        if (hunger.getDigestionBuffer() < 0.05F) {
-            amountToTransfer = hunger.getDigestionBuffer();
-        }
-
-        hunger.reduceDigestionBuffer(amountToTransfer);
-        return pendingHunger + amountToTransfer;
-    }
-
-    private float applyGamemodeLogic(Player player, EntityStatValue stat, float pendingHunger, float deltaTime) {
-        if (player.getGameMode() == GameMode.Creative) {
-            if (pendingHunger < stat.getMax()) {
-                float regenSpeed = config.creativeRegenSpeed > 0 ? config.creativeRegenSpeed : 50.0F;
-                return pendingHunger + (regenSpeed * deltaTime);
-            }
+        if (player.getGameMode() == GameMode.Adventure) {
+            updatedHunger = processAdventureMode(
+                    hunger,
+                    hungerStat,
+                    currentHunger,
+                    deltaTime,
+                    entityRef,
+                    commandBuffer
+            );
         } else {
-            float lossPerSecond = config.saturationLossSpeed / config.saturationLossInterval;
-            return pendingHunger - (lossPerSecond * deltaTime);
+            updatedHunger = processCreativeMode(hungerStat, currentHunger, deltaTime);
         }
-        return pendingHunger;
+
+        if (updatedHunger != currentHunger) {
+            statMap.setStatValue(getHungerStatIndex(), updatedHunger);
+        }
+
+        updateHungerDisplay(hunger, updatedHunger, hungerStat.getMax(), deltaTime);
+
+        updateHud(player, hunger, hungerStat);
     }
 
-    private void updateStatIfChanged(EntityStatMap statMap, float oldVal, float newVal) {
-        if (Math.abs(newVal - oldVal) > 1e-5f) {
-            statMap.setStatValue(getHungerStatIndex(), newVal);
-        }
-    }
+    private float processAdventureMode(
+            HungerComponent hunger,
+            EntityStatValue hungerStat,
+            float currentHunger,
+            float deltaTime,
+            Ref<EntityStore> entityRef,
+            CommandBuffer<EntityStore> commandBuffer
+    ) {
+        float updatedHunger = currentHunger;
 
-    private void handleStarvationLogic(HungerComponent hunger, float currentHunger, float minHunger, Ref<EntityStore> ref, float dt, CommandBuffer<EntityStore> cb) {
-        if (currentHunger <= minHunger) {
-            processStarvation(hunger, dt, ref, cb);
+        hunger.addElapsedTime(deltaTime);
+        if (hunger.getElapsedTime() >= config.saturationLossInterval) {
+            hunger.resetElapsedTime();
+            updatedHunger = StatHelper.clamp(
+                    hungerStat,
+                    currentHunger - config.saturationLossSpeed
+            );
+        }
+
+        if (updatedHunger <= hungerStat.getMin()) {
+            processStarvation(
+                    hunger,
+                    deltaTime,
+                    entityRef,
+                    commandBuffer
+            );
         } else {
             hunger.resetStarvingElapsedTime();
         }
-    }
 
-    private void handleVisualUpdates(Player player, HungerComponent hunger, EntityStatValue stat, float oldVal, float newVal) {
-        if (Math.abs(newVal - oldVal) > 1e-5f || hunger.getDigestionBuffer() > 0) {
-            updateHud(player, stat);
-        }
+        return updatedHunger;
     }
 
     private void processStarvation(
@@ -129,11 +137,85 @@ public class HungerSystem extends EntityTickingSystem<EntityStore> {
         }
     }
 
-    private void updateHud(Player player, EntityStatValue hungerStat) {
-        float percentage = hungerStat.get() / hungerStat.getMax();
-        HudManager.updateChild(player, "hunger", HungerHud.class, (hud, builder) -> {
-            hud.render(builder, percentage);
+    private float processCreativeMode(
+            EntityStatValue hungerStat,
+            float currentHunger,
+            float deltaTime
+    ) {
+        if (currentHunger < hungerStat.getMax()) {
+            return StatHelper.clamp(
+                    hungerStat,
+                    currentHunger + config.creativeRegenSpeed * deltaTime
+            );
+        }
+        return currentHunger;
+    }
+
+    private void updateHungerDisplay(
+            HungerComponent hunger,
+            float targetHunger,
+            float maxHunger,
+            float deltaTime
+    ) {
+        float diff = targetHunger - hunger.getLerpedHunger();
+
+        if (Math.abs(diff) < LERP_THRESHOLD) {
+            hunger.setLerpedHunger(targetHunger);
+        } else {
+            float lerpedValue = hunger.getLerpedHunger() +
+                    diff * Math.min(deltaTime * LERP_SPEED, 1.0F);
+            hunger.setLerpedHunger(lerpedValue);
+        }
+    }
+
+    private void updateHud(Player player, HungerComponent hunger, EntityStatValue hungerStat) {
+        HudManager.ifPresent(player, "hunger", HungerHud.class, hud -> {
+            float percentage = hunger.getLerpedHunger() / hungerStat.getMax();
+            hud.updateValues(player.getGameMode(), percentage);
         });
+    }
+
+    public void onFoodConsumed(Ref<EntityStore> entityRef, Item item) {
+        float saturationValue = config.foodValues.getOrDefault(
+                item.getId(),
+                config.defaultSaturation
+        );
+
+        Store<EntityStore> store = entityRef.getStore();
+        Player player = store.getComponent(entityRef, Player.getComponentType());
+
+        if (player != null) {
+            EntityStatMap statMap = store.getComponent(
+                    player.getReference(),
+                    EntityStatMap.getComponentType()
+            );
+            EntityStatValue hungerStat = statMap.get(getHungerStatIndex());
+
+            float newValue = StatHelper.clamp(
+                    hungerStat,
+                    hungerStat.get() + saturationValue
+            );
+            statMap.setStatValue(getHungerStatIndex(), newValue);
+        }
+    }
+
+    private void registerFoodConsumptionCallback() {
+        Object bridgeObj = System.getProperties().get("hunger.bridge");
+
+        if (bridgeObj instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> bridge = (Map<String, Object>) bridgeObj;
+
+            BiConsumer<Object, Object> callback = (entity, item) -> {
+                try {
+                    onFoodConsumed((Ref<EntityStore>) entity, (Item) item);
+                } catch (ClassCastException e) {
+                    e.printStackTrace(System.err);
+                }
+            };
+
+            bridge.put("callback", callback);
+        }
     }
 
     private DamageCause getStarvationDamageCause() {
@@ -153,6 +235,6 @@ public class HungerSystem extends EntityTickingSystem<EntityStore> {
     @NullableDecl
     @Override
     public Query<EntityStore> getQuery() {
-        return Query.and(Player.getComponentType(), HungerComponent.getComponentType());
+        return Query.and(Player.getComponentType(), hungerComponentType);
     }
 }

@@ -1,5 +1,6 @@
 package org.tact.features.hunger.ui;
 
+import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -12,9 +13,10 @@ public class HungerHud extends CustomUIHud {
         super(playerRef);
     }
 
-    public void render(UICommandBuilder builder, float hungerValue) {
-        builder.set("#HungerBar.Value", hungerValue)
-                .set("#HungerBar.Visible", true);
+    public void updateValues(GameMode gameMode, float hungerValue) {
+        UICommandBuilder builder = (new UICommandBuilder()).set("#Icon.Background", "Hud/Textures/HungerIcon.png")
+                .set("#ProgressBar.Value", hungerValue).set("#ProgressBar.Visible", gameMode == GameMode.Adventure);
+        this.update(false, builder);
     }
 
     @Override
