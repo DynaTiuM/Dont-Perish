@@ -1,5 +1,6 @@
 package org.tact.core;
 
+import com.hypixel.hytale.event.EventBusRegistry;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.util.Config;
