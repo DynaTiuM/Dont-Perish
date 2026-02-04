@@ -3,7 +3,6 @@ package org.tact.features.temperature.system;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
-import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageCause;
@@ -18,10 +17,6 @@ import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.tact.common.ui.HudManager;
 import org.tact.features.temperature.component.TemperatureComponent;
-import org.tact.features.seasons.config.SeasonsConfig;
-import org.tact.features.seasons.model.Season;
-import org.tact.features.seasons.resource.SeasonsResource;
-import org.tact.features.seasons.ui.SeasonsHud;
 import org.tact.features.temperature.config.TemperatureConfig;
 import org.tact.features.temperature.ui.TemperatureHud;
 
