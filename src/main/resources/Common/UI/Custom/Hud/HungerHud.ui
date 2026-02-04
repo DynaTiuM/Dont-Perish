@@ -17,7 +17,7 @@
 @HotbarWidthMenu = @DefaultItemSlotSize * @DefaultItemSlotsPerRow + @HotbarSlotSpacingMenu * @DefaultItemSlotsPerRow;
 @HotbarHeight = @DefaultItemSlotSize + (2 * @DefaultItemGridPadding);
 
-@HungerIconImg = "Textures/HungerIcon.png";
+@Icon = "Textures/HungerIcon.png";
 @Bar = "Textures/HungerBar.png";
 
 Group {
@@ -31,17 +31,16 @@ Group {
       Anchor: (Left: 0, Width: 318, Height: 12);
       Background: "Textures/HungerBarBg.png";
 
-      ProgressBar #HungerBar {
+      ProgressBar #ProgressBar {
         Anchor: (Width: 318, Height: 12);
         BarTexturePath: @Bar;
         Visible: true;
       }
     }
 
-    Group #HungerIcon {
+    Group #Icon {
       Anchor: (Left: 4, Width: 24, Height: 24, Right: 0, Top: -9);
-      Background: @HungerIconImg;
-      Visible: true;
+      Background: @Icon;
     }
   }
 }
