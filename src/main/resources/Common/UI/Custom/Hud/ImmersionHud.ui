@@ -1,0 +1,8 @@
+@ImmersionImg = "Textures/Immersion/FrostHud.png";
+
+Group #Immersion {
+  Anchor: (Top: 0, Left: 0);
+  LayoutMode: Left;
+  Background: @ImmersionImg;
+  Visible: true;
+}

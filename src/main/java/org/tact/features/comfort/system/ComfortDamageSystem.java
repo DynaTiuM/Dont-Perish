@@ -10,6 +10,7 @@ import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
 import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.tact.features.comfort.config.ComfortConfig;
 
@@ -54,13 +55,29 @@ public class ComfortDamageSystem extends DamageEventSystem {
         if (comfortStat == null) return;
 
         float comfortRatio = comfortStat.get() / comfortStat.getMax();
-        float finalBonus = comfortRatio *
-                (config.maxDamageBonusPercent + config.maxDamagePenaltyPercent) - config.maxDamagePenaltyPercent;
+
+        float newDamage = getNewDamage(damage, comfortRatio);
+
+        damage.setAmount(newDamage);
+    }
+
+    private float getNewDamage(@NonNullDecl Damage damage, float comfortRatio) {
+        float finalBonus;
+
+        float threshold =  config.threshold;
+        if (comfortRatio < threshold) {
+            float factor = (threshold - comfortRatio) / threshold;
+            finalBonus = -config.maxDamagePenaltyPercent * factor;
+        }
+        else {
+            float range = 1.0f - threshold;
+            float factor = (comfortRatio - threshold) / range;
+            finalBonus = config.maxDamageBonusPercent * factor;
+        }
 
         float newAmount = damage.getAmount() * (1.0F + finalBonus);
         if (newAmount < 0) newAmount = 0;
-
-        damage.setAmount(newAmount);
+        return newAmount;
     }
 
     @NullableDecl

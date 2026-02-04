@@ -54,13 +54,29 @@ public class ComfortBlockSystem extends EntityEventSystem<EntityStore, DamageBlo
 
         float comfortRatio = comfortStat.get() / comfortStat.getMax();
 
-        float finalBonus = comfortRatio *
-                (config.maxBlockBonusPercent + config.maxBlockPenaltyPercent) - config.maxBlockPenaltyPercent;
+
+        float newBlockDamage = getNewBlockDamage(damageBlockEvent, comfortRatio);
+
+        damageBlockEvent.setDamage(newBlockDamage);
+    }
+
+    private float getNewBlockDamage(@NonNullDecl DamageBlockEvent damageBlockEvent, float comfortRatio) {
+        float finalBonus;
+
+        float threshold =  config.threshold;
+        if (comfortRatio < threshold) {
+            float factor = (threshold - comfortRatio) / threshold;
+            finalBonus = -config.maxBlockPenaltyPercent * factor;
+        }
+        else {
+            float range = 1.0f - threshold;
+            float factor = (comfortRatio - threshold) / range;
+            finalBonus = config.maxBlockBonusPercent * factor;
+        }
 
         float newBlockDamage = damageBlockEvent.getDamage() * (1.0F + finalBonus);
         if (newBlockDamage < 0) newBlockDamage = 0;
-
-        damageBlockEvent.setDamage(newBlockDamage);
+        return newBlockDamage;
     }
 
 

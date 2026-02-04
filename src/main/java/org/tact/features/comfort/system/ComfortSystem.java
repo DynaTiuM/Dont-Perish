@@ -39,7 +39,7 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
-        ComfortComponent comfortComp = archetypeChunk.getComponent(index, ComfortComponent.getComponentType());
+        ComfortComponent comfortComponent = archetypeChunk.getComponent(index, ComfortComponent.getComponentType());
         Ref<EntityStore> entityRef = archetypeChunk.getReferenceTo(index);
 
         EntityStatMap statMap = store.getComponent(entityRef, EntityStatMap.getComponentType());
@@ -48,15 +48,20 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
         float currentComfort = comfortStat.get();
         float pendingComfort = currentComfort;
 
-        pendingComfort = applyComfortAnimation(comfortComp, pendingComfort, deltaTime);
-        pendingComfort = applyComfortLogic(player, comfortComp, comfortStat, pendingComfort, deltaTime);
+        pendingComfort = applyComfortAnimation(comfortComponent, pendingComfort, deltaTime);
+        pendingComfort = applyComfortLogic(player, comfortComponent, comfortStat, pendingComfort, deltaTime);
 
         float finalComfort = StatHelper.clamp(comfortStat, pendingComfort);
         updateStatIfChanged(statMap, currentComfort, finalComfort);
 
+        float discomfortThreshold = comfortStat.getMax() * config.threshold;
+
+        boolean isUncomfortable = finalComfort < discomfortThreshold;
+        comfortComponent.setUncomfortable(isUncomfortable);
+
         float comfortRatio = finalComfort / comfortStat.getMax();
         updateComfortHud(player, comfortRatio);
-        handleMaxStaminaBonus(statMap, comfortRatio, comfortComp);
+        handleMaxStaminaBonus(statMap, comfortRatio, comfortComponent);
     }
 
     private float applyComfortAnimation(ComfortComponent comp, float pendingComfort, float deltaTime) {
@@ -102,8 +107,18 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
     private void handleMaxStaminaBonus(EntityStatMap statMap, float comfortRatio, ComfortComponent comfortComponent) {
         int staminaIdx = DefaultEntityStatTypes.getStamina();
 
-        float finalBonus = comfortRatio *
-                (config.maxStaminaBonusPercent + config.maxStaminaPenaltyPercent) - config.maxStaminaPenaltyPercent;
+        float finalBonus;
+
+        float threshold =  config.threshold;
+        if (comfortRatio < threshold) {
+            float factor = (threshold - comfortRatio) / threshold;
+            finalBonus = -config.maxStaminaPenaltyPercent * factor;
+        }
+        else {
+            float range = 1.0f - threshold;
+            float factor = (comfortRatio - threshold) / range;
+            finalBonus = config.maxStaminaBonusPercent * factor;
+        }
 
         if (Math.abs(finalBonus - comfortComponent.getLastAppliedBonus()) < 0.005F) {
             return;

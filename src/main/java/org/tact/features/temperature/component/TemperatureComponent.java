@@ -16,6 +16,9 @@ public class TemperatureComponent implements Component<EntityStore> {
     private boolean hasProtection;
     private float damageTimer;
 
+    private transient boolean isFreezing = false;
+    private transient boolean isOverheating = false;
+
     public static ComponentType<EntityStore, TemperatureComponent> TYPE;
 
     public TemperatureComponent() {
@@ -26,6 +29,12 @@ public class TemperatureComponent implements Component<EntityStore> {
         this.hasProtection = false;
         this.damageTimer = 0.0F;
     }
+
+    public boolean isFreezing() { return isFreezing; }
+    public void setFreezing(boolean v) { this.isFreezing = v; }
+
+    public boolean isOverheating() { return isOverheating; }
+    public void setOverheating(boolean v) { this.isOverheating = v; }
 
     public float getLerpedTemperature() {
         return this.lerpedTemperature;

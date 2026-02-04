@@ -77,10 +77,19 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         }
         temperatureComponent.setLerpedTemperature(newTemperature);
 
+        float coldThreshold = 0.0F - config.extremeTemperatureThreshold;
+        float heatThreshold = 35.0F + config.extremeTemperatureThreshold;
+
+        boolean freezing = newTemperature < coldThreshold;
+        boolean overheating = newTemperature > heatThreshold;
+
+        temperatureComponent.setFreezing(freezing);
+        temperatureComponent.setOverheating(overheating);
+
         boolean hasProtection = checkProtection(player, store, newTemperature);
         temperatureComponent.setHasProtection(hasProtection);
 
-        if(!hasProtection && isExtremeTemperature(newTemperature)) {
+        if(!hasProtection && (freezing || overheating)) {
             temperatureComponent.addDamageTimer(deltaTime);
 
             if(temperatureComponent.getDamageTimer() >= config.damageInterval) {
@@ -147,11 +156,6 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     private boolean checkProtection(Player player, Store<EntityStore> store, float temperature) {
         // TODO: Verify the inventory of the player and holding item
         return false;
-    }
-
-    private boolean isExtremeTemperature(float temp) {
-        return temp > (35.0F + config.extremeTemperatureThreshold) ||
-            temp < (0.0F - config.extremeTemperatureThreshold);
     }
 
     private void applyTemperatureDamage(

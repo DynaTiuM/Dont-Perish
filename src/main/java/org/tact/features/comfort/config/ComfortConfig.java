@@ -26,6 +26,8 @@ public class ComfortConfig {
 
     public float creativeRegenSpeed = 100.0F;
 
+    public float threshold = 0.20F;
+
     public Map<String, Float> comfortValues = new HashMap<>();
 
     public final float ANIMATION_SPEED = 30.0F;

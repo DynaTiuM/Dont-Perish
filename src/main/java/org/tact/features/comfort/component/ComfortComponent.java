@@ -19,9 +19,12 @@ public class ComfortComponent implements Component<EntityStore>{
 
     private transient float lastAppliedBonus = -1.0f;
 
+    private transient boolean isUncomfortable;
+
     public ComfortComponent() {
         this.environmentalGain = 0.0F;
         this.comfortBuffer = 0.0F;
+        this.isUncomfortable = false;
     }
 
     static {
@@ -45,6 +48,7 @@ public class ComfortComponent implements Component<EntityStore>{
         cloned.environmentalGain = this.environmentalGain;
         cloned.comfortBuffer = this.comfortBuffer;
         cloned.lastAppliedBonus = this.lastAppliedBonus;
+        cloned.isUncomfortable = this.isUncomfortable;
         return cloned;
     }
 
@@ -54,6 +58,9 @@ public class ComfortComponent implements Component<EntityStore>{
     public void setEnvironmentalGain(float gain) {
         this.environmentalGain = gain;
     }
+
+    public boolean isUncomfortable() { return isUncomfortable; }
+    public void setUncomfortable(boolean v) { this.isUncomfortable = v; }
 
     public float getComfortBuffer() { return comfortBuffer; }
     public void addComfortBuffer(float amount) { this.comfortBuffer += amount; }
