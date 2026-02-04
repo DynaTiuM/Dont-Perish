@@ -3,13 +3,19 @@ package org.tact.core.config;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import org.tact.features.baxter.config.BaxterConfig;
+import org.tact.features.comfort.config.ComfortConfig;
 import org.tact.features.hunger.config.HungerConfig;
+import org.tact.features.seasons.config.SeasonsConfig;
+import org.tact.features.temperature.config.TemperatureConfig;
 
 public class ModConfig {
     public static final BuilderCodec<ModConfig> CODEC;
 
     public HungerConfig hunger = new HungerConfig();
     public BaxterConfig baxter = new BaxterConfig();
+    public SeasonsConfig seasons = new SeasonsConfig();
+    public TemperatureConfig temperature = new TemperatureConfig();
+    public ComfortConfig comfort = new ComfortConfig();
 
     public ModConfig() {}
 
@@ -18,11 +24,24 @@ public class ModConfig {
 
         b.append(new KeyedCodec<>("Hunger", HungerConfig.CODEC),
                 (cfg, v) -> cfg.hunger = v,
-                cfg -> cfg.hunger);
+                cfg -> cfg.hunger).add();
 
         b.append(new KeyedCodec<>("Baxter", BaxterConfig.CODEC),
                 (cfg, v) -> cfg.baxter = v,
-                cfg -> cfg.baxter);
+                cfg -> cfg.baxter).add();
+
+        b.append(new KeyedCodec<>("Seasons", SeasonsConfig.CODEC),
+                (cfg, v) -> cfg.seasons = v,
+                cfg -> cfg.seasons).add();
+
+        b.append(new KeyedCodec<>("Temperature", TemperatureConfig.CODEC),
+                (cfg, v) -> cfg.temperature = v,
+                cfg -> cfg.temperature).add();
+
+        b.append(new KeyedCodec<>("Comfort", ComfortConfig.CODEC),
+                (cfg, v) -> cfg.comfort = v,
+                cfg -> cfg.comfort).add();
+
 
         CODEC = b.build();
     }
