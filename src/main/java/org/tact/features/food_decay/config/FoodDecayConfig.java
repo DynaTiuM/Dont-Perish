@@ -13,8 +13,7 @@ public class FoodDecayConfig {
     public boolean enabled = true;
 
     public float degradationSpeed = 1.0F;
-    public float playerDecayInterval = 5.0F;
-    public float chestDecayInterval = 10.0F;
+    public float decayInterval = 5.0F;
 
     public Map<String, Double> decayTimes = new HashMap<>();
 
@@ -43,15 +42,9 @@ public class FoodDecayConfig {
         ).add();
 
         builder.append(
-                new KeyedCodec<>("PlayerDecayInterval", Codec.FLOAT),
-                (obj, v) -> obj.playerDecayInterval = v,
-                obj -> obj.playerDecayInterval
-        ).add();
-
-        builder.append(
-                new KeyedCodec<>("ChestDecayInterval", Codec.FLOAT),
-                (obj, v) -> obj.chestDecayInterval = v,
-                obj -> obj.chestDecayInterval
+                new KeyedCodec<>("DecayInterval", Codec.FLOAT),
+                (obj, v) -> obj.decayInterval = v,
+                obj -> obj.decayInterval
         ).add();
 
         CODEC = builder.build();

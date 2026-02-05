@@ -3,31 +3,29 @@ package org.tact.features.food_decay.system;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
-import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.event.events.ecs.InteractivelyPickupItemEvent;
-import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.meta.state.ItemContainerState;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
-import org.checkerframework.checker.nullness.compatqual.NullableDecl;
-import org.tact.features.food_decay.config.FoodDecayConfig;
 import org.tact.features.food_decay.manager.FoodDecayManager;
 
-public class FoodDecaySystem extends EntityTickingSystem<EntityStore> {
-    private final FoodDecayConfig config;
-    private final FoodDecayManager decayManager;
-    private float playerTimer = 0.0f;
-    private float chestTimer = 0.0f;
 
-    public FoodDecaySystem(FoodDecayConfig config, FoodDecayManager decayManager) {
-        this.config = config;
+public class ContainerDecaySystem extends EntityTickingSystem<EntityStore> {
+    private final FoodDecayManager decayManager;
+    private final DecayTickControlSystem controller;
+
+    public ContainerDecaySystem(FoodDecayManager decayManager, DecayTickControlSystem controller) {
         this.decayManager = decayManager;
+        this.controller = controller;
     }
 
     @Override
+    public Query<EntityStore> getQuery() {
+        return Query.and(Player.getComponentType());
+    }
+
     public void tick(
             float deltaTime,
             int index,
@@ -35,57 +33,28 @@ public class FoodDecaySystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl Store<EntityStore> store,
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
+        if (index != 0 || !controller.shouldProcess()) return;
+
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
-        if (player == null) return;
 
-        boolean isLeader = (index == 0);
-
-        if (isLeader) {
-            playerTimer += deltaTime;
-
-            if (playerTimer >= config.playerDecayInterval) {
-                double multiplier = decayManager.calculateMultiplier(player.getWorld(), archetypeChunk.getReferenceTo(index), null);
-                decayManager.processContainer(player.getInventory().getCombinedEverything(), playerTimer, multiplier);
-
-                playerTimer = 0.0f;
-            }
-        }
-
-        if (isLeader) {
-            chestTimer += deltaTime;
-
-            if (chestTimer >= config.chestDecayInterval) {
-                processAllWorldChests(player.getWorld(), chestTimer);
-                chestTimer = 0.0f;
-            }
-        }
+        processAllWorldChests(player.getWorld(), controller.getTimeToProcess());
     }
 
     private void processAllWorldChests(World world, float deltaTime) {
         var containerType = getContainerType(world);
         if (containerType == null) return;
 
-        Store<ChunkStore> blockStore = world.getChunkStore().getStore();
-        Query<ChunkStore> query = Query.and(containerType);
-
-        final int[] chestsFound = {0};
-
-        blockStore.forEachChunk(query, (archetypeChunk, buffer) -> {
+        world.getChunkStore().getStore().forEachChunk(Query.and(containerType), (archetypeChunk, buffer) -> {
             for (int i = 0; i < archetypeChunk.size(); i++) {
-
                 ItemContainerState state = archetypeChunk.getComponent(i, containerType);
-
                 if (state != null && state.getItemContainer() != null) {
-                    chestsFound[0]++;
-
                     double multiplier = 1.0;
-                    BlockType blockType = state.getBlockType();
-                    if (blockType.getId().contains("Fridge")) multiplier = 0.5;
                     decayManager.processContainer(state.getItemContainer(), deltaTime, multiplier);
                 }
             }
         });
     }
+
 
     @SuppressWarnings("unchecked")
     private ComponentType<ChunkStore, ItemContainerState> getContainerType(World world) {
@@ -107,17 +76,10 @@ public class FoodDecaySystem extends EntityTickingSystem<EntityStore> {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error Reflection: " + e.getMessage());
+            System.out.println("Reflection Error: " + e.getMessage());
             e.printStackTrace();
         }
 
         return null;
-    }
-
-
-    @NullableDecl
-    @Override
-    public Query<EntityStore> getQuery() {
-        return Query.and(Player.getComponentType());
     }
 }

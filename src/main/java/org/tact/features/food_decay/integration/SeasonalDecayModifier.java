@@ -10,6 +10,8 @@ import org.tact.features.seasons.resource.SeasonsResource;
 public class SeasonalDecayModifier implements FoodDecayModifier {
     @Override
     public double getMultiplier(World world, Ref<EntityStore> playerRef, String blockId) {
+        if (playerRef == null) return 1.0;
+
         SeasonsResource data = playerRef.getStore().getResource(SeasonsResource.TYPE);
         Season currentSeason = data.getCurrentSeason();
 

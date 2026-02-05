@@ -8,7 +8,6 @@ import org.tact.features.food_decay.modifier.FoodDecayModifier;
 public class ContainerDecayModifier implements FoodDecayModifier {
     @Override
     public double getMultiplier(World world, Ref<EntityStore> playerRef, String blockId) {
-
         if (blockId == null) return 1.0;
 
         if (blockId.contains("Fridge")) {
