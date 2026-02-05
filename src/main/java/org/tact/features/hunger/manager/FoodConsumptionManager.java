@@ -5,13 +5,9 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.transaction.ItemStackSlotTransaction;
-import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
-import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
-import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.features.comfort.component.ComfortComponent;
 import org.tact.features.hunger.component.HungerComponent;
-import org.tact.features.hunger.config.FoodProperties;
 import org.tact.features.hunger.config.HungerConfig;
 
 public class FoodConsumptionManager {
@@ -36,14 +32,14 @@ public class FoodConsumptionManager {
         int qtyAfter = (itemAfter != null) ? itemAfter.getQuantity() : 0;
 
         if (qtyAfter == qtyBefore - 1) {
-            FoodProperties properties = config.getFoodProperties(itemId);
+            HungerConfig.NutritionValue properties = config.getNutrition(itemId);
 
-            if (properties.getHunger() > 0) {
-                addToHungerBuffer(player, properties.getHunger());
+            if (properties.hunger > 0) {
+                addToHungerBuffer(player, properties.hunger);
             }
 
-            if(properties.getComfort() > 0) {
-                addToComfortBuffer(player, properties.getComfort());
+            if(properties.comfort > 0) {
+                addToComfortBuffer(player, properties.comfort);
             }
         }
     }

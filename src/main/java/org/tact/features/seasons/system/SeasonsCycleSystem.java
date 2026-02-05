@@ -43,7 +43,6 @@ public class SeasonsCycleSystem extends EntityTickingSystem<EntityStore> {
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
         SeasonsResource data = store.getResource(SeasonsResource.TYPE);
         Season currentSeason = data.getCurrentSeason();
-        World world = player.getWorld();
 
         // Progression of the Timer
         data.addSeasonTimer(deltaTime);

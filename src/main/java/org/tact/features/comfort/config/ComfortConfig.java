@@ -28,8 +28,6 @@ public class ComfortConfig {
 
     public Map<String, Float> comfortValues = new HashMap<>();
 
-    public final float ANIMATION_SPEED = 30.0F;
-
     public ComfortConfig() {
         initializeComfortBlocks();
     }

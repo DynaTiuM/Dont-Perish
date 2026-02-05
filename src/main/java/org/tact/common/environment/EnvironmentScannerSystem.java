@@ -1,15 +1,13 @@
 package org.tact.common.environment;
 
-import com.hypixel.hytale.component.ArchetypeChunk;
-import com.hypixel.hytale.component.CommandBuffer;
-import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
@@ -86,10 +84,13 @@ public class EnvironmentScannerSystem extends EntityTickingSystem<EntityStore> {
         for(int x = -radius; x <= radius; x++) {
             for(int y = -radius; y <= radius; y++) {
                 for(int z = -radius; z <= radius; z++) {
+                    int blockX = playerX + x;
+                    int blockY = playerY + y;
+                    int blockZ = playerZ + z;
                     BlockType blockType = world.getBlockType(
-                            playerX + x,
-                            playerY + y,
-                            playerZ + z
+                            blockX,
+                            blockY,
+                            blockZ
                     );
                     String blockId = blockType.getId();
 
@@ -99,13 +100,9 @@ public class EnvironmentScannerSystem extends EntityTickingSystem<EntityStore> {
                 }
             }
         }
-
         return result;
     }
 
-    public void removePlayer(Ref<EntityStore> entityRef) {
-        scanCache.remove(entityRef);
-    }
 
     private static class CachedScan {
         EnvironmentResult lastResult = null;
