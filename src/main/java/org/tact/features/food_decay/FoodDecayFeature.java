@@ -16,13 +16,17 @@ import org.tact.features.food_decay.integration.SeasonalDecayModifier;
 import org.tact.features.food_decay.manager.FoodDecayManager;
 import org.tact.features.food_decay.system.FoodDecaySystem;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
+
 public class FoodDecayFeature implements Feature {
     private final FoodDecayConfig config;
 
     public FoodDecayFeature(FoodDecayConfig config) {
         this.config = config;
     }
-
+    private final Set<ItemContainer> hookedContainers = Collections.newSetFromMap(new WeakHashMap<>());
     @Override
     public String getId() {
         return "food";
@@ -46,15 +50,29 @@ public class FoodDecayFeature implements Feature {
         plugin.getEventRegistry().registerGlobal(PlayerReadyEvent.class, event -> {
             Player player = event.getPlayer();
             if (player.getInventory() != null) {
-                player.getInventory().getStorage().registerChangeEvent(ev -> this.handleContainerChange(player, ev));
-                player.getInventory().getHotbar().registerChangeEvent(ev -> this.handleContainerChange(player, ev));
-           }
+                ItemContainer storage = player.getInventory().getStorage();
+                ItemContainer hotbar = player.getInventory().getHotbar();
+
+                storage.registerChangeEvent(ev -> this.handleContainerChange(player, ev));
+                hookedContainers.add(storage);
+
+                hotbar.registerChangeEvent(ev -> this.handleContainerChange(player, ev));
+                hookedContainers.add(hotbar);
+            }
         });
     }
+
     private void handleContainerChange(Player player, ItemContainer.ItemContainerChangeEvent event) {
         Transaction transaction = event.transaction();
 
         if (transaction instanceof MoveTransaction<?> moveTx && moveTx.succeeded()) {
+
+            ItemContainer other = moveTx.getOtherContainer();
+            if (other != null && !hookedContainers.contains(other)) {
+                other.registerChangeEvent(ev -> this.handleContainerChange(player, ev));
+                hookedContainers.add(other);
+            }
+
             SlotTransaction removeTx = moveTx.getRemoveTransaction();
             if (moveTx.getAddTransaction() instanceof SlotTransaction addSlotTx) {
 
@@ -70,9 +88,7 @@ public class FoodDecayFeature implements Feature {
                         if (moveTx.getMoveType() == MoveType.MOVE_TO_SELF) {
                             destCont = event.container();
                             sourceCont = moveTx.getOtherContainer();
-                        }
-
-                        else {
+                        } else {
                             return;
                         }
 
@@ -85,6 +101,7 @@ public class FoodDecayFeature implements Feature {
 
     private void mergeStacksManually(Player player, ItemContainer destContainer, short destSlot, ItemContainer sourceContainer, short sourceSlot, ItemStack held, ItemStack inSlot) {
         int totalQty = held.getQuantity() + inSlot.getQuantity();
+
         if (totalQty <= inSlot.getItem().getMaxStack()) {
             double durHeld = getRealDurability(held);
             double durSlot = getRealDurability(inSlot);
@@ -99,17 +116,17 @@ public class FoodDecayFeature implements Feature {
             } else {
                 player.getInventory().getCombinedEverything().setItemStackForSlot((short)-1, ItemStack.EMPTY);
             }
+
+            player.sendMessage(Message.raw("§aStacking réussi (Coffre inclus) !"));
         }
     }
 
     private double getRealDurability(ItemStack item) {
         double current = item.getDurability();
-
         if (current <= 0.1) {
             double maxDecay = config.getDecayTime(item.getItemId());
             return maxDecay > 0 ? maxDecay : current;
         }
-
         return current;
     }
 
