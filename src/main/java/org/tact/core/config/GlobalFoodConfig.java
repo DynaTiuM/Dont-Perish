@@ -16,13 +16,14 @@ public class GlobalFoodConfig {
 
     private final double STANDARD_DECAY = 5760.0;
     private final double FAST_DECAY = 2880.0;
+    private final double INSTANT_DECAY = 60.0;
     private final double NO_DECAY = -1.0;
 
     public GlobalFoodConfig() {
         foods.add(new FoodDefinition("Ingredient_Dough", STANDARD_DECAY, 2.0F, 0.0F));
         foods.add(new FoodDefinition("Ingredient_Flour", NO_DECAY, 1.0F, 0.0F));
 
-        foods.add(new FoodDefinition("Plant_Fruit_Apple", STANDARD_DECAY, 15.0F, 2.0F));
+        foods.add(new FoodDefinition("Plant_Fruit_Apple", INSTANT_DECAY, 15.0F, 2.0F));
         foods.add(new FoodDefinition("Plant_Fruit_Mango", FAST_DECAY, 15.0F, 3.0F));
         foods.add(new FoodDefinition("Plant_Fruit_Coconut", STANDARD_DECAY, 15.0F, 2.0F));
 

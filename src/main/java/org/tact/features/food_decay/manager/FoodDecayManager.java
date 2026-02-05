@@ -52,11 +52,12 @@ public class FoodDecayManager {
             } else {
                 double degradation = config.degradationSpeed * deltaTime * multiplier;
                 double newDurability = item.getDurability() - degradation;
+                double roundedDurability = Math.floor(newDurability);
 
                 if (newDurability <= 0) {
                     container.setItemStackForSlot(i, new ItemStack("Ingredient_Poop", item.getQuantity()));
                 } else {
-                    container.setItemStackForSlot(i, item.withDurability(newDurability));
+                    container.setItemStackForSlot(i, item.withDurability(roundedDurability));
                 }
             }
         }
