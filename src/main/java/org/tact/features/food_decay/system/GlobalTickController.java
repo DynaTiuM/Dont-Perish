@@ -10,16 +10,24 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.tact.features.food_decay.config.FoodDecayConfig;
 import org.tact.features.food_decay.manager.FoodDecayManager;
+import org.tact.features.food_decay.manager.FoodStackingManager;
 
-public class DecayTickControlSystem extends EntityTickingSystem<EntityStore> {
+public class GlobalTickController extends EntityTickingSystem<EntityStore> {
     private final FoodDecayConfig config;
     private final FoodDecayManager decayManager;
+    private final FoodStackingManager stackingManager;
     private boolean shouldProcessThisTick = false;
     private float timeToProcess = 0.0f;
 
-    public DecayTickControlSystem(FoodDecayConfig config, FoodDecayManager decayManager) {
+
+    public GlobalTickController(
+            FoodDecayConfig config,
+            FoodDecayManager decayManager,
+            FoodStackingManager stackingManager
+    ) {
         this.config = config;
         this.decayManager = decayManager;
+        this.stackingManager = stackingManager;
     }
 
     @Override
@@ -32,6 +40,7 @@ public class DecayTickControlSystem extends EntityTickingSystem<EntityStore> {
     ) {
         if (index == 0) {
             decayManager.updateClock(deltaTime);
+            stackingManager.clearTransactionCache();
 
             if (decayManager.getGlobalAccumulatedTime() >= config.decayInterval) {
                 shouldProcessThisTick = true;

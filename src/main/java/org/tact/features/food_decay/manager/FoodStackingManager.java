@@ -7,16 +7,12 @@ import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.inventory.transaction.*;
 import org.tact.features.food_decay.config.FoodDecayConfig;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 
 public class FoodStackingManager {
 
     private final FoodDecayConfig config;
-
-    private final Set<ItemContainer> hookedContainers = Collections.newSetFromMap(new WeakHashMap<>());
+    private final Set<ItemContainer> hookedContainers = Collections.newSetFromMap(new IdentityHashMap<>());
     private final Set<String> processedSignatures = new HashSet<>();
 
     public FoodStackingManager(FoodDecayConfig config) {
@@ -43,6 +39,9 @@ public class FoodStackingManager {
     private void handleContainerChange(Player player, ItemContainer.ItemContainerChangeEvent event) {
         Transaction transaction = event.transaction();
 
+        if (processedSignatures.contains(String.valueOf(transaction.hashCode()))) {
+            return;
+        }
         if (transaction instanceof MoveTransaction<?> moveTx && moveTx.succeeded()) {
 
             ItemContainer other = moveTx.getOtherContainer();
@@ -70,7 +69,7 @@ public class FoodStackingManager {
                         } else {
                             return;
                         }
-                        String signature = player.getReference().toString() + "-" + addSlotTx.getSlot() + "-" + held.getItemId();
+                        String signature = String.valueOf(transaction.hashCode());
                         if (processedSignatures.contains(signature)) {
                             return;
                         }
@@ -100,7 +99,8 @@ public class FoodStackingManager {
             } else {
                 player.getInventory().getCombinedEverything().setItemStackForSlot((short)-1, ItemStack.EMPTY);
             }
-            player.sendMessage(Message.raw("§aStacking réussi !"));
+
+            player.sendMessage(Message.raw("Stacking"));
         }
     }
 

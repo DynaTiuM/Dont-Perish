@@ -17,6 +17,7 @@ public class FoodDecayManager {
 
     private final FoodDecayConfig config;
     private final List<FoodDecayModifier> modifiers = new ArrayList<>();
+    private float globalAccumulatedTime = 0.0f;
 
     public FoodDecayManager(FoodDecayConfig config) {
         this.config = config;
@@ -25,7 +26,6 @@ public class FoodDecayManager {
     public void addModifier(FoodDecayModifier modifier) {
         this.modifiers.add(modifier);
     }
-    private float globalAccumulatedTime = 0.0f;
 
     public void updateClock(float deltaTime) {
         globalAccumulatedTime += deltaTime;
@@ -38,6 +38,7 @@ public class FoodDecayManager {
     public void resetClock() {
         globalAccumulatedTime = 0.0f;
     }
+
 
     public double calculateMultiplier(World world, @Nullable Ref<EntityStore> playerRef, @Nullable String blockId) {
         double multiplier = 1.0;

@@ -11,9 +11,9 @@ import org.tact.features.food_decay.manager.FoodDecayManager;
 
 public class PlayerDecaySystem extends EntityTickingSystem<EntityStore> {
     private final FoodDecayManager decayManager;
-    private final DecayTickControlSystem controller;
+    private final GlobalTickController controller;
 
-    public PlayerDecaySystem(FoodDecayManager decayManager, DecayTickControlSystem controller) {
+    public PlayerDecaySystem(FoodDecayManager decayManager, GlobalTickController controller) {
         this.decayManager = decayManager;
         this.controller = controller;
     }
