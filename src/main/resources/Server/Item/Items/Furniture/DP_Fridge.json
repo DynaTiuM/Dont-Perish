@@ -107,9 +107,9 @@
         "Id": "Furniture_Bench"
       }
     ],
-    "RequiredMemoriesLevel": 3
+    "RequiredMemoriesLevel": 1
   },
   "ItemSoundSetId": "ISS_Blocks_Wood",
   "ItemLevel": 11,
-  "MaxStack": 10
+  "MaxStack": 1
 }
