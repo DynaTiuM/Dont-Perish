@@ -4,6 +4,7 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import org.tact.features.baxter.config.BaxterConfig;
 import org.tact.features.comfort.config.ComfortConfig;
+import org.tact.features.food_decay.config.FoodDecayConfig;
 import org.tact.features.hunger.config.HungerConfig;
 import org.tact.features.seasons.config.SeasonsConfig;
 import org.tact.features.temperature.config.TemperatureConfig;
@@ -16,6 +17,9 @@ public class ModConfig {
     public SeasonsConfig seasons = new SeasonsConfig();
     public TemperatureConfig temperature = new TemperatureConfig();
     public ComfortConfig comfort = new ComfortConfig();
+    public FoodDecayConfig foodDecay = new FoodDecayConfig();
+    public GlobalFoodConfig globalFood = new GlobalFoodConfig();
+
 
     public ModConfig() {}
 
@@ -42,6 +46,13 @@ public class ModConfig {
                 (cfg, v) -> cfg.comfort = v,
                 cfg -> cfg.comfort).add();
 
+        b.append(new KeyedCodec<>("FoodDecay", FoodDecayConfig.CODEC),
+                (cfg, v) -> cfg.foodDecay = v,
+                cfg -> cfg.foodDecay).add();
+
+        b.append(new KeyedCodec<>("Food", GlobalFoodConfig.CODEC),
+                (cfg, v) -> cfg.globalFood = v,
+                cfg -> cfg.globalFood).add();
 
         CODEC = b.build();
     }

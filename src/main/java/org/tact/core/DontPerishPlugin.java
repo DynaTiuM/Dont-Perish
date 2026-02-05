@@ -7,11 +7,16 @@ import com.hypixel.hytale.server.core.util.Config;
 import org.tact.commands.BaxterCommand;
 import org.tact.common.environment.EnvironmentRegistry;
 import org.tact.common.environment.EnvironmentScannerSystem;
+import org.tact.core.config.FoodDefinition;
+import org.tact.core.config.GlobalFoodConfig;
 import org.tact.core.config.ModConfig;
 import org.tact.core.registry.FeatureRegistry;
 import org.tact.features.baxter.BaxterFeature;
 import org.tact.features.comfort.ComfortFeature;
+import org.tact.features.food_decay.FoodDecayFeature;
+import org.tact.features.food_decay.config.FoodDecayConfig;
 import org.tact.features.hunger.HungerFeature;
+import org.tact.features.hunger.config.HungerConfig;
 import org.tact.features.seasons.SeasonsFeature;
 import org.tact.features.temperature.TemperatureFeature;
 
@@ -71,13 +76,37 @@ public class DontPerishPlugin extends JavaPlugin {
     }
 
     private void registerFeatures() {
-        featureRegistry.register(new HungerFeature(modConfig.hunger));
-        featureRegistry.register(new BaxterFeature(modConfig.baxter));
 
+        dispatchGlobalFoodDefinitions();
+
+        featureRegistry.register(new HungerFeature(modConfig.hunger));
         featureRegistry.register(new SeasonsFeature(modConfig.seasons));
+
+        featureRegistry.register(new BaxterFeature(modConfig.baxter));
+        featureRegistry.register(new FoodDecayFeature(modConfig.foodDecay));
 
         featureRegistry.register(new ComfortFeature(modConfig.comfort, environmentRegistry));
         featureRegistry.register(new TemperatureFeature(modConfig.temperature, environmentRegistry));
+    }
+
+    private void dispatchGlobalFoodDefinitions() {
+        GlobalFoodConfig globalConfig = modConfig.globalFood;
+
+        modConfig.foodDecay.decayTimes.clear();
+        modConfig.hunger.nutritionValues.clear();
+
+        for (FoodDefinition def : globalConfig.foods) {
+            if (def.decayTime > 0) {
+                modConfig.foodDecay.decayTimes.put(def.itemId, def.decayTime);
+            }
+
+            if (def.hunger > 0) {
+                modConfig.hunger.nutritionValues.put(def.itemId,
+                        new HungerConfig.NutritionValue(def.hunger, def.comfort));
+            }
+        }
+
+        LOGGER.info("Successfully dispatched " + globalConfig.foods.size() + " food definitions.");
     }
 
     public ModConfig getModConfig() {
