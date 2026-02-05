@@ -8,6 +8,8 @@ import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import org.tact.api.Feature;
 import org.tact.features.food_decay.config.FoodDecayConfig;
+import org.tact.features.food_decay.integration.ContainerDecayModifier;
+import org.tact.features.food_decay.integration.SeasonalDecayModifier;
 import org.tact.features.food_decay.manager.FoodDecayManager;
 import org.tact.features.food_decay.manager.FoodStackingManager;
 import org.tact.features.food_decay.system.*;
@@ -35,6 +37,8 @@ public class FoodDecayFeature implements Feature {
 
     @Override
     public void registerSystems(JavaPlugin plugin) {
+        decayManager.addModifier(new SeasonalDecayModifier());
+        decayManager.addModifier(new ContainerDecayModifier());
 
         GlobalTickController controller = new GlobalTickController(config, decayManager, stackingManager);
 

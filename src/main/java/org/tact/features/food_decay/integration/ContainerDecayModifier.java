@@ -11,7 +11,7 @@ public class ContainerDecayModifier implements FoodDecayModifier {
         if (blockId == null) return 1.0;
 
         if (blockId.contains("Fridge")) {
-            return 0.1;
+            return 0.6;
         }
 
         return 1.0;
