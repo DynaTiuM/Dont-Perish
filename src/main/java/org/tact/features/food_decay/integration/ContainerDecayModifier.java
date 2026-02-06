@@ -10,8 +10,8 @@ public class ContainerDecayModifier implements FoodDecayModifier {
     public double getMultiplier(World world, Ref<EntityStore> playerRef, String blockId) {
         if (blockId == null) return 1.0;
 
-        if (blockId.contains("Fridge")) {
-            return 0.1;
+        if (blockId.contains("DP_Fridge")) {
+            return 0.6;
         }
 
         return 1.0;

@@ -48,7 +48,7 @@ public class ContainerDecaySystem extends EntityTickingSystem<EntityStore> {
             for (int i = 0; i < archetypeChunk.size(); i++) {
                 ItemContainerState state = archetypeChunk.getComponent(i, containerType);
                 if (state != null && state.getItemContainer() != null) {
-                    double multiplier = 1.0;
+                    double multiplier = decayManager.calculateMultiplier(world, null, state.getBlockType().getId());
                     decayManager.processContainer(state.getItemContainer(), deltaTime, multiplier);
                 }
             }
