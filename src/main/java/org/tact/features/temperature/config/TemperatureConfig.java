@@ -15,7 +15,10 @@ public class TemperatureConfig {
 
     public float defaultBaseTemperature = 20.0f;
 
-    public float temperatureTransitionSpeed = 0.2F;
+    public float fastResponseSpeed = 0.6F;
+    public float slowResponseSpeed = 0.014F;
+    public float comfortZoneThreshold = 15.0F;
+
     public float extremeTemperatureThreshold = 5.0F;
     public float heatDamage = 1.5F;
     public float coldDamage = 1.5F;
@@ -89,8 +92,14 @@ public class TemperatureConfig {
                 (cfg, v) -> cfg.enabled = v, cfg -> cfg.enabled).add();
         b.append(new KeyedCodec<>("DefaultBaseTemperature", Codec.FLOAT),
                 (cfg, v) -> cfg.defaultBaseTemperature = v, cfg -> cfg.defaultBaseTemperature).add();
-        b.append(new KeyedCodec<>("TemperatureTransitionSpeed", Codec.FLOAT),
-                (cfg, v) -> cfg.temperatureTransitionSpeed = v, cfg -> cfg.temperatureTransitionSpeed).add();
+
+        b.append(new KeyedCodec<>("FastResponseSpeed", Codec.FLOAT),
+                (cfg, v) -> cfg.fastResponseSpeed = v, cfg -> cfg.fastResponseSpeed).add();
+        b.append(new KeyedCodec<>("SlowResponseSpeed", Codec.FLOAT),
+                (cfg, v) -> cfg.slowResponseSpeed = v, cfg -> cfg.slowResponseSpeed).add();
+        b.append(new KeyedCodec<>("ComfortZoneThreshold", Codec.FLOAT),
+                (cfg, v) -> cfg.comfortZoneThreshold = v, cfg -> cfg.comfortZoneThreshold).add();
+
         b.append(new KeyedCodec<>("ExtremeTemperatureThreshold", Codec.FLOAT),
                 (cfg, v) -> cfg.extremeTemperatureThreshold = v, cfg -> cfg.extremeTemperatureThreshold).add();
         b.append(new KeyedCodec<>("HeatDamage", Codec.FLOAT),

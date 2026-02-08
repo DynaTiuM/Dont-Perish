@@ -81,8 +81,6 @@ public class TemperatureEnvironmentHandler implements EnvironmentHandler {
         float preciseHour = TimeUtil.getPreciseHour(timeResource);
         float cycleFactor = TimeUtil.getSeasonalDayCycleFactor(preciseHour, dayLengthMultiplier);
 
-        if (cycleFactor <= 0) return 0.0F;
-
         return Math.max(0.0F, cycleFactor  * config.sunExposureHeat * dayLengthMultiplier);
     }
 }

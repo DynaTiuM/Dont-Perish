@@ -63,9 +63,7 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         float seasonStretch = getSeasonStretch(store);
         // Temperature of the player
         float targetTemperature = calculateTargetTemperature(temperatureComponent, timeResource, seasonStretch);
-        player.sendMessage(Message.raw("[Temperature] " + targetTemperature + "°C"));
 
-        //player.sendMessage(Message.raw("target temperature " + targetTemperature));
         temperatureComponent.setTargetTemperature(targetTemperature);
 
         float currentTemperature = temperatureStat.get();
@@ -75,6 +73,8 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
             statMap.setStatValue(getTemperatureStatIndex(), nextTemperature);
             temperatureComponent.setLerpedTemperature(nextTemperature);
         }
+        player.sendMessage(Message.raw("[Temperature] " + nextTemperature + "°C"));
+
         boolean isProtected = checkProtection(player, nextTemperature);
         temperatureComponent.setHasProtection(isProtected);
 
@@ -141,15 +141,39 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         float preciseHour = TimeUtil.getPreciseHour(timeResource);
         float cycleFactor = TimeUtil.getSeasonalDayCycleFactor(preciseHour, dayLengthMultiplier);
         if (cycleFactor > 0) {
-            return cycleFactor * config.dayNightTemperatureVariation * dayLengthMultiplier;
+            return cycleFactor * config.dayNightTemperatureVariation * Math.min(dayLengthMultiplier, 1.0F);
         }
 
         return cycleFactor * config.dayNightTemperatureVariation;
     }
 
     private float interpolateTemperature(float current, float target, float deltaTime) {
+        float base = config.defaultBaseTemperature;
+        float threshold = config.comfortZoneThreshold;
+
+        float comfortMin = base - threshold;
+        float comfortMax = base + threshold;
+
+        boolean isHeatingUp = target > current;
+        boolean isCoolingDown = target < current;
+
+        boolean isRecovering = false;
+
+        if (isHeatingUp) {
+            if (current < comfortMin) {
+                isRecovering = true;
+            }
+        }
+        else if (isCoolingDown) {
+            if (current > comfortMax) {
+                isRecovering = true;
+            }
+        }
+
+        float selectedSpeed = isRecovering ? config.fastResponseSpeed : config.slowResponseSpeed;
+
         float diff = target - current;
-        float step = Math.min(deltaTime * config.temperatureTransitionSpeed, 1.0F);
+        float step = Math.min(deltaTime * selectedSpeed, 1.0F);
         return current + (diff * step);
     }
 
