@@ -58,13 +58,13 @@ public class TemperatureEnvironmentHandler implements EnvironmentHandler {
 
         WorldTimeResource timeResource = store.getResource(WorldTimeResource.getResourceType());
         SeasonsResource seasonData = store.getResource(SeasonsResource.TYPE);
-        float seasonStretch;
+
+        float dayLengthMultiplier;
 
         Season currentSeason = seasonData.getCurrentSeason();
-        seasonStretch = currentSeason.getDayLengthMultiplier();
+        dayLengthMultiplier = currentSeason.getDayLengthMultiplier();
         if (!result.isUnderRoof()) {
-            float sunIntensity = calculateSunIntensity(timeResource, seasonStretch);
-
+            float sunIntensity = calculateSunIntensity(timeResource, dayLengthMultiplier);
             if (sunIntensity > 0) {
                 totalModifier += sunIntensity;
             }
@@ -75,12 +75,14 @@ public class TemperatureEnvironmentHandler implements EnvironmentHandler {
         temperatureComponent.setEnvironmentModifier(totalModifier);
     }
 
-    private float calculateSunIntensity(WorldTimeResource timeResource, float seasonStretch) {
+    private float calculateSunIntensity(WorldTimeResource timeResource, float dayLengthMultiplier) {
         if (timeResource == null) return 0.0F;
 
         float preciseHour = TimeUtil.getPreciseHour(timeResource);
-        float cycleFactor = TimeUtil.getSeasonalDayCycleFactor(preciseHour, seasonStretch);
+        float cycleFactor = TimeUtil.getSeasonalDayCycleFactor(preciseHour, dayLengthMultiplier);
 
-        return Math.max(0.0F, cycleFactor  * config.sunExposureHeat);
+        if (cycleFactor <= 0) return 0.0F;
+
+        return Math.max(0.0F, cycleFactor  * config.sunExposureHeat * dayLengthMultiplier);
     }
 }

@@ -15,23 +15,23 @@ public class TemperatureConfig {
 
     public float defaultBaseTemperature = 20.0f;
 
-    public float temperatureTransitionSpeed = 0.05F;
+    public float temperatureTransitionSpeed = 0.2F;
     public float extremeTemperatureThreshold = 5.0F;
     public float heatDamage = 1.5F;
     public float coldDamage = 1.5F;
     public float damageInterval = 3.0F;
 
-    public float sunExposureHeat = 4.0f;
-    public float dayNightTemperatureVariation = 12.0F;
+    public float sunExposureHeat = 5.0F;
+    public float dayNightTemperatureVariation = 6.0F;
 
     public boolean staminaLoss = true;
-    public float staminaDrainAmount = 5.0f;
+    public float staminaDrainAmount = 5.0F;
 
     public Map<String, String> protectionItems = new HashMap<>();
     public Map<String, Float> blockTemperatures = new HashMap<>();
     public Map<String, Float> floorTemperatures = new HashMap<>();
-    public float maxBlockHeatBonus = 30.0f;
-    public float maxBlockColdBonus = -20.0f;
+    public float maxBlockHeatBonus = 30.0F;
+    public float maxBlockColdBonus = -20.0F;
 
 
     public TemperatureConfig() {

@@ -150,8 +150,9 @@ public class EnvironmentScannerSystem extends EntityTickingSystem<EntityStore> {
         int fluidId = world.getFluidId(x, y, z);
 
         if (fluidId == 0) return null;
-        if (fluidId == 7 ||fluidId == 8) return "Fluid_Water";
+        if (fluidId == 7 || fluidId == 8) return "Fluid_Water";
         if (fluidId == 6 || fluidId == 11) return "Fluid_Lava";
+
         return null;
     }
 

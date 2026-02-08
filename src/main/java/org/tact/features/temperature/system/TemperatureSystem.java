@@ -3,6 +3,7 @@ package org.tact.features.temperature.system;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
+import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageCause;
@@ -62,6 +63,9 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         float seasonStretch = getSeasonStretch(store);
         // Temperature of the player
         float targetTemperature = calculateTargetTemperature(temperatureComponent, timeResource, seasonStretch);
+        player.sendMessage(Message.raw("[Temperature] " + targetTemperature + "°C"));
+
+        //player.sendMessage(Message.raw("target temperature " + targetTemperature));
         temperatureComponent.setTargetTemperature(targetTemperature);
 
         float currentTemperature = temperatureStat.get();
@@ -116,9 +120,9 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     private float calculateTargetTemperature(
             TemperatureComponent temperatureComponent,
             WorldTimeResource timeResource,
-            float seasonStretch
+            float dayLengthMultiplier
     ) {
-        float timeModifier = calculateTimeModifier(timeResource, seasonStretch);
+        float timeModifier = calculateTimeModifier(timeResource, dayLengthMultiplier);
 
         // Modifier 0: Base Temperature (without any influence)
         float baseTemperature = config.defaultBaseTemperature;
@@ -131,11 +135,14 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         return baseTemperature + environment + seasonal + timeModifier;
     }
 
-    private float calculateTimeModifier(WorldTimeResource timeResource, float seasonStretch) {
+    private float calculateTimeModifier(WorldTimeResource timeResource, float dayLengthMultiplier) {
         if (timeResource == null) return 0.0F;
 
         float preciseHour = TimeUtil.getPreciseHour(timeResource);
-        float cycleFactor = TimeUtil.getSeasonalDayCycleFactor(preciseHour, seasonStretch);
+        float cycleFactor = TimeUtil.getSeasonalDayCycleFactor(preciseHour, dayLengthMultiplier);
+        if (cycleFactor > 0) {
+            return cycleFactor * config.dayNightTemperatureVariation * dayLengthMultiplier;
+        }
 
         return cycleFactor * config.dayNightTemperatureVariation;
     }

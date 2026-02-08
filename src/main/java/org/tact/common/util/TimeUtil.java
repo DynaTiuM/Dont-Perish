@@ -16,9 +16,29 @@ public class TimeUtil {
         return hour + (minute / 60.0F);
     }
 
-    public static float getSeasonalDayCycleFactor(float preciseHour, float seasonStretch) {
-        float zenith = 14.0f;
-        double angle = ((preciseHour - zenith) / (24.0f * seasonStretch)) * 2.0f * Math.PI;
+    public static float getSeasonalDayCycleFactor(
+            float preciseHour,
+            float dayLengthMultiplier
+    ) {
+        final float ZENITH = 12.0f;
+        final float BASE_DAY_HOURS = 14.4f;
+
+        float currentDayDuration = BASE_DAY_HOURS * dayLengthMultiplier;
+        currentDayDuration = Math.min(currentDayDuration, 24.0f);
+        float distToSunset = currentDayDuration / 2.0f;
+
+        float distFromNoon = Math.abs(preciseHour - ZENITH);
+
+        double angle;
+
+        if (distFromNoon <= distToSunset) {
+            angle = (distFromNoon / distToSunset) * (Math.PI / 2.0);
+        } else {
+            float distInNight = distFromNoon - distToSunset;
+            float totalNightDist = 12.0f - distToSunset;
+
+            angle = (Math.PI / 2.0) + ((distInNight / totalNightDist) * (Math.PI / 2.0));
+        }
 
         return (float) Math.cos(angle);
     }
