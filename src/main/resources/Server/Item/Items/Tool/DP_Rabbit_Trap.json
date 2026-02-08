@@ -1,0 +1,221 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.Tool_DP_Rabbit_Trap.name",
+    "Description": "server.items.Tool_DP_Rabbit_Trap.description"
+  },
+  "Icon": "Icons/ItemsGenerated/DP_Rabbit_Trap.png",
+  "Categories": [
+    "Furniture.Containers"
+  ],
+  "ItemLevel": 19,
+  "Recipe": {
+    "TimeSeconds": 5,
+    "Input": [
+      {
+        "Quantity": 10,
+        "ResourceTypeId": "Wood_All"
+      },
+      {
+        "ItemId": "Ingredient_Life_Essence",
+        "Quantity": 50
+      },
+      {
+        "ItemId": "Ingredient_Fibre",
+        "Quantity": 20
+      },
+      {
+        "ItemId": "Ingredient_Bar_Iron",
+        "Quantity": 1
+      }
+    ],
+    "BenchRequirement": [
+      {
+        "Type": "Crafting",
+        "Id": "Farmingbench",
+        "Categories": [
+          "Farming"
+        ],
+        "RequiredTierLevel": 1
+      }
+    ]
+  },
+  "BlockType": {
+    "Effect": [
+      "WindFractal"
+    ],
+    "VariantRotation": "NESW",
+    "Material": "Solid",
+    "DrawType": "Model",
+    "Group": "Props",
+    "Gathering": {
+      "Soft": {
+        "ItemId": "DP_Rabbit_Trap",
+        "IsWeaponBreakable": false
+      }
+    },
+    "Flags": {
+      "IsStackable": false
+    },
+    "BlockParticleSetId": "Water",
+    "ParticleColor": "#ffffff",
+    "BlockSoundSetId": "Wood",
+    "State": {
+      "Definitions": {
+        "StageFinal": {
+          "CustomModel": "Blocks/Tool/DP_Rabbit_Trap/Models/Rabbit_Trap.blockymodel",
+          "CustomModelTexture": [
+            {
+              "Texture": "Blocks/Tool/DP_Rabbit_Trap/Models/Rabbit_Trap_Texture.png",
+              "Weight": 1
+            }
+          ],
+          "HitboxType": "DP_Rabbit_Trap_Full",
+          "InteractionHint": "server.interactionHints.harvest",
+          "Interactions": {
+            "Use": {
+              "Interactions": [
+                {
+                  "Type": "HarvestCrop"
+                }
+              ]
+            }
+          },
+          "Gathering": {
+            "Soft": {
+              "ItemId": "DP_Rabbit_Trap"
+            },
+            "Harvest": {
+              "DropList": "Drops_Fishing_Trap_Crude"
+            }
+          }
+        },
+        "Baited": {
+          "CustomModelTexture": [
+            {
+              "Texture": "Blocks/Farming/Trap_Fishing_Baited.png",
+              "Weight": 1
+            }
+          ],
+          "Gathering": {
+            "Soft": {
+              "ItemId": "DP_Rabbit_Trap"
+            }
+          }
+        },
+        "Baited_StageFinal": {
+          "CustomModel": "Blocks/Tool/DP_Rabbit_Trap/Models/Rabbit_Trap_Full.blockymodel",
+          "CustomModelTexture": [
+            {
+              "Texture": "Blocks/Tool/DP_Rabbit_Trap/Models/Rabbit_Trap_Texture.png",
+              "Weight": 1
+            }
+          ],
+          "HitboxType": "DP_Rabbit_Trap_Full",
+          "InteractionHint": "server.interactionHints.harvest",
+          "Interactions": {
+            "Use": {
+              "Interactions": [
+                {
+                  "Type": "HarvestCrop"
+                }
+              ]
+            }
+          },
+          "Gathering": {
+            "Soft": {
+              "ItemId": "DP_Rabbit_Trap"
+            },
+            "Harvest": {
+              "DropList": "Drops_Fishing_Trap_Crude_Baited_Wild"
+            }
+          }
+        }
+      }
+    },
+    "Farming": {
+      "Stages": {
+        "Default": [
+          {
+            "Type": "BlockState",
+            "Duration": {
+              "Min": 40000,
+              "Max": 60000
+            },
+            "State": "default",
+            "SoundEventId": "SFX_Water_MoveOut"
+          },
+          {
+            "Type": "BlockState",
+            "State": "StageFinal",
+            "SoundEventId": "SFX_Water_MoveIn"
+          }
+        ],
+        "Baited": [
+          {
+            "Type": "BlockState",
+            "Duration": {
+              "Min": 20000,
+              "Max": 40000
+            },
+            "State": "Baited",
+            "SoundEventId": "SFX_Water_MoveOut"
+          },
+          {
+            "Type": "BlockState",
+            "State": "Baited_StageFinal",
+            "SoundEventId": "SFX_Water_MoveIn"
+          }
+        ]
+      },
+      "StartingStageSet": "Default",
+      "StageSetAfterHarvest": "Default",
+      "ActiveGrowthModifiers": [
+        "Water",
+        "LightLevel"
+      ]
+    },
+    "BlockEntity": {
+      "Components": {
+        "FarmingBlock": {}
+      }
+    },
+    "CustomModel": "Blocks/Tool/DP_Rabbit_Trap/Models/Rabbit_Trap.blockymodel",
+    "CustomModelScale": 1,
+    "CustomModelTexture": [
+      {
+        "Texture": "Blocks/Tool/DP_Rabbit_Trap/Models/Rabbit_Trap_Texture.png"
+      }
+    ],
+    "Textures": [
+      {
+        "Sides": "Items/Tools/Traps/Fishing_Trap_Full.png",
+        "UpDown": "Items/Tools/Traps/Fishing_Trap_Empty.png"
+      }
+    ],
+    "BlockBreakingDecalId": "Breaking_Decals_Wood",
+    "HitboxType": "DP_Rabbit_Trap"
+  },
+  "PlayerAnimationsId": "Block",
+  "Tags": {
+    "Type": [
+      "Furniture"
+    ],
+    "Family": [
+      "Village",
+      "Trap"
+    ]
+  },
+  "ItemSoundSetId": "ISS_Blocks_Wood",
+  "IconProperties": {
+    "Scale": 0.4,
+    "Rotation": [
+      0,
+      322,
+      340
+    ],
+    "Translation": [
+      4,
+      -1
+    ]
+  }
+}
