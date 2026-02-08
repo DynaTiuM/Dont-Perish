@@ -90,10 +90,16 @@ public class SeasonsCycleSystem extends EntityTickingSystem<EntityStore> {
 
     private void applyDayNightCycle(World world, Season nextSeason) {
         int baseDay = config.baseDayDurationSeconds;
-        int baseNight = config.baseNightDurationSeconds;
+        int totalCycleDuration = config.baseDayDurationSeconds + config.baseNightDurationSeconds;
 
-        int newDayDuration = (int) (baseDay * nextSeason.getDayLengthMultiplier());
-        int newNightDuration = (int) (baseNight * (2.0f - nextSeason.getDayLengthMultiplier()));
+        int newDayDuration = Math.round(baseDay * nextSeason.getDayLengthMultiplier());
+
+        int minimumBuffer = 60;
+
+        newDayDuration = Math.min(newDayDuration, totalCycleDuration - minimumBuffer);
+        newDayDuration = Math.max(minimumBuffer, newDayDuration);
+
+        int newNightDuration = totalCycleDuration - newDayDuration;
 
         WorldConfig worldConfig = world.getWorldConfig();
         try {

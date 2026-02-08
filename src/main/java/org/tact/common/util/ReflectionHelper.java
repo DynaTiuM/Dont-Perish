@@ -1,4 +1,4 @@
-package org.tact.common.utils;
+package org.tact.common.util;
 
 
 import java.lang.reflect.InvocationTargetException;

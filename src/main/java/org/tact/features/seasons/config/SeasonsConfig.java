@@ -13,25 +13,16 @@ public class SeasonsConfig {
 
     public boolean enabled = true;
 
-    // Duration of the seasons (in seconds)
-    /*
     public float springDuration = 14_400.0F; // 5 days
     public float summerDuration = 11_520.0F; // 4 days
     public float autumnDuration = 14_400.0F; // 5 days
     public float winterDuration = 11_520.0F; // 4 days
 
-     */
-    public float springDuration = 30.0F; // 5 days
-    public float summerDuration = 11_520.0F; // 4 days
-    public float autumnDuration = 14_400.0F; // 5 days
-    public float winterDuration = 30.0F; // 4 days
-
     // Temperature mechanics
     public float springTemperatureModifier = -5.0F;
     public float summerTemperatureModifier = 15.0F;
     public float autumnTemperatureModifier = -10.0F;
-    public float winterTemperatureModifier = -20.0F;
-
+    public float winterTemperatureModifier = -25.0F;
 
     // Weather
     public boolean enableWeatherControl = true;

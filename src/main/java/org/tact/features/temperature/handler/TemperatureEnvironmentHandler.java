@@ -2,13 +2,19 @@ package org.tact.features.temperature.handler;
 
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.modules.time.WorldTimeResource;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.common.environment.EnvironmentHandler;
 import org.tact.common.environment.EnvironmentResult;
+import org.tact.common.util.TimeUtil;
+import org.tact.features.seasons.model.Season;
+import org.tact.features.seasons.resource.SeasonsResource;
 import org.tact.features.temperature.component.TemperatureComponent;
 import org.tact.features.temperature.config.TemperatureConfig;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 public class TemperatureEnvironmentHandler implements EnvironmentHandler {
@@ -30,7 +36,7 @@ public class TemperatureEnvironmentHandler implements EnvironmentHandler {
         TemperatureComponent temperatureComponent = store.getComponent(entityRef, TemperatureComponent.getComponentType());
         if (temperatureComponent == null) return;
 
-        float temperatureBonus = 0.0F;
+        float totalModifier = 0.0F;
 
         for (Map.Entry<String, Integer> entry : result.getBlockCounts().entrySet()) {
             String blockId = entry.getKey();
@@ -39,11 +45,42 @@ public class TemperatureEnvironmentHandler implements EnvironmentHandler {
             float heatValue = config.getBlockTemperature(blockId);
 
             if (heatValue != 0.0F) {
-                temperatureBonus += (float) Math.log1p(count) * heatValue;
+                totalModifier  += (float) Math.log1p(count) * heatValue;
             }
         }
-        temperatureBonus = Math.max(config.maxBlockColdBonus, Math.min(temperatureBonus, config.maxBlockHeatBonus));
 
-        temperatureComponent.setEnvironmentModifier(temperatureBonus);
+        String floorBlock = result.getBlockUnderFeet();
+        float floorValue = config.getFloorTemperature(floorBlock);
+
+        if (floorValue != 0.0F) {
+            totalModifier += floorValue;
+        }
+
+        WorldTimeResource timeResource = store.getResource(WorldTimeResource.getResourceType());
+        SeasonsResource seasonData = store.getResource(SeasonsResource.TYPE);
+        float seasonStretch;
+
+        Season currentSeason = seasonData.getCurrentSeason();
+        seasonStretch = currentSeason.getDayLengthMultiplier();
+        if (!result.isUnderRoof()) {
+            float sunIntensity = calculateSunIntensity(timeResource, seasonStretch);
+
+            if (sunIntensity > 0) {
+                totalModifier += sunIntensity;
+            }
+        }
+
+        totalModifier = Math.max(config.maxBlockColdBonus, Math.min(totalModifier, config.maxBlockHeatBonus));
+
+        temperatureComponent.setEnvironmentModifier(totalModifier);
+    }
+
+    private float calculateSunIntensity(WorldTimeResource timeResource, float seasonStretch) {
+        if (timeResource == null) return 0.0F;
+
+        float preciseHour = TimeUtil.getPreciseHour(timeResource);
+        float cycleFactor = TimeUtil.getSeasonalDayCycleFactor(preciseHour, seasonStretch);
+
+        return Math.max(0.0F, cycleFactor  * config.sunExposureHeat);
     }
 }

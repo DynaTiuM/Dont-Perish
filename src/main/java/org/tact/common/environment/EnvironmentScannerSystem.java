@@ -3,7 +3,9 @@ package org.tact.common.environment;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
+import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
+import com.hypixel.hytale.server.core.asset.type.fluid.Fluid;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -70,17 +72,47 @@ public class EnvironmentScannerSystem extends EntityTickingSystem<EntityStore> {
         World world = player.getWorld();
 
         Store<EntityStore> store = playerRef.getStore();
-
         TransformComponent transformComponent = store.getComponent(playerRef, TransformComponent.getComponentType());
+        if (transformComponent == null) return result;
+        if (world == null) return result;
 
-        if (transformComponent == null) {
-            return result;
+        double rawX = transformComponent.getPosition().x;
+        double rawY = transformComponent.getPosition().y;
+        double rawZ = transformComponent.getPosition().z;
+
+        int playerX = (int) Math.floor(rawX);
+        int playerY = (int) Math.floor(rawY);
+        int playerZ = (int) Math.floor(rawZ);
+
+        // Floor check
+        int floorY = (int) Math.floor(rawY - 0.1);
+        String fluidId = getFluidIdAsString(world, playerX, floorY + 1, playerZ);
+        if (fluidId != null) {
+            result.setBlockUnderFeet(fluidId);
+        }
+        else {
+            BlockType floorBlockType = world.getBlockType(playerX, floorY, playerZ);
+            if (floorBlockType != null && !floorBlockType.getId().equals("Empty")) {
+                result.setBlockUnderFeet(floorBlockType.getId());
+            }
         }
 
-        int playerX = (int) transformComponent.getPosition().x;
-        int playerY = (int) transformComponent.getPosition().y;
-        int playerZ = (int) transformComponent.getPosition().z;
+        // Roof check
+        int maxRoofScan = 30;
+        for (int height = 2; height <= maxRoofScan; height++) {
+            BlockType skyBlockType = world.getBlockType(
+                    playerX,
+                    playerY + height,
+                    playerZ
+            );
 
+            if (skyBlockType != null && !skyBlockType.getId().equals("Empty")) {
+                result.setRoof(true, height);
+                break;
+            }
+        }
+
+        // Environment Check (comfort & temperature)
         for(int x = -radius; x <= radius; x++) {
             for(int y = -radius; y <= radius; y++) {
                 for(int z = -radius; z <= radius; z++) {
@@ -92,15 +124,35 @@ public class EnvironmentScannerSystem extends EntityTickingSystem<EntityStore> {
                             blockY,
                             blockZ
                     );
-                    String blockId = blockType.getId();
 
-                    if(blockId != null && !blockId.equals("air")) {
+                    if(isValidBlock(blockType)) {
+                        String blockId = blockType.getId();
                         result.addBlock(blockId);
+                    }
+                    else {
+                        fluidId = getFluidIdAsString(world, blockX, blockY, blockZ);
+
+                        if (fluidId != null) {
+                            result.addBlock(fluidId);
+                        }
                     }
                 }
             }
         }
         return result;
+    }
+
+    private boolean isValidBlock(BlockType block) {
+        return block != null && block.getId() != null && !block.getId().equals("Empty");
+    }
+
+    private String getFluidIdAsString(World world, int x, int y, int z) {
+        int fluidId = world.getFluidId(x, y, z);
+
+        if (fluidId == 0) return null;
+        if (fluidId == 7 ||fluidId == 8) return "Fluid_Water";
+        if (fluidId == 6 || fluidId == 11) return "Fluid_Lava";
+        return null;
     }
 
 
