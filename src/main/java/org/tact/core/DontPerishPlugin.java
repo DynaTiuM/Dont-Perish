@@ -17,6 +17,7 @@ import org.tact.features.food_decay.FoodDecayFeature;
 import org.tact.features.food_decay.config.FoodDecayConfig;
 import org.tact.features.hunger.HungerFeature;
 import org.tact.features.hunger.config.HungerConfig;
+import org.tact.features.itemStats.ItemStatsFeature;
 import org.tact.features.seasons.SeasonsFeature;
 import org.tact.features.temperature.TemperatureFeature;
 
@@ -85,8 +86,9 @@ public class DontPerishPlugin extends JavaPlugin {
         featureRegistry.register(new BaxterFeature(modConfig.baxter));
         featureRegistry.register(new FoodDecayFeature(modConfig.foodDecay));
 
-        featureRegistry.register(new ComfortFeature(modConfig.comfort, environmentRegistry));
-        featureRegistry.register(new TemperatureFeature(modConfig.temperature, environmentRegistry));
+        featureRegistry.register(new ItemStatsFeature(modConfig.itemStats));
+        featureRegistry.register(new ComfortFeature(modConfig.comfort, modConfig.itemStats, environmentRegistry));
+        featureRegistry.register(new TemperatureFeature(modConfig.temperature, modConfig.itemStats, environmentRegistry));
     }
 
     private void dispatchGlobalFoodDefinitions() {

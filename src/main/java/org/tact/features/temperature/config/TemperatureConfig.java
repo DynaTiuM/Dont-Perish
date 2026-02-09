@@ -4,6 +4,7 @@ import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.map.MapCodec;
+import org.tact.features.itemStats.config.ItemStats;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class TemperatureConfig {
     public boolean staminaLoss = true;
     public float staminaDrainAmount = 5.0F;
 
-    public Map<String, String> protectionItems = new HashMap<>();
+    public Map<String, ItemStats> itemStats = new HashMap<>();
     public Map<String, Float> blockTemperatures = new HashMap<>();
     public Map<String, Float> floorTemperatures = new HashMap<>();
     public float maxBlockHeatBonus = 30.0F;
@@ -42,22 +43,9 @@ public class TemperatureConfig {
     public float altitudeSpread = 100.0F;
 
     public TemperatureConfig() {
-        initDefaultProtectionItems();
         initBlockTemperatures();
     }
 
-    private void initDefaultProtectionItems() {
-        // TODO: Create the items
-        // SUMMER
-        protectionItems.put("IceCube", "SUMMER");
-        protectionItems.put("Item_Fan", "SUMMER");
-        protectionItems.put("Item_SunHat", "SUMMER");
-
-        // WINTER
-        protectionItems.put("WinterCoat", "WINTER");
-        protectionItems.put("Item_Scarf", "WINTER");
-        protectionItems.put("Item_Gloves", "WINTER");
-    }
 
     private void initBlockTemperatures() {
         blockTemperatures.put("*Bench_Campfire_State_Definitions_Processing", 5.0F);
@@ -84,6 +72,10 @@ public class TemperatureConfig {
     }
     public float getFloorTemperature(String blockId) {
         return floorTemperatures.getOrDefault(blockId, 0.0F);
+    }
+
+    public ItemStats getItemStats(String itemId) {
+        return itemStats.get(itemId);
     }
 
     static {
@@ -116,8 +108,10 @@ public class TemperatureConfig {
                 (cfg, v) -> cfg.staminaLoss = v, cfg -> cfg.staminaLoss).add();
         b.append(new KeyedCodec<>("StaminaDrainAmount", Codec.FLOAT),
                 (cfg, v) -> cfg.staminaDrainAmount = v, cfg -> cfg.staminaDrainAmount).add();
-        b.append(new KeyedCodec<>("ProtectionItems", new MapCodec<>(Codec.STRING, HashMap::new)),
-                (cfg, v) -> cfg.protectionItems = v, cfg -> cfg.protectionItems).add();
+
+        b.append(new KeyedCodec<>("ItemStats", new MapCodec<>(ItemStats.CODEC, HashMap::new)),
+                (cfg, v) -> cfg.itemStats = v, cfg -> cfg.itemStats).add();
+
         b.append(new KeyedCodec<>("BlockTemperatures", new MapCodec<>(Codec.FLOAT, HashMap::new)),
                 (cfg, v) -> cfg.blockTemperatures = v, cfg -> cfg.blockTemperatures).add();
         b.append(new KeyedCodec<>("FloorTemperatures", new MapCodec<>(Codec.FLOAT, HashMap::new)),

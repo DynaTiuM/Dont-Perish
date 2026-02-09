@@ -17,16 +17,20 @@ import org.tact.features.comfort.system.ComfortBlockSystem;
 import org.tact.features.comfort.system.ComfortDamageSystem;
 import org.tact.features.comfort.system.ComfortSystem;
 import org.tact.features.comfort.ui.ComfortHud;
+import org.tact.features.itemStats.config.ItemStatsConfig;
 
 public class ComfortFeature implements Feature {
     private final ComfortConfig config;
+    private final ItemStatsConfig itemConfig;
     private final EnvironmentRegistry environmentRegistry;
 
     public ComfortFeature(
             ComfortConfig config,
+            ItemStatsConfig itemConfig,
             EnvironmentRegistry environmentRegistry
     ) {
         this.config = config;
+        this.itemConfig = itemConfig;
         this.environmentRegistry = environmentRegistry;
     }
 
@@ -65,7 +69,7 @@ public class ComfortFeature implements Feature {
     @Override
     public void enable(JavaPlugin plugin) {
         environmentRegistry.register("comfort", new ComfortEnvironmentHandler(config));
-        plugin.getEntityStoreRegistry().registerSystem(new ComfortSystem(config));
+        plugin.getEntityStoreRegistry().registerSystem(new ComfortSystem(config, itemConfig));
         plugin.getEntityStoreRegistry().registerSystem(new ComfortDamageSystem(config));
         plugin.getEntityStoreRegistry().registerSystem(new ComfortBlockSystem(config));
 

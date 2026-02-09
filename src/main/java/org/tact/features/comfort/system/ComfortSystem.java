@@ -7,6 +7,7 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.protocol.GameMode;
+import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
@@ -22,12 +23,20 @@ import org.tact.common.util.StatHelper;
 import org.tact.features.comfort.component.ComfortComponent;
 import org.tact.features.comfort.config.ComfortConfig;
 import org.tact.features.comfort.ui.ComfortHud;
+import org.tact.features.itemStats.config.ItemStatsConfig;
+import org.tact.features.itemStats.model.ItemStatSnapshot;
+import org.tact.features.itemStats.util.ItemStatCalculator;
 
 public class ComfortSystem extends EntityTickingSystem<EntityStore> {
     private final ComfortConfig config;
+    private final ItemStatsConfig itemConfig;
 
-    public ComfortSystem(ComfortConfig config) {
+    public ComfortSystem(
+            ComfortConfig config,
+            ItemStatsConfig itemConfig
+    ) {
         this.config = config;
+        this.itemConfig = itemConfig;
     }
 
     @Override
@@ -45,11 +54,14 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
         EntityStatMap statMap = store.getComponent(entityRef, EntityStatMap.getComponentType());
         EntityStatValue comfortStat = statMap.get(getComfortStatIndex());
 
+        ItemStatSnapshot itemStats = ItemStatCalculator.calculate(player, itemConfig);
+        float equipmentBonus = itemStats.comfortModifier;
+
         float currentComfort = comfortStat.get();
         float pendingComfort = currentComfort;
 
         pendingComfort = applyComfortAnimation(comfortComp, pendingComfort, deltaTime);
-        pendingComfort = applyComfortLogic(player, comfortComp, comfortStat, pendingComfort, deltaTime);
+        pendingComfort = applyComfortLogic(player, comfortComp, comfortStat, pendingComfort, deltaTime, equipmentBonus);
 
         float finalComfort = StatHelper.clamp(comfortStat, pendingComfort);
         updateStatIfChanged(statMap, currentComfort, finalComfort);
@@ -73,16 +85,25 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
         return pendingComfort + amountToTransfer;
     }
 
-    private float applyComfortLogic(Player player, ComfortComponent comp, EntityStatValue stat, float pendingComfort, float deltaTime) {
+    private float applyComfortLogic(
+            Player player,
+            ComfortComponent comp,
+            EntityStatValue stat,
+            float pendingComfort,
+            float deltaTime,
+            float equipmentBonus
+    ) {
         if (player.getGameMode() == GameMode.Creative) {
             if (pendingComfort < stat.getMax()) {
                 float regenSpeed = config.creativeRegenSpeed > 0 ? config.creativeRegenSpeed : 50.0F;
                 return pendingComfort + (regenSpeed * deltaTime);
             }
         } else {
-            float loss = (config.comfortLossSpeed / config.comfortLossInterval) * deltaTime;
-            float gain = comp.getEnvironmentalGain() * config.globalGainMultiplier * deltaTime;
-            return pendingComfort - loss + gain;
+            float loss = (config.comfortLossSpeed / config.comfortLossInterval);
+            float gain = comp.getEnvironmentalGain() * config.globalGainMultiplier;
+            float totalChangePerSecond = gain - loss + equipmentBonus;
+
+            return pendingComfort + (totalChangePerSecond * deltaTime);
         }
         return pendingComfort;
     }
