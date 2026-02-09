@@ -1,46 +1,84 @@
 # 🌲 Don't Perish
 
-![Status](https://img.shields.io/badge/Status-In%20Development-orange) ![License](https://img.shields.io/badge/License-All%20Rights%20Reserved-red)
+![Status](https://img.shields.io/badge/Status-Active%20Development-orange?style=flat-square)
+![License](https://img.shields.io/badge/License-All%20Rights%20Reserved-red?style=flat-square)
 
-**Don't Perish** is a mod for **Hytale**, heavily inspired by the mechanics and dark atmosphere of the game *Don't Starve*. Survival is no longer a choice: it's a constant struggle against hunger, insanity, health and environmental hazards.
+**Don't Perish** is a hardcore survival mod for **Hytale**, heavily inspired by the mechanics and dark atmosphere of *Don't Starve*. Survival is no longer a choice: it's a constant struggle against hunger, insanity, and environmental hazards.
 
-> **Project Status:** Under Active Development. This mod is in its VERY early architectural stages.
+> **Project Status:** Under Active Development. This mod is in its early architectural stages and features are subject to change.
+
+---
+
+## 🌟 Key Features
+
+### 🌡️ Advanced Thermodynamics
+Gone are simple health bars. Don't Perish introduces a complex body temperature simulation:
+- **Dynamic Inertia:** Your body resists temperature changes based on your "comfort zone". Approaching 20°C slows down heat transfer (Homeostasis).
+- **Active vs. Passive Protection:**
+  - **Isolation (Passive):** Clothes act as a "brake" against the elements.
+  - **Active Cooling/Heating:** Use items like **Fans** or **Torches** to forcefully alter your target temperature.
+- **Environmental Factors:** Temperature is calculated in real-time based on **Season**, **Time of Day**, **Altitude**, **Light Sources** (Campfires, Furnaces), and **Roof Detection**.
+- **HUD Integration:** Visual feedback for body temperature and seasonal progress.
+
+### 🏠 Comfort & Proficiency System
+Your mental state is just as important as your physical health. The **Comfort Bar** dictates your efficiency in the world.
+- **Environmental Coziness:** Comfort regenerates when you are surrounded by **civilization**. Being near tables, benches, beds, and decorations creates a "cozy" aura that restores your Comfort bar.
+- **Proficiency Buffs (High Comfort):** A well-rested explorer is a deadly one. High comfort grants bonuses to **Mining Speed**, **Stamina**, and **Combat Strength**.
+- **The "Broken" State (<20%):** Neglecting your comfort triggers lethargy, exhaustion, and weakness.
+
+### 🍎 Metabolism & Perishability
+Food serves a dual purpose: fueling your body and soothing your mind.
+- **Comfort Foods:** High-quality meals provide a burst of Comfort.
+- **Risky Eating:** Eating raw or questionable items drains your Comfort bar.
+- **Spoilage:** Stockpiling is risky. Every food item has a decay timer and eventually turns into **Rot**.
+
+### 🐕 Companions
+- **Baxter:** Your faithful companion, fully animated and ready to follow you through the wilderness (WIP).
+
+### ⏳ Seasonal Cycle
+- Full seasonal rotation affecting ambient temperature and day length (crops season growth: WIP).
 
 ---
 
 ## 🛠 Technical Architecture
 
-This mod is built from the ground up leveraging Hytale's native **ECS (Entity Component System)**.
+This mod is built using a **Modular Feature Architecture** leveraging Hytale's native **ECS**. Instead of a flat structure, every gameplay mechanic is a self-contained module containing its own ECS components, systems, and configuration.
 
 ### Project Structure
 
-The codebase is organized to maintain a strict separation between assets and server-side logic:
-* **`java/`** – The core logic of the mod:
-    * `commands/` – Custom chat commands for debugging and gameplay.
-    * `components/` – Pure data containers attached to entities.
-    * `interactions/` – Logic for player-world interaction.
-    * `services/` – Managers for data and logic external to the core ECS flow.
-    * `systems/` – The brains of the mod. These process components every tick.
-    * **`DontPerish.java`** – The main entry point and mod initialization class.
+```text
+src/main/java/org/tact/
+├── api/                 # Module interfaces (Feature system)
+├── commands/            # Global commands
+├── common/              # Shared utilities (Environment, UI, Utils)
+├── core/                # Core plugin logic
+│   ├── config/          # Global configuration
+│   ├── registry/        # Centralized registration
+│   └── DontPerishPlugin.java # Main Entry Point
+├── features/            # Modular Gameplay Features
+│   ├── baxter/          # Companion logic
+│   ├── comfort/         # Comfort System (UI, Component, Handler)
+│   ├── food_decay/      # Spoilage & Rot mechanics
+│   ├── hunger/          # Metabolism logic
+│   ├── itemStats/       # Custom items attributes
+│   ├── seasons/         # Seasonal cycle logic
+│   └── temperature/     # Thermodynamics engine
+└── services/            # Global services
+```
+---
 
-* **`resources/`** – Contains all textures, 3D models, animations, and server-side data definitions.
+## 📚 Documentation
+For a deep dive into the mechanics and item stats:
+
+- [📖 Thermodynamics Mechanics Explained](docs/mechanics.md)
+- [🧥 Item Stats & Insulation Guide](docs/items.md)
 
 ---
 
-## 🕯 Currently In Progress
+## ⚖️ License & Rights
+Copyright © 2026 - **All Rights Reserved**.
 
-- **Baxter**: Your favorite companion, ready to follow you through every step of your journey
-- **Seasons**: Seasonal system affecting gameplay in various ways (temperature, length of days, etc.)
-- **Hunger**: A Hunger bar forcing the player to manage their food consumption
-
----
-
-## ⚙️ Development
-
-As Hytale is currently in pre-release, this repository also serves as a foundational resource and a learning guide for community members looking to get started with modding.
-
-⚠️ **Important Note on Licensing:**  
-Although this source code is visible for educational purposes, this project is released under an **All Rights Reserved** license.
+Although this source code is visible for educational purposes and portfolio demonstration, this project is **NOT open source**.
 
 You are welcome to read the code to understand the logic and learn how to implement similar features yourself. However, you are **strictly prohibited from directly copy-pasting this source code or using these specific assets** in your own projects.
 
