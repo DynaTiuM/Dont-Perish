@@ -16,10 +16,14 @@ public class TemperatureConfig {
 
     public float defaultBaseTemperature = 20.0f;
 
-    public float fastResponseSpeed = 0.6F;
-    public float slowResponseSpeed = 0.014F;
-    public float comfortZoneThreshold = 15.0F;
+    public float fastResponseSpeed = 0.4F;
+    public float slowResponseSpeed = 0.012F;
     public float activeItemResponseSpeed = 2.0F;
+    public float comfortZoneThreshold = 15.0F;
+
+    public float inertiaReferenceDistance = 10.0F;
+    public float maxInertiaMultiplier = 1.0F;
+    public float minInertiaMultiplier = 0.15F;
 
     public float extremeTemperatureThreshold = 5.0F;
     public float heatDamage = 1.5F;
@@ -94,8 +98,17 @@ public class TemperatureConfig {
                 (cfg, v) -> cfg.fastResponseSpeed = v, cfg -> cfg.fastResponseSpeed).add();
         b.append(new KeyedCodec<>("SlowResponseSpeed", Codec.FLOAT),
                 (cfg, v) -> cfg.slowResponseSpeed = v, cfg -> cfg.slowResponseSpeed).add();
+        b.append(new KeyedCodec<>("ActiveItemResponseSpeed", Codec.FLOAT),
+                (cfg, v) -> cfg.activeItemResponseSpeed = v, cfg -> cfg.activeItemResponseSpeed).add();
         b.append(new KeyedCodec<>("ComfortZoneThreshold", Codec.FLOAT),
                 (cfg, v) -> cfg.comfortZoneThreshold = v, cfg -> cfg.comfortZoneThreshold).add();
+
+        b.append(new KeyedCodec<>("InertiaReferenceDistance", Codec.FLOAT),
+                (cfg, v) -> cfg.inertiaReferenceDistance = v, cfg -> cfg.inertiaReferenceDistance).add();
+        b.append(new KeyedCodec<>("MaxInertiaMultiplier", Codec.FLOAT),
+                (cfg, v) -> cfg.maxInertiaMultiplier = v, cfg -> cfg.maxInertiaMultiplier).add();
+        b.append(new KeyedCodec<>("MinInertiaMultiplier", Codec.FLOAT),
+                (cfg, v) -> cfg.minInertiaMultiplier = v, cfg -> cfg.minInertiaMultiplier).add();
 
         b.append(new KeyedCodec<>("ExtremeTemperatureThreshold", Codec.FLOAT),
                 (cfg, v) -> cfg.extremeTemperatureThreshold = v, cfg -> cfg.extremeTemperatureThreshold).add();

@@ -208,23 +208,28 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         if (activeMode) {
             float degreesPerSecond = config.activeItemResponseSpeed;
             float maxChange = degreesPerSecond * deltaTime;
-
             if (isHeatingUp) return Math.min(current + maxChange, target);
             else return Math.max(current - maxChange, target);
         }
 
-        boolean isRecovering = false;
         float base = config.defaultBaseTemperature;
-        float thresh = config.comfortZoneThreshold;
 
-        if (isHeatingUp && current < (base - thresh)) isRecovering = true;
-        else if (isCoolingDown && current > (base + thresh)) isRecovering = true;
+        boolean isRecovering = (isHeatingUp && current < base) || (isCoolingDown && current > base);
 
         float selectedSpeed = isRecovering ? config.fastResponseSpeed : config.slowResponseSpeed;
 
-        if (!isRecovering) {
+        if (isRecovering) {
+            float currentDist = Math.abs(current - base);
+            float distanceRatio = currentDist / config.inertiaReferenceDistance;
+
+            float inertiaMultiplier = Math.max(
+                    config.minInertiaMultiplier,
+                    Math.min(config.maxInertiaMultiplier, distanceRatio)
+            );
+            selectedSpeed *= inertiaMultiplier;
+        } else {
             float appliedInsulation = isCoolingDown ? equipmentStats.insulationCooling : equipmentStats.insulationHeating;
-            selectedSpeed = selectedSpeed * (1.0f - appliedInsulation);
+            selectedSpeed *= (1.0f - appliedInsulation);
         }
 
         float step = Math.min(deltaTime * selectedSpeed, 1.0F);
