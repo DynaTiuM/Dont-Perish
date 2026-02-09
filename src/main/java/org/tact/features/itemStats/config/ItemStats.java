@@ -21,6 +21,8 @@ public class ItemStats {
     public boolean activeInArmor = false;
     public boolean activeInInventory = false;
 
+    public boolean requireUsage = false;
+
     public ItemStats() {}
 
     static {
@@ -40,6 +42,8 @@ public class ItemStats {
         b.append(new KeyedCodec<>("ActiveInArmor", Codec.BOOLEAN), (c, v) -> c.activeInArmor = v, c -> c.activeInArmor).add();
         b.append(new KeyedCodec<>("ActiveInInventory", Codec.BOOLEAN), (c, v) -> c.activeInInventory = v, c -> c.activeInInventory).add();
 
+        b.append(new KeyedCodec<>("RequireUsage", Codec.BOOLEAN), (c, v) -> c.requireUsage = v, c -> c.requireUsage).add();
+        
         CODEC = b.build();
     }
 }

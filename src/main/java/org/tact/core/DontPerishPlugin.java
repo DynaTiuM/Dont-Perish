@@ -1,6 +1,5 @@
 package org.tact.core;
 
-import com.hypixel.hytale.event.EventBusRegistry;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.util.Config;
@@ -14,7 +13,6 @@ import org.tact.core.registry.FeatureRegistry;
 import org.tact.features.baxter.BaxterFeature;
 import org.tact.features.comfort.ComfortFeature;
 import org.tact.features.food_decay.FoodDecayFeature;
-import org.tact.features.food_decay.config.FoodDecayConfig;
 import org.tact.features.hunger.HungerFeature;
 import org.tact.features.hunger.config.HungerConfig;
 import org.tact.features.itemStats.ItemStatsFeature;
@@ -56,7 +54,7 @@ public class DontPerishPlugin extends JavaPlugin {
             feature.registerEvents(this);
             feature.registerSystems(this);
         });
-
+        
         this.configWrapper.save();
     }
 

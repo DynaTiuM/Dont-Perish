@@ -19,6 +19,7 @@ public class TemperatureConfig {
     public float fastResponseSpeed = 0.6F;
     public float slowResponseSpeed = 0.014F;
     public float comfortZoneThreshold = 15.0F;
+    public float activeItemResponseSpeed = 2.0F;
 
     public float extremeTemperatureThreshold = 5.0F;
     public float heatDamage = 1.5F;

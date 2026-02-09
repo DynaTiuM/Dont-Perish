@@ -1,14 +1,14 @@
 package org.tact.features.itemStats.system;
-import com.hypixel.hytale.component.ArchetypeChunk;
-import com.hypixel.hytale.component.CommandBuffer;
-import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
+import com.hypixel.hytale.server.core.entity.InteractionManager;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
+import com.hypixel.hytale.server.core.modules.interaction.InteractionModule;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.tact.features.itemStats.config.ItemStatsConfig;
 import org.tact.features.itemStats.model.ItemStatSnapshot;
@@ -27,21 +27,23 @@ public class PassiveItemSystem extends EntityTickingSystem<EntityStore> {
             int index,
             ArchetypeChunk<EntityStore> archetypeChunk,
             Store<EntityStore> store,
-            CommandBuffer<EntityStore> buffer
+            @NonNullDecl CommandBuffer<EntityStore> bufferCommand
     ) {
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
-        Ref<EntityStore> entityRef = archetypeChunk.getReferenceTo(index);
+        Ref<EntityStore> playerRef = archetypeChunk.getReferenceTo(index);
 
-        ItemStatSnapshot totals = ItemStatCalculator.calculate(player, config);
+        ComponentType<EntityStore, InteractionManager> managerType = InteractionModule.get().getInteractionManagerComponent();
+        InteractionManager interactionManager = store.getComponent(playerRef, managerType);
+        ItemStatSnapshot totals = ItemStatCalculator.calculate(player, interactionManager, config);
 
-        applySpeed(store, entityRef, totals.speedModifier);
+        applySpeed(store, playerRef, totals.speedModifier);
 
         if (totals.healthChange != 0) {
-            applyHealth(player, entityRef, buffer, totals.healthChange, deltaTime);
+            applyHealth(player, playerRef, bufferCommand, totals.healthChange, deltaTime);
         }
 
         if (totals.staminaDrain != 0) {
-            applyStamina(store, entityRef, totals.staminaDrain, deltaTime);
+            applyStamina(store, playerRef, totals.staminaDrain, deltaTime);
         }
     }
 

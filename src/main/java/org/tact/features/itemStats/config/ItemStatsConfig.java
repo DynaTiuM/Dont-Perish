@@ -15,17 +15,21 @@ public class ItemStatsConfig {
 
     public ItemStatsConfig() {
         ItemStats iceCubeStats = new ItemStats();
-        iceCubeStats.thermalOffset = -5.0F;
-        iceCubeStats.comfortModifier = -2.0F;
+        iceCubeStats.thermalOffset = -20.0F;
+        iceCubeStats.comfortModifier = -5.0F;
         iceCubeStats.activeInInventory = true;
-        items.put("Wood_Ice_Trunk", iceCubeStats);
+        items.put("DP_Compact_Ice_Cube", iceCubeStats);
 
         ItemStats fan = new ItemStats();
-        fan.thermalOffset = -5.0F;
+        fan.thermalOffset = -12.0F;
         fan.activeInHand = true;
-        fan.activeInArmor = false;
-        fan.activeInInventory = false;
-        items.put("Furniture_Crude_Torch", fan);
+        fan.requireUsage = true;
+        items.put("DP_Fan", fan);
+
+        ItemStats torch = new ItemStats();
+        torch.thermalOffset = 2.0F;
+        torch.activeInHand = true;
+        items.put("Furniture_Crude_Torch", torch);
 
         ItemStats sunHat = new ItemStats();
         sunHat.insulationHeating = 0.4F;
@@ -35,13 +39,13 @@ public class ItemStatsConfig {
 
         ItemStats coat = new ItemStats();
         coat.insulationCooling = 0.6F;
-        coat.thermalOffset = 5.0F;
+        coat.thermalOffset = 8.0F;
         coat.activeInArmor = true;
-        items.put("Armor_Adamantite_Chest", coat);
+        items.put("DP_Coat", coat);
 
         ItemStats scarf = new ItemStats();
         scarf.insulationCooling = 0.2F;
-        scarf.thermalOffset = 2.0F;
+        scarf.thermalOffset = 3.0F;
         scarf.activeInArmor = true;
         items.put("DP_Scarf", scarf);
 

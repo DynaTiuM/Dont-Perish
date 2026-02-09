@@ -3,11 +3,9 @@ package org.tact.features.temperature.system;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
+import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.entity.InteractionManager;
 import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.inventory.Inventory;
-import com.hypixel.hytale.server.core.inventory.ItemStack;
-import com.hypixel.hytale.server.core.inventory.container.CombinedItemContainer;
-import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageCause;
@@ -16,6 +14,7 @@ import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
 import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
 import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
+import com.hypixel.hytale.server.core.modules.interaction.InteractionModule;
 import com.hypixel.hytale.server.core.modules.time.WorldTimeResource;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
@@ -78,7 +77,10 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         WorldTimeResource timeResource = store.getResource(WorldTimeResource.getResourceType());
         float seasonStretch = getSeasonStretch(store);
 
-        ItemStatSnapshot equipmentStats = ItemStatCalculator.calculate(player, itemConfig);
+        ComponentType<EntityStore, InteractionManager> managerType = InteractionModule.get().getInteractionManagerComponent();
+        InteractionManager interactionManager = store.getComponent(playerRef, managerType);
+
+        ItemStatSnapshot equipmentStats = ItemStatCalculator.calculate(player, interactionManager, itemConfig);
 
         // Temperature of the player
         float targetTemperature = calculateTargetTemperature(
@@ -98,7 +100,7 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
                 deltaTime,
                 equipmentStats
         );
-
+        player.sendMessage(Message.raw("[Temperature]" + nextTemperature));
         if (nextTemperature != currentTemperature) {
             statMap.setStatValue(getTemperatureStatIndex(), nextTemperature);
             temperatureComponent.setLerpedTemperature(nextTemperature);
@@ -190,43 +192,41 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
             float target,
             float deltaTime,
             ItemStatSnapshot equipmentStats
-            ) {
-        float base = config.defaultBaseTemperature;
-        float threshold = config.comfortZoneThreshold;
+    ) {
+        float diff = target - current;
+        boolean isHeatingUp = diff > 0;
+        boolean isCoolingDown = diff < 0;
 
-        float comfortMin = base - threshold;
-        float comfortMax = base + threshold;
+        float itemOffset = equipmentStats.thermalOffset;
+        boolean itemWantsToCool = itemOffset < -1.0f;
+        boolean itemWantsToHeat = itemOffset > 1.0f;
 
-        boolean isHeatingUp = target > current;
-        boolean isCoolingDown = target < current;
+        boolean activeMode = false;
+        if (itemWantsToCool && isCoolingDown) activeMode = true;
+        else if (itemWantsToHeat && isHeatingUp) activeMode = true;
+
+        if (activeMode) {
+            float degreesPerSecond = config.activeItemResponseSpeed;
+            float maxChange = degreesPerSecond * deltaTime;
+
+            if (isHeatingUp) return Math.min(current + maxChange, target);
+            else return Math.max(current - maxChange, target);
+        }
 
         boolean isRecovering = false;
+        float base = config.defaultBaseTemperature;
+        float thresh = config.comfortZoneThreshold;
 
-        if (isHeatingUp) {
-            if (current < comfortMin) {
-                isRecovering = true;
-            }
-        }
-        else if (isCoolingDown) {
-            if (current > comfortMax) {
-                isRecovering = true;
-            }
-        }
+        if (isHeatingUp && current < (base - thresh)) isRecovering = true;
+        else if (isCoolingDown && current > (base + thresh)) isRecovering = true;
 
         float selectedSpeed = isRecovering ? config.fastResponseSpeed : config.slowResponseSpeed;
 
         if (!isRecovering) {
-            float appliedInsulation = 0.0f;
-            if (isCoolingDown) {
-                appliedInsulation = equipmentStats.insulationCooling;
-            } else if (isHeatingUp) {
-                appliedInsulation = equipmentStats.insulationHeating;
-            }
-
+            float appliedInsulation = isCoolingDown ? equipmentStats.insulationCooling : equipmentStats.insulationHeating;
             selectedSpeed = selectedSpeed * (1.0f - appliedInsulation);
         }
 
-        float diff = target - current;
         float step = Math.min(deltaTime * selectedSpeed, 1.0F);
         return current + (diff * step);
     }

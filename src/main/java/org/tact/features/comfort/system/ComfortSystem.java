@@ -1,13 +1,11 @@
 package org.tact.features.comfort.system;
 
-import com.hypixel.hytale.component.ArchetypeChunk;
-import com.hypixel.hytale.component.CommandBuffer;
-import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.entity.InteractionManager;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
@@ -15,6 +13,7 @@ import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntitySta
 import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
 import com.hypixel.hytale.server.core.modules.entitystats.modifier.Modifier;
 import com.hypixel.hytale.server.core.modules.entitystats.modifier.StaticModifier;
+import com.hypixel.hytale.server.core.modules.interaction.InteractionModule;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
@@ -49,12 +48,14 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
     ) {
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
         ComfortComponent comfortComp = archetypeChunk.getComponent(index, ComfortComponent.getComponentType());
-        Ref<EntityStore> entityRef = archetypeChunk.getReferenceTo(index);
+        Ref<EntityStore> playerRef = archetypeChunk.getReferenceTo(index);
 
-        EntityStatMap statMap = store.getComponent(entityRef, EntityStatMap.getComponentType());
+        EntityStatMap statMap = store.getComponent(playerRef, EntityStatMap.getComponentType());
         EntityStatValue comfortStat = statMap.get(getComfortStatIndex());
 
-        ItemStatSnapshot itemStats = ItemStatCalculator.calculate(player, itemConfig);
+        ComponentType<EntityStore, InteractionManager> managerType = InteractionModule.get().getInteractionManagerComponent();
+        InteractionManager interactionManager = store.getComponent(playerRef, managerType);
+        ItemStatSnapshot itemStats = ItemStatCalculator.calculate(player, interactionManager, itemConfig);
         float equipmentBonus = itemStats.comfortModifier;
 
         float currentComfort = comfortStat.get();

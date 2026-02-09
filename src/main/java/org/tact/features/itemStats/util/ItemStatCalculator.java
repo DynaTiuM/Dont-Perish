@@ -1,6 +1,9 @@
 package org.tact.features.itemStats.util;
 
-import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.protocol.InteractionState;
+import com.hypixel.hytale.protocol.InteractionType;
+import com.hypixel.hytale.server.core.entity.InteractionChain;
+import com.hypixel.hytale.server.core.entity.InteractionManager;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
@@ -13,20 +16,24 @@ public class ItemStatCalculator {
 
     private enum ScanLocation { ARMOR, HAND, INVENTORY }
 
-    public static ItemStatSnapshot calculate(Player player, ItemStatsConfig config) {
+    public static ItemStatSnapshot calculate(
+            Player player,
+            InteractionManager interactionManager,
+            ItemStatsConfig config
+    ) {
         ItemStatSnapshot totals = new ItemStatSnapshot();
         Inventory inventory = player.getInventory();
 
         ItemContainer armor = inventory.getArmor();
         for (int i = 0; i < armor.getCapacity(); i++) {
-            processItem(player, totals, armor.getItemStack( (short) i), ScanLocation.ARMOR, config);
+            processItem(totals, armor.getItemStack( (short) i), ScanLocation.ARMOR, config, interactionManager);
         }
 
-        processItem(player, totals, inventory.getItemInHand(), ScanLocation.HAND, config);
+        processItem(totals, inventory.getItemInHand(), ScanLocation.HAND, config, interactionManager);
 
         ItemContainer backpack = inventory.getCombinedStorageFirst();
         for (int i = 0; i < backpack.getCapacity(); i++) {
-            processItem(player, totals, backpack.getItemStack( (short) i), ScanLocation.INVENTORY, config);
+            processItem(totals, backpack.getItemStack( (short) i), ScanLocation.INVENTORY, config, interactionManager);
         }
 
         totals.insulationCooling = Math.min(totals.insulationCooling, 0.95f);
@@ -36,11 +43,11 @@ public class ItemStatCalculator {
     }
 
     private static void processItem(
-            Player player,
             ItemStatSnapshot totals,
             ItemStack stack,
             ScanLocation loc,
-            ItemStatsConfig config
+            ItemStatsConfig config,
+            InteractionManager interactionManager
     ) {
         if (stack == null || stack.isEmpty()) return;
 
@@ -48,9 +55,27 @@ public class ItemStatCalculator {
         if (stats == null) return;
         boolean active = false;
         switch (loc) {
-            case ARMOR: if (stats.activeInArmor) active = true; break;
-            case HAND: if (stats.activeInHand) active = true; break;
-            case INVENTORY: if (stats.activeInInventory) active = true; break;
+            case ARMOR:
+                if (stats.activeInArmor) {
+                    active = true;
+                }
+                break;
+            case HAND:
+                if (stats.activeInHand) {
+                    if (stats.requireUsage) {
+                        if (isPlayerUsingItem(interactionManager)) {
+                            active = true;
+                        }
+                    } else {
+                        active = true;
+                    }
+                }
+                break;
+            case INVENTORY:
+                if (stats.activeInInventory) {
+                    active = true;
+                }
+                break;
         }
 
         if (active) {
@@ -64,5 +89,19 @@ public class ItemStatCalculator {
 
             totals.comfortModifier += stats.comfortModifier;
         }
+    }
+
+    private static boolean isPlayerUsingItem(InteractionManager interactionManager) {
+        if (interactionManager == null) return false;
+
+        for (InteractionChain chain : interactionManager.getChains().values()) {
+            if (chain.getType() == InteractionType.Secondary) {
+                if (chain.getServerState() == InteractionState.NotFinished) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
