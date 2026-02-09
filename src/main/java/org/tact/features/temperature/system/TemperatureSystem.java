@@ -5,6 +5,7 @@ import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageCause;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageSystems;
@@ -59,10 +60,17 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         EntityStatValue temperatureStat = statMap.get(getTemperatureStatIndex());
         if (temperatureStat == null) return;
 
+        TransformComponent transformComponent = archetypeChunk.getComponent(index, TransformComponent.getComponentType());
+
+        double playerY = config.optimalAltitude;
+        if(transformComponent != null) {
+            playerY = transformComponent.getPosition().getY();
+        }
+
         WorldTimeResource timeResource = store.getResource(WorldTimeResource.getResourceType());
         float seasonStretch = getSeasonStretch(store);
         // Temperature of the player
-        float targetTemperature = calculateTargetTemperature(temperatureComponent, timeResource, seasonStretch);
+        float targetTemperature = calculateTargetTemperature(temperatureComponent, timeResource, seasonStretch, playerY);
 
         temperatureComponent.setTargetTemperature(targetTemperature);
 
@@ -73,7 +81,6 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
             statMap.setStatValue(getTemperatureStatIndex(), nextTemperature);
             temperatureComponent.setLerpedTemperature(nextTemperature);
         }
-        player.sendMessage(Message.raw("[Temperature] " + nextTemperature + "°C"));
 
         boolean isProtected = checkProtection(player, nextTemperature);
         temperatureComponent.setHasProtection(isProtected);
@@ -120,9 +127,11 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     private float calculateTargetTemperature(
             TemperatureComponent temperatureComponent,
             WorldTimeResource timeResource,
-            float dayLengthMultiplier
+            float dayLengthMultiplier,
+            double playerY
     ) {
         float timeModifier = calculateTimeModifier(timeResource, dayLengthMultiplier);
+        float altitude = calculateAltitudeModifier(playerY);
 
         // Modifier 0: Base Temperature (without any influence)
         float baseTemperature = config.defaultBaseTemperature;
@@ -132,7 +141,7 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         // Modifier 2: Environment (blocks)
         float environment = temperatureComponent.getEnvironmentModifier();
 
-        return baseTemperature + environment + seasonal + timeModifier;
+        return baseTemperature + environment + seasonal + timeModifier + altitude;
     }
 
     private float calculateTimeModifier(WorldTimeResource timeResource, float dayLengthMultiplier) {
@@ -145,6 +154,15 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         }
 
         return cycleFactor * config.dayNightTemperatureVariation;
+    }
+
+    private float calculateAltitudeModifier(double entityY) {
+        float optimalY = config.optimalAltitude;
+        float spread = config.altitudeSpread;
+        float maxDrop = config.altitudeMaxDrop;
+        double gaussian = Math.exp(-Math.pow(entityY - optimalY, 2) / (2 * Math.pow(spread, 2)));
+
+        return (float) ((gaussian - 1.0) * maxDrop);
     }
 
     private float interpolateTemperature(float current, float target, float deltaTime) {

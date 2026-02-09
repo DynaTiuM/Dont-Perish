@@ -36,6 +36,10 @@ public class TemperatureConfig {
     public float maxBlockHeatBonus = 30.0F;
     public float maxBlockColdBonus = -20.0F;
 
+    // Level of the sea
+    public float optimalAltitude = 115.0F;
+    public float altitudeMaxDrop = 20.0F;
+    public float altitudeSpread = 100.0F;
 
     public TemperatureConfig() {
         initDefaultProtectionItems();
@@ -127,6 +131,13 @@ public class TemperatureConfig {
 
         b.append(new KeyedCodec<>("DayNightTemperatureVariation", Codec.FLOAT),
                 (cfg, v) -> cfg.dayNightTemperatureVariation = v, cfg -> cfg.dayNightTemperatureVariation).add();
+
+        b.append(new KeyedCodec<>("OptimalAltitude", Codec.FLOAT),
+                (cfg, v) -> cfg.optimalAltitude = v, cfg -> cfg.optimalAltitude).add();
+        b.append(new KeyedCodec<>("AltitudeMaxDrop", Codec.FLOAT),
+                (cfg, v) -> cfg.altitudeMaxDrop = v, cfg -> cfg.altitudeMaxDrop).add();
+        b.append(new KeyedCodec<>("AltitudeSpread", Codec.FLOAT),
+                (cfg, v) -> cfg.altitudeSpread = v, cfg -> cfg.altitudeSpread).add();
 
         CODEC = b.build();
     }
