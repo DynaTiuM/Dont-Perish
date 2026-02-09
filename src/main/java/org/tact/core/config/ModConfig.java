@@ -13,7 +13,7 @@ import org.tact.features.temperature.config.TemperatureConfig;
 public class ModConfig {
     public static final BuilderCodec<ModConfig> CODEC;
 
-    public int version = 1;
+    public float version = 1.1F;
 
     public HungerConfig hunger = new HungerConfig();
     public BaxterConfig baxter = new BaxterConfig();
@@ -29,7 +29,7 @@ public class ModConfig {
     static {
         BuilderCodec.Builder<ModConfig> b = BuilderCodec.builder(ModConfig.class, ModConfig::new);
 
-        b.append(new KeyedCodec<>("Version", Codec.INTEGER),
+        b.append(new KeyedCodec<>("Version", Codec.FLOAT),
                 (cfg, v) -> cfg.version = v,
                 cfg -> cfg.version).add();
 

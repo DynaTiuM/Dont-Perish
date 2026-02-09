@@ -15,22 +15,26 @@ public class TemperatureConfig {
 
     public float defaultBaseTemperature = 20.0f;
 
-    public float temperatureTransitionSpeed = 0.5F;
+    public float fastResponseSpeed = 0.6F;
+    public float slowResponseSpeed = 0.014F;
+    public float comfortZoneThreshold = 15.0F;
+
     public float extremeTemperatureThreshold = 5.0F;
     public float heatDamage = 1.5F;
     public float coldDamage = 1.5F;
     public float damageInterval = 3.0F;
 
-    public float dayNightTemperatureVariation = 12.0F;
-
+    public float sunExposureHeat = 5.0F;
+    public float dayNightTemperatureVariation = 6.0F;
 
     public boolean staminaLoss = true;
-    public float staminaDrainAmount = 5.0f;
+    public float staminaDrainAmount = 5.0F;
 
     public Map<String, String> protectionItems = new HashMap<>();
     public Map<String, Float> blockTemperatures = new HashMap<>();
-    public float maxBlockHeatBonus = 30.0f;
-    public float maxBlockColdBonus = -20.0f;
+    public Map<String, Float> floorTemperatures = new HashMap<>();
+    public float maxBlockHeatBonus = 30.0F;
+    public float maxBlockColdBonus = -20.0F;
 
 
     public TemperatureConfig() {
@@ -53,16 +57,29 @@ public class TemperatureConfig {
 
     private void initBlockTemperatures() {
         blockTemperatures.put("*Bench_Campfire_State_Definitions_Processing", 5.0F);
-        blockTemperatures.put("Fluid_Lava", 5.0F);
+        blockTemperatures.put("*Bench_Furnace_State_Definitions_Processing", 9.0F);
+        blockTemperatures.put("Fluid_Lava", 3.0F);
         blockTemperatures.put("Furniture_Crude_Torch", 2.0F);
-        blockTemperatures.put("Rock_Ice", -2.0F);
-        blockTemperatures.put("Rock_Ice_Permafrost", -2.0F);
-        blockTemperatures.put("Soil_Snow", -0.5F);
-        blockTemperatures.put("Soil_Snow_Half", -0.2F);
+
+        floorTemperatures.put("Rock_Ice", -2.0F);
+        floorTemperatures.put("Rock_Ice_Permafrost", -2.0F);
+        floorTemperatures.put("Soil_Snow", -2.0F);
+        floorTemperatures.put("Soil_Snow_Half", -1.0F);
+        floorTemperatures.put("Rubble_Ice", -1.0F);
+        floorTemperatures.put("Rubble_Ice_Medium", -2.0F);
+        floorTemperatures.put("Wood_Ice_Trunk", -2.0F);
+
+        floorTemperatures.put("Fluid_Water", -5.0F);
+
+        floorTemperatures.put("Wood_Fire_Trunk", 2.0F);
+        floorTemperatures.put("Wood_Fire_Trunk_Full", 2.0F);
     }
 
     public float getBlockTemperature(String blockId) {
         return blockTemperatures.getOrDefault(blockId, 0.0F);
+    }
+    public float getFloorTemperature(String blockId) {
+        return floorTemperatures.getOrDefault(blockId, 0.0F);
     }
 
     static {
@@ -75,8 +92,14 @@ public class TemperatureConfig {
                 (cfg, v) -> cfg.enabled = v, cfg -> cfg.enabled).add();
         b.append(new KeyedCodec<>("DefaultBaseTemperature", Codec.FLOAT),
                 (cfg, v) -> cfg.defaultBaseTemperature = v, cfg -> cfg.defaultBaseTemperature).add();
-        b.append(new KeyedCodec<>("TemperatureTransitionSpeed", Codec.FLOAT),
-                (cfg, v) -> cfg.temperatureTransitionSpeed = v, cfg -> cfg.temperatureTransitionSpeed).add();
+
+        b.append(new KeyedCodec<>("FastResponseSpeed", Codec.FLOAT),
+                (cfg, v) -> cfg.fastResponseSpeed = v, cfg -> cfg.fastResponseSpeed).add();
+        b.append(new KeyedCodec<>("SlowResponseSpeed", Codec.FLOAT),
+                (cfg, v) -> cfg.slowResponseSpeed = v, cfg -> cfg.slowResponseSpeed).add();
+        b.append(new KeyedCodec<>("ComfortZoneThreshold", Codec.FLOAT),
+                (cfg, v) -> cfg.comfortZoneThreshold = v, cfg -> cfg.comfortZoneThreshold).add();
+
         b.append(new KeyedCodec<>("ExtremeTemperatureThreshold", Codec.FLOAT),
                 (cfg, v) -> cfg.extremeTemperatureThreshold = v, cfg -> cfg.extremeTemperatureThreshold).add();
         b.append(new KeyedCodec<>("HeatDamage", Codec.FLOAT),
@@ -93,10 +116,17 @@ public class TemperatureConfig {
                 (cfg, v) -> cfg.protectionItems = v, cfg -> cfg.protectionItems).add();
         b.append(new KeyedCodec<>("BlockTemperatures", new MapCodec<>(Codec.FLOAT, HashMap::new)),
                 (cfg, v) -> cfg.blockTemperatures = v, cfg -> cfg.blockTemperatures).add();
+        b.append(new KeyedCodec<>("FloorTemperatures", new MapCodec<>(Codec.FLOAT, HashMap::new)),
+                (cfg, v) -> cfg.floorTemperatures = v, cfg -> cfg.floorTemperatures).add();
         b.append(new KeyedCodec<>("MaxBlockHeatBonus", Codec.FLOAT),
                 (cfg, v) -> cfg.maxBlockHeatBonus = v, cfg -> cfg.maxBlockHeatBonus).add();
         b.append(new KeyedCodec<>("MaxBlockColdBonus", Codec.FLOAT),
                 (cfg, v) -> cfg.maxBlockColdBonus = v, cfg -> cfg.maxBlockColdBonus).add();
+        b.append(new KeyedCodec<>("SunExposureHeat", Codec.FLOAT),
+                (cfg, v) -> cfg.sunExposureHeat = v, cfg -> cfg.sunExposureHeat).add();
+
+        b.append(new KeyedCodec<>("DayNightTemperatureVariation", Codec.FLOAT),
+                (cfg, v) -> cfg.dayNightTemperatureVariation = v, cfg -> cfg.dayNightTemperatureVariation).add();
 
         CODEC = b.build();
     }

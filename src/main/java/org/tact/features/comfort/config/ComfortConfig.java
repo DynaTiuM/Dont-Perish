@@ -3,6 +3,7 @@ package org.tact.features.comfort.config;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
+import com.hypixel.hytale.codec.codecs.map.MapCodec;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -95,17 +96,40 @@ public class ComfortConfig {
         );
 
         b.append(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
-                (cfg, v) -> cfg.enabled = v,
-                cfg -> cfg.enabled).add();
-
+                (cfg, v) -> cfg.enabled = v, cfg -> cfg.enabled).add();
 
         b.append(new KeyedCodec<>("ComfortLossSpeed", Codec.FLOAT),
-                (cfg, v) -> cfg.comfortLossSpeed = v,
-                cfg -> cfg.comfortLossSpeed).add();
+                (cfg, v) -> cfg.comfortLossSpeed = v, cfg -> cfg.comfortLossSpeed).add();
+
+        b.append(new KeyedCodec<>("ComfortLossInterval", Codec.FLOAT),
+                (cfg, v) -> cfg.comfortLossInterval = v, cfg -> cfg.comfortLossInterval).add();
 
         b.append(new KeyedCodec<>("GlobalGainMultiplier", Codec.FLOAT),
-                (cfg, v) -> cfg.globalGainMultiplier = v,
-                cfg -> cfg.globalGainMultiplier).add();
+                (cfg, v) -> cfg.globalGainMultiplier = v, cfg -> cfg.globalGainMultiplier).add();
+
+        b.append(new KeyedCodec<>("CreativeRegenSpeed", Codec.FLOAT),
+                (cfg, v) -> cfg.creativeRegenSpeed = v, cfg -> cfg.creativeRegenSpeed).add();
+
+        b.append(new KeyedCodec<>("MaxStaminaPenaltyPercent", Codec.FLOAT),
+                (cfg, v) -> cfg.maxStaminaPenaltyPercent = v, cfg -> cfg.maxStaminaPenaltyPercent).add();
+
+        b.append(new KeyedCodec<>("MaxStaminaBonusPercent", Codec.FLOAT),
+                (cfg, v) -> cfg.maxStaminaBonusPercent = v, cfg -> cfg.maxStaminaBonusPercent).add();
+
+        b.append(new KeyedCodec<>("MaxDamagePenaltyPercent", Codec.FLOAT),
+                (cfg, v) -> cfg.maxDamagePenaltyPercent = v, cfg -> cfg.maxDamagePenaltyPercent).add();
+
+        b.append(new KeyedCodec<>("MaxDamageBonusPercent", Codec.FLOAT),
+                (cfg, v) -> cfg.maxDamageBonusPercent = v, cfg -> cfg.maxDamageBonusPercent).add();
+
+        b.append(new KeyedCodec<>("MaxBlockPenaltyPercent", Codec.FLOAT),
+                (cfg, v) -> cfg.maxBlockPenaltyPercent = v, cfg -> cfg.maxBlockPenaltyPercent).add();
+
+        b.append(new KeyedCodec<>("MaxBlockBonusPercent", Codec.FLOAT),
+                (cfg, v) -> cfg.maxBlockBonusPercent = v, cfg -> cfg.maxBlockBonusPercent).add();
+
+        b.append(new KeyedCodec<>("ComfortValues", new MapCodec<>(Codec.FLOAT, HashMap::new)),
+                (cfg, v) -> cfg.comfortValues = v, cfg -> cfg.comfortValues).add();
 
         CODEC = b.build();
     }

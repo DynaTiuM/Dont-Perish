@@ -10,7 +10,6 @@ public class TemperatureComponent implements Component<EntityStore> {
     private float targetTemperature ;
 
     private float seasonalModifier;
-
     private float environmentModifier;
 
     private boolean hasProtection;
@@ -23,6 +22,7 @@ public class TemperatureComponent implements Component<EntityStore> {
         this.targetTemperature = 20.0F;
         this.seasonalModifier = 0.0F;
         this.environmentModifier = 0.0F;
+
         this.hasProtection = false;
         this.damageTimer = 0.0F;
     }
@@ -64,10 +64,10 @@ public class TemperatureComponent implements Component<EntityStore> {
     public float getSeasonalModifier() {
         return seasonalModifier;
     }
-
     public void setSeasonalModifier(float seasonalModifier) {
         this.seasonalModifier = seasonalModifier;
     }
+
 
     @NullableDecl
     @Override

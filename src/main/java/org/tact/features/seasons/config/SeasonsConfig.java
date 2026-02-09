@@ -13,29 +13,20 @@ public class SeasonsConfig {
 
     public boolean enabled = true;
 
-    // Duration of the seasons (in seconds)
-    /*
     public float springDuration = 14_400.0F; // 5 days
     public float summerDuration = 11_520.0F; // 4 days
     public float autumnDuration = 14_400.0F; // 5 days
     public float winterDuration = 11_520.0F; // 4 days
 
-     */
-    public float springDuration = 30.0F; // 5 days
-    public float summerDuration = 11_520.0F; // 4 days
-    public float autumnDuration = 14_400.0F; // 5 days
-    public float winterDuration = 30.0F; // 4 days
-
     // Temperature mechanics
-    public float springTemperatureModifier = -5.0F;
+    public float springTemperatureModifier = -7.0F;
     public float summerTemperatureModifier = 15.0F;
-    public float autumnTemperatureModifier = -10.0F;
-    public float winterTemperatureModifier = -20.0F;
-
+    public float autumnTemperatureModifier = -5.0F;
+    public float winterTemperatureModifier = -26.0F;
 
     // Weather
     public boolean enableWeatherControl = true;
-    public float springRainDuration = 120.0f;
+    public float springRainDuration = 120.0F;
 
     // Default Day & Night durations of Hytale
     // Total duration = 2880s
@@ -51,7 +42,7 @@ public class SeasonsConfig {
             case 1 -> summerDuration;
             case 2 -> autumnDuration;
             case 3 -> winterDuration;
-            default -> 4500.0F;
+            default -> 2880.0F;
         };
     }
 

@@ -1,4 +1,4 @@
-package org.tact.common.utils;
+package org.tact.common.util;
 
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
 

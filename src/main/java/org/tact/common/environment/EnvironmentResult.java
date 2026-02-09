@@ -8,20 +8,16 @@ public class EnvironmentResult {
 
     private final int radius;
 
+    private boolean isUnderRoof = false;
+    private int roofHeight = -1;
+    private String blockUnderFeet = "air";
+
     public EnvironmentResult(int radius) {
         this.radius = radius;
     }
 
     public void addBlock(String blockId) {
         blockCounts.merge(blockId, 1, Integer::sum);
-    }
-
-    public int getCount(String blockId) {
-        return blockCounts.getOrDefault(blockId, 0);
-    }
-
-    public boolean contains(String blockId) {
-        return blockCounts.containsKey(blockId);
     }
 
     public Map<String, Integer> getBlockCounts() {
@@ -31,4 +27,13 @@ public class EnvironmentResult {
     public int getRadius() {
         return radius;
     }
+
+    public void setBlockUnderFeet(String blockId) { this.blockUnderFeet = blockId; }
+    public String getBlockUnderFeet() { return blockUnderFeet; }
+
+    public void setRoof(boolean isUnderRoof, int height) {
+        this.isUnderRoof = isUnderRoof;
+        this.roofHeight = height;
+    }
+    public boolean isUnderRoof() { return isUnderRoof; }
 }

@@ -34,6 +34,11 @@ public class FoodDecayConfig {
 
     static {
         BuilderCodec.Builder<FoodDecayConfig> builder = BuilderCodec.builder(FoodDecayConfig.class, FoodDecayConfig::new);
+        builder.append(
+                new KeyedCodec<>("Enabled", Codec.BOOLEAN),
+                (obj, v) -> obj.enabled = v,
+                obj -> obj.enabled
+        ).add();
 
         builder.append(
                 new KeyedCodec<>("DegradationSpeed", Codec.FLOAT),
