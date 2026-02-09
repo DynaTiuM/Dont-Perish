@@ -4,6 +4,7 @@ import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.entity.InteractionManager;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
@@ -13,12 +14,16 @@ import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
 import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
 import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
+import com.hypixel.hytale.server.core.modules.interaction.InteractionModule;
 import com.hypixel.hytale.server.core.modules.time.WorldTimeResource;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.tact.common.ui.HudManager;
 import org.tact.common.util.TimeUtil;
+import org.tact.features.itemStats.config.ItemStatsConfig;
+import org.tact.features.itemStats.model.ItemStatSnapshot;
+import org.tact.features.itemStats.util.ItemStatCalculator;
 import org.tact.features.seasons.resource.SeasonsResource;
 import org.tact.features.temperature.component.TemperatureComponent;
 import org.tact.features.temperature.config.TemperatureConfig;
@@ -26,17 +31,19 @@ import org.tact.features.temperature.ui.TemperatureHud;
 
 public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     private final TemperatureConfig config;
+    private final ItemStatsConfig itemConfig;
 
     private int temperatureStatIndex = -1;
 
     private DamageCause heatDamageCause;
     private DamageCause coldDamageCause;
 
-
     public TemperatureSystem(
-            TemperatureConfig config
+            TemperatureConfig config,
+            ItemStatsConfig itemConfig
     ) {
         this.config = config;
+        this.itemConfig = itemConfig;
     }
 
     @Override
@@ -69,23 +76,37 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
 
         WorldTimeResource timeResource = store.getResource(WorldTimeResource.getResourceType());
         float seasonStretch = getSeasonStretch(store);
+
+        ComponentType<EntityStore, InteractionManager> managerType = InteractionModule.get().getInteractionManagerComponent();
+        InteractionManager interactionManager = store.getComponent(playerRef, managerType);
+
+        ItemStatSnapshot equipmentStats = ItemStatCalculator.calculate(player, interactionManager, itemConfig);
+
         // Temperature of the player
-        float targetTemperature = calculateTargetTemperature(temperatureComponent, timeResource, seasonStretch, playerY);
+        float targetTemperature = calculateTargetTemperature(
+                temperatureComponent,
+                timeResource,
+                seasonStretch,
+                playerY,
+                equipmentStats.thermalOffset
+        );
 
         temperatureComponent.setTargetTemperature(targetTemperature);
 
         float currentTemperature = temperatureStat.get();
-        float nextTemperature = interpolateTemperature(currentTemperature, targetTemperature, deltaTime);
-
+        float nextTemperature = interpolateTemperature(
+                currentTemperature,
+                targetTemperature,
+                deltaTime,
+                equipmentStats
+        );
+        player.sendMessage(Message.raw("[Temperature]" + nextTemperature));
         if (nextTemperature != currentTemperature) {
             statMap.setStatValue(getTemperatureStatIndex(), nextTemperature);
             temperatureComponent.setLerpedTemperature(nextTemperature);
         }
 
-        boolean isProtected = checkProtection(player, nextTemperature);
-        temperatureComponent.setHasProtection(isProtected);
-
-        boolean shouldApplyDamage = updateDamageTimer(temperatureComponent, nextTemperature, isProtected, deltaTime);
+        boolean shouldApplyDamage = updateDamageTimer(temperatureComponent, nextTemperature, deltaTime);
         if (shouldApplyDamage) {
             applyTemperatureDamage(playerRef, commandBuffer, nextTemperature);
         }
@@ -106,10 +127,9 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     private boolean updateDamageTimer(
             TemperatureComponent temperatureComponent,
             float currentTemp,
-            boolean isProtected,
             float deltaTime
     ) {
-        if (isProtected || !isExtremeTemperature(currentTemp)) {
+        if (!isExtremeTemperature(currentTemp)) {
             temperatureComponent.resetDamageTimer();
             return false;
         }
@@ -128,10 +148,10 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
             TemperatureComponent temperatureComponent,
             WorldTimeResource timeResource,
             float dayLengthMultiplier,
-            double playerY
+            double playerY,
+            float equipmentOffset
     ) {
         float timeModifier = calculateTimeModifier(timeResource, dayLengthMultiplier);
-        float altitude = calculateAltitudeModifier(playerY);
 
         // Modifier 0: Base Temperature (without any influence)
         float baseTemperature = config.defaultBaseTemperature;
@@ -140,8 +160,10 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         float seasonal = temperatureComponent.getSeasonalModifier();
         // Modifier 2: Environment (blocks)
         float environment = temperatureComponent.getEnvironmentModifier();
+        // Modifier 3: Altitude
+        float altitude = calculateAltitudeModifier(playerY);
 
-        return baseTemperature + environment + seasonal + timeModifier + altitude;
+        return baseTemperature + environment + seasonal + timeModifier + altitude + equipmentOffset;
     }
 
     private float calculateTimeModifier(WorldTimeResource timeResource, float dayLengthMultiplier) {
@@ -165,32 +187,58 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         return (float) ((gaussian - 1.0) * maxDrop);
     }
 
-    private float interpolateTemperature(float current, float target, float deltaTime) {
+    private float interpolateTemperature(
+            float current,
+            float target,
+            float deltaTime,
+            ItemStatSnapshot equipmentStats
+    ) {
+        float diff = target - current;
+        boolean isHeatingUp = diff > 0;
+        boolean isCoolingDown = diff < 0;
+
+        float itemOffset = equipmentStats.thermalOffset;
+        boolean itemWantsToCool = itemOffset < -1.0f;
+        boolean itemWantsToHeat = itemOffset > 1.0f;
+
+        boolean activeMode = false;
+        if (itemWantsToCool && isCoolingDown) activeMode = true;
+        else if (itemWantsToHeat && isHeatingUp) activeMode = true;
+
+        if (activeMode) {
+            float maxChange = config.activeItemResponseSpeed * deltaTime;
+            if (isHeatingUp) return Math.min(current + maxChange, target);
+            else return Math.max(current - maxChange, target);
+        }
+
         float base = config.defaultBaseTemperature;
-        float threshold = config.comfortZoneThreshold;
 
-        float comfortMin = base - threshold;
-        float comfortMax = base + threshold;
+        float safeThreshold = config.comfortZoneThreshold;
+        boolean targetIsSafe = (target > base - safeThreshold) && (target < base + safeThreshold);
 
-        boolean isHeatingUp = target > current;
-        boolean isCoolingDown = target < current;
-
-        boolean isRecovering = false;
-
-        if (isHeatingUp) {
-            if (current < comfortMin) {
-                isRecovering = true;
-            }
-        }
-        else if (isCoolingDown) {
-            if (current > comfortMax) {
-                isRecovering = true;
-            }
-        }
+        boolean directionTowardsBase = (isHeatingUp && current < base) || (isCoolingDown && current > base);
+        boolean isRecovering = directionTowardsBase && targetIsSafe;
 
         float selectedSpeed = isRecovering ? config.fastResponseSpeed : config.slowResponseSpeed;
 
-        float diff = target - current;
+        if (isRecovering) {
+            float currentDist = Math.abs(current - base);
+            float distanceRatio = currentDist / config.inertiaReferenceDistance;
+
+            float inertiaMultiplier = Math.max(
+                    config.minInertiaMultiplier,
+                    Math.min(config.maxInertiaMultiplier, distanceRatio)
+            );
+            selectedSpeed *= inertiaMultiplier;
+
+        } else {
+            float appliedInsulation = isCoolingDown ? equipmentStats.insulationCooling : equipmentStats.insulationHeating;
+
+            appliedInsulation = Math.min(appliedInsulation, 0.95f);
+
+            selectedSpeed *= (1.0f - appliedInsulation);
+        }
+
         float step = Math.min(deltaTime * selectedSpeed, 1.0F);
         return current + (diff * step);
     }
@@ -201,11 +249,6 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
             return seasonData.getCurrentSeason().getDayLengthMultiplier();
         }
         return 1.0F;
-    }
-
-    private boolean checkProtection(Player player, float temperature) {
-        // TODO: Verify the inventory of the player and holding item
-        return false;
     }
 
     private boolean isExtremeTemperature(float temp) {

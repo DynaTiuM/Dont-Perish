@@ -7,6 +7,7 @@ import org.tact.features.baxter.config.BaxterConfig;
 import org.tact.features.comfort.config.ComfortConfig;
 import org.tact.features.food_decay.config.FoodDecayConfig;
 import org.tact.features.hunger.config.HungerConfig;
+import org.tact.features.itemStats.config.ItemStatsConfig;
 import org.tact.features.seasons.config.SeasonsConfig;
 import org.tact.features.temperature.config.TemperatureConfig;
 
@@ -22,6 +23,8 @@ public class ModConfig {
     public ComfortConfig comfort = new ComfortConfig();
     public FoodDecayConfig foodDecay = new FoodDecayConfig();
     public GlobalFoodConfig globalFood = new GlobalFoodConfig();
+    public ItemStatsConfig itemStats = new ItemStatsConfig();
+
 
 
     public ModConfig() {}
@@ -60,6 +63,11 @@ public class ModConfig {
         b.append(new KeyedCodec<>("Food", GlobalFoodConfig.CODEC),
                 (cfg, v) -> cfg.globalFood = v,
                 cfg -> cfg.globalFood).add();
+
+
+        b.append(new KeyedCodec<>("ItemStats", ItemStatsConfig.CODEC),
+                (cfg, v) -> cfg.itemStats = v,
+                cfg -> cfg.itemStats).add();
 
         CODEC = b.build();
     }

@@ -1,0 +1,7 @@
+{
+  "Type": "Simple",
+  "Effects": {
+    "WaitForAnimationToFinish": true,
+    "LocalSoundEventId": "hytale:sfx.mud.break"
+  }
+}

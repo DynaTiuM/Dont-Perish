@@ -1,9 +1,9 @@
 {
   "TranslationProperties": {
-    "Name": "items.Baxter.name",
-    "Description": "Baxter"
+    "Name": "items.DP_Fan.name",
+    "Description": "DP_Fan"
   },
-  "Icon": "Icons/ItemsGenerated/Aurora.png",
+  "Icon": "Icons/ItemsGenerated/DP_Fridge.png",
   "Model": "Items/Baxter/Model.blockymodel",
   "Texture": "Items/Baxter/Texture.png",
   "Quality": "Common",
@@ -17,7 +17,7 @@
       "Tool"
     ],
     "Family": [
-      "Fishing_Rod"
+      "Dont Perish"
     ]
   },
   "IconProperties": {
@@ -36,7 +36,7 @@
     "Secondary": {
       "Interactions": [
         {
-          "Type": "SpawnBaxter"
+          "Type": "Fan_Use"
         }
       ]
     }

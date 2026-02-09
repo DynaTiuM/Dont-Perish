@@ -1,6 +1,5 @@
 package org.tact.core;
 
-import com.hypixel.hytale.event.EventBusRegistry;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.util.Config;
@@ -14,9 +13,9 @@ import org.tact.core.registry.FeatureRegistry;
 import org.tact.features.baxter.BaxterFeature;
 import org.tact.features.comfort.ComfortFeature;
 import org.tact.features.food_decay.FoodDecayFeature;
-import org.tact.features.food_decay.config.FoodDecayConfig;
 import org.tact.features.hunger.HungerFeature;
 import org.tact.features.hunger.config.HungerConfig;
+import org.tact.features.itemStats.ItemStatsFeature;
 import org.tact.features.seasons.SeasonsFeature;
 import org.tact.features.temperature.TemperatureFeature;
 
@@ -55,7 +54,7 @@ public class DontPerishPlugin extends JavaPlugin {
             feature.registerEvents(this);
             feature.registerSystems(this);
         });
-
+        
         this.configWrapper.save();
     }
 
@@ -85,8 +84,9 @@ public class DontPerishPlugin extends JavaPlugin {
         featureRegistry.register(new BaxterFeature(modConfig.baxter));
         featureRegistry.register(new FoodDecayFeature(modConfig.foodDecay));
 
-        featureRegistry.register(new ComfortFeature(modConfig.comfort, environmentRegistry));
-        featureRegistry.register(new TemperatureFeature(modConfig.temperature, environmentRegistry));
+        featureRegistry.register(new ItemStatsFeature(modConfig.itemStats));
+        featureRegistry.register(new ComfortFeature(modConfig.comfort, modConfig.itemStats, environmentRegistry));
+        featureRegistry.register(new TemperatureFeature(modConfig.temperature, modConfig.itemStats, environmentRegistry));
     }
 
     private void dispatchGlobalFoodDefinitions() {
