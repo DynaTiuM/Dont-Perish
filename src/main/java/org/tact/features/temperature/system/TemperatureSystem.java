@@ -206,15 +206,18 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         else if (itemWantsToHeat && isHeatingUp) activeMode = true;
 
         if (activeMode) {
-            float degreesPerSecond = config.activeItemResponseSpeed;
-            float maxChange = degreesPerSecond * deltaTime;
+            float maxChange = config.activeItemResponseSpeed * deltaTime;
             if (isHeatingUp) return Math.min(current + maxChange, target);
             else return Math.max(current - maxChange, target);
         }
 
         float base = config.defaultBaseTemperature;
 
-        boolean isRecovering = (isHeatingUp && current < base) || (isCoolingDown && current > base);
+        float safeThreshold = config.comfortZoneThreshold;
+        boolean targetIsSafe = (target > base - safeThreshold) && (target < base + safeThreshold);
+
+        boolean directionTowardsBase = (isHeatingUp && current < base) || (isCoolingDown && current > base);
+        boolean isRecovering = directionTowardsBase && targetIsSafe;
 
         float selectedSpeed = isRecovering ? config.fastResponseSpeed : config.slowResponseSpeed;
 
@@ -227,8 +230,12 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
                     Math.min(config.maxInertiaMultiplier, distanceRatio)
             );
             selectedSpeed *= inertiaMultiplier;
+
         } else {
             float appliedInsulation = isCoolingDown ? equipmentStats.insulationCooling : equipmentStats.insulationHeating;
+
+            appliedInsulation = Math.min(appliedInsulation, 0.95f);
+
             selectedSpeed *= (1.0f - appliedInsulation);
         }
 
