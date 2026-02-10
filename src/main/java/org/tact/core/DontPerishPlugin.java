@@ -34,13 +34,6 @@ public class DontPerishPlugin extends JavaPlugin {
 
     public DontPerishPlugin(@Nonnull JavaPluginInit init) {
         super(init);
-        getCodecRegistry(Interaction.CODEC).register(
-                "Fan_Use",
-                SimpleInteraction.class,
-                SimpleInteraction.CODEC
-        );
-
-        LOGGER.info("Registered Fan_Use interaction type");
 
         this.configWrapper = this.withConfig("DontPerish", ModConfig.CODEC);
     }

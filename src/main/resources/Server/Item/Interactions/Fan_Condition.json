@@ -1,0 +1,6 @@
+{
+  "Type": "Condition",
+  "RequiredGameMode": "Adventure",
+  "Next": "Fan_Use",
+  "Failed": "Simple"
+}

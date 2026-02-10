@@ -1,13 +1,14 @@
 {
   "TranslationProperties": {
-    "Name": "items.DP_Fan.name",
-    "Description": "DP_Fan"
+    "Name": "items.DP_Fan.name"
   },
   "Icon": "Icons/ItemsGenerated/DP_Fan.png",
   "Model": "Items/Tools/DP_Fan/Fan.blockymodel",
   "Texture": "Items/Tools/DP_Fan/Fan_Texture.png",
-  "PlayerAnimationsId": "Item",
-  "MaxDurability": 200,
+
+  "PlayerAnimationsId": "DP_Fan_Animations",
+
+  "MaxDurability": 50,
   "Quality": "Rare",
   "MaxStack": 1,
   "ItemLevel": 3,
@@ -22,10 +23,10 @@
       "Dont Perish"
     ]
   },
+  "RequireNewClick": true,
   "Interactions": {
     "Secondary": {
-      "Interactions": ["Fan_Use"]
-
+      "Interactions": ["Fan_Condition"]
     }
   },
   "IconProperties": {

@@ -4,14 +4,23 @@
   "HorizontalSpeedMultiplier": 0.5,
   "Effects": {
     "ItemAnimationId": "DP_Fan_Wave",
-    "Looping": true
+    "ClearAnimationOnFinish": true,
+    "ClearSoundEventOnFinish": true
   },
   "Next": {
-    "2.0": {
-      "Type": "Fan_Use"
+    "3.0": {
+      "Type": "ModifyInventory",
+      "AdjustHeldItemDurability": -1,
+      "NotifyOnBreak": true,
+      "NotifyOnBreakMessage": "server.general.repair.itemBroken"
     }
   },
+
   "Failed": {
-    "Type": "Simple"
+    "Type": "Simple",
+    "Effects": {
+      "ItemAnimationId": "Idle",
+      "Looping": true
+    }
   }
 }

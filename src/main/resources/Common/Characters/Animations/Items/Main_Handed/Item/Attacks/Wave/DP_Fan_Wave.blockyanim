@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "duration": 45,
+  "duration": 30,
   "holdLastKeyframe": false,
   "nodeAnimations": {
     "Root": {
@@ -19,11 +19,6 @@
         {
           "time": 30,
           "delta": {"x": 0, "y": 0, "z": 0, "w": 1},
-          "interpolationType": "linear"
-        },
-        {
-          "time": 45,
-          "delta": {"x": -0.34202, "y": 0, "z": 0, "w": 0.93969},
           "interpolationType": "linear"
         }
       ],
