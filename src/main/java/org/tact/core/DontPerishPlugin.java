@@ -1,5 +1,7 @@
 package org.tact.core;
 
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInteraction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.util.Config;
@@ -16,6 +18,7 @@ import org.tact.features.food_decay.FoodDecayFeature;
 import org.tact.features.hunger.HungerFeature;
 import org.tact.features.hunger.config.HungerConfig;
 import org.tact.features.itemStats.ItemStatsFeature;
+import org.tact.features.itemStats.interaction.ItemStatsInteraction;
 import org.tact.features.seasons.SeasonsFeature;
 import org.tact.features.temperature.TemperatureFeature;
 
@@ -32,6 +35,14 @@ public class DontPerishPlugin extends JavaPlugin {
 
     public DontPerishPlugin(@Nonnull JavaPluginInit init) {
         super(init);
+        getCodecRegistry(Interaction.CODEC).register(
+                "Fan_Effect",
+                SimpleInteraction.class,
+                SimpleInteraction.CODEC
+        );
+
+        LOGGER.info("Registered Fan_Use interaction type");
+
         this.configWrapper = this.withConfig("DontPerish", ModConfig.CODEC);
     }
 
@@ -54,7 +65,7 @@ public class DontPerishPlugin extends JavaPlugin {
             feature.registerEvents(this);
             feature.registerSystems(this);
         });
-        
+
         this.configWrapper.save();
     }
 

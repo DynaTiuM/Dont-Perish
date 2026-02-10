@@ -1,7 +1,18 @@
 {
-  "Type": "Simple",
+  "Type": "Charging",
+  "FailsOnDamage": false,
+  "HorizontalSpeedMultiplier": 0.5,
   "Effects": {
-    "WaitForAnimationToFinish": true,
-    "LocalSoundEventId": "hytale:sfx.mud.break"
-  }
+    "ItemAnimationId": "DP_Fan_Wave",
+    "Looping": true
+  },
+  "Next": {
+    "5.0": {
+      "Type": "Fan_Use"
+    }
+  },
+  "Failed": {
+    "Type": "Simple"
+  },
+  "RunTime": 5.0
 }

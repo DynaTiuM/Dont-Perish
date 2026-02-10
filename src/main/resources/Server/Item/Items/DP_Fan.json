@@ -3,10 +3,12 @@
     "Name": "items.DP_Fan.name",
     "Description": "DP_Fan"
   },
-  "Icon": "Icons/ItemsGenerated/DP_Fridge.png",
-  "Model": "Items/Baxter/Model.blockymodel",
-  "Texture": "Items/Baxter/Texture.png",
-  "Quality": "Common",
+  "Icon": "Icons/ItemsGenerated/DP_Fan.png",
+  "Model": "Items/Tools/DP_Fan/Fan.blockymodel",
+  "Texture": "Items/Tools/DP_Fan/Fan_Texture.png",
+  "PlayerAnimationsId": "Item",
+  "MaxDurability": 200,
+  "Quality": "Rare",
   "MaxStack": 1,
   "ItemLevel": 3,
   "Categories": [
@@ -20,26 +22,33 @@
       "Dont Perish"
     ]
   },
-  "IconProperties": {
-    "Scale": 1.1,
-    "Rotation": [
-      350,
-      112,
-      0
-    ],
-    "Translation": [
-      1,
-      -6
-    ]
-  },
   "Interactions": {
     "Secondary": {
       "Interactions": [
         {
-          "Type": "Fan_Use"
+          "Type": "Charging",
+          "FailsOnDamage": false,
+          "HorizontalSpeedMultiplier": 0.5,
+          "Effects": {
+            "ItemAnimationId": "DP_Fan_Use",
+            "Looping": true
+          },
+          "Next": {
+            "5.0": {
+              "Type": "Fan_Effect"
+            }
+          },
+          "Failed": {
+            "Type": "Simple"
+          }
         }
       ]
     }
+  },
+  "IconProperties": {
+    "Scale": 0.55,
+    "Translation": [ 0, -10 ],
+    "Rotation": [ 0, 45, 0 ]
   },
   "Set": "",
   "Scale": 1

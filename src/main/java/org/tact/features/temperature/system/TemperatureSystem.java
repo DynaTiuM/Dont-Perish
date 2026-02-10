@@ -100,7 +100,6 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
                 deltaTime,
                 equipmentStats
         );
-        player.sendMessage(Message.raw("[Temperature]" + nextTemperature));
         if (nextTemperature != currentTemperature) {
             statMap.setStatValue(getTemperatureStatIndex(), nextTemperature);
             temperatureComponent.setLerpedTemperature(nextTemperature);
