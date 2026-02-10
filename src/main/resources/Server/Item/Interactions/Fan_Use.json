@@ -8,11 +8,9 @@
     "ClearSoundEventOnFinish": true
   },
   "Next": {
-    "3.0": {
+    "2.0": {
       "Type": "ModifyInventory",
-      "AdjustHeldItemDurability": -1,
-      "NotifyOnBreak": true,
-      "NotifyOnBreakMessage": "server.general.repair.itemBroken"
+      "NotifyOnBreak": true
     }
   },
 

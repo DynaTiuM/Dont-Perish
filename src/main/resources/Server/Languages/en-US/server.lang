@@ -1,3 +1,4 @@
 items.DP_Fridge.name = Fridge
 items.DP_Fan.name = Fan
 server.general.repair.itemBroken_DP_Fan
+server.general.damageCauses.starvation = starvation

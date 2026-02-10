@@ -1,7 +1,17 @@
 package org.tact.features.itemStats;
 
+import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.api.Feature;
+import org.tact.common.ui.HudManager;
+import org.tact.features.comfort.component.ComfortComponent;
+import org.tact.features.comfort.ui.ComfortHud;
+import org.tact.features.itemStats.component.UsageBufferComponent;
 import org.tact.features.itemStats.config.ItemStatsConfig;
 import org.tact.features.itemStats.system.PassiveItemSystem;
 
@@ -17,6 +27,8 @@ public class ItemStatsFeature implements Feature {
 
     @Override
     public void registerComponents(JavaPlugin plugin) {
+        UsageBufferComponent.TYPE = plugin.getEntityStoreRegistry()
+                .registerComponent(UsageBufferComponent.class, UsageBufferComponent::new);
 
     }
 
@@ -27,7 +39,16 @@ public class ItemStatsFeature implements Feature {
 
     @Override
     public void registerEvents(JavaPlugin plugin) {
+        plugin.getEventRegistry().registerGlobal(PlayerReadyEvent.class, event -> {
+            Player player = event.getPlayer();
+            Ref<EntityStore> ref = player.getReference();
+            Store<EntityStore> store = ref.getStore();
 
+            if (store.getComponent(ref, UsageBufferComponent.getComponentType()) == null) {
+                store.putComponent(ref, UsageBufferComponent.getComponentType(), new UsageBufferComponent());
+            }
+
+        });
     }
 
     @Override

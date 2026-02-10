@@ -21,6 +21,7 @@ import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.tact.common.ui.HudManager;
 import org.tact.common.util.TimeUtil;
+import org.tact.features.itemStats.component.UsageBufferComponent;
 import org.tact.features.itemStats.config.ItemStatsConfig;
 import org.tact.features.itemStats.model.ItemStatSnapshot;
 import org.tact.features.itemStats.util.ItemStatCalculator;
@@ -80,7 +81,9 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         ComponentType<EntityStore, InteractionManager> managerType = InteractionModule.get().getInteractionManagerComponent();
         InteractionManager interactionManager = store.getComponent(playerRef, managerType);
 
-        ItemStatSnapshot equipmentStats = ItemStatCalculator.calculate(player, interactionManager, itemConfig);
+        UsageBufferComponent buffer = archetypeChunk.getComponent(index, UsageBufferComponent.getComponentType());
+
+        ItemStatSnapshot equipmentStats = ItemStatCalculator.calculate(player, interactionManager, itemConfig, deltaTime, buffer, false);
 
         // Temperature of the player
         float targetTemperature = calculateTargetTemperature(

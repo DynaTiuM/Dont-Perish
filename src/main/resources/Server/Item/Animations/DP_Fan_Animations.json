@@ -4,8 +4,7 @@
     "DP_Fan_Wave": {
       "ThirdPerson": "Characters/Animations/Items/Main_Handed/Item/Attacks/Wave/DP_Fan_Wave.blockyanim",
       "FirstPerson": "Characters/Animations/Items/Main_Handed/Item/Attacks/Wave/DP_Fan_Wave.blockyanim",
-      "Looping": true,
-      "BlendingDuration": 0.0
+      "Looping": true
     }
   }
 }

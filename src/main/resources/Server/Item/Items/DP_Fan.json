@@ -23,7 +23,6 @@
       "Dont Perish"
     ]
   },
-  "RequireNewClick": true,
   "Interactions": {
     "Secondary": {
       "Interactions": ["Fan_Condition"]
