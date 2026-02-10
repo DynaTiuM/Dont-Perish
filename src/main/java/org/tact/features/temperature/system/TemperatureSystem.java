@@ -78,12 +78,10 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         WorldTimeResource timeResource = store.getResource(WorldTimeResource.getResourceType());
         float seasonStretch = getSeasonStretch(store);
 
-        ComponentType<EntityStore, InteractionManager> managerType = InteractionModule.get().getInteractionManagerComponent();
-        InteractionManager interactionManager = store.getComponent(playerRef, managerType);
 
         UsageBufferComponent buffer = archetypeChunk.getComponent(index, UsageBufferComponent.getComponentType());
 
-        ItemStatSnapshot equipmentStats = ItemStatCalculator.calculate(player, interactionManager, itemConfig, deltaTime, buffer, false);
+        ItemStatSnapshot itemStats = (buffer != null) ? buffer.getLastSnapshot() : new ItemStatSnapshot();
 
         // Temperature of the player
         float targetTemperature = calculateTargetTemperature(
@@ -91,7 +89,7 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
                 timeResource,
                 seasonStretch,
                 playerY,
-                equipmentStats.thermalOffset
+                itemStats.thermalOffset
         );
 
         temperatureComponent.setTargetTemperature(targetTemperature);
@@ -101,7 +99,7 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
                 currentTemperature,
                 targetTemperature,
                 deltaTime,
-                equipmentStats
+                itemStats
         );
         if (nextTemperature != currentTemperature) {
             statMap.setStatValue(getTemperatureStatIndex(), nextTemperature);

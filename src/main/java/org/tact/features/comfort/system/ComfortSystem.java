@@ -54,11 +54,10 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
         EntityStatMap statMap = store.getComponent(playerRef, EntityStatMap.getComponentType());
         EntityStatValue comfortStat = statMap.get(getComfortStatIndex());
 
-        ComponentType<EntityStore, InteractionManager> managerType = InteractionModule.get().getInteractionManagerComponent();
-        InteractionManager interactionManager = store.getComponent(playerRef, managerType);
         UsageBufferComponent buffer = archetypeChunk.getComponent(index, UsageBufferComponent.getComponentType());
 
-        ItemStatSnapshot itemStats = ItemStatCalculator.calculate(player, interactionManager, itemConfig, deltaTime, buffer, false);
+        ItemStatSnapshot itemStats = (buffer != null) ? buffer.getLastSnapshot() : new ItemStatSnapshot();
+
         float equipmentBonus = itemStats.comfortModifier;
 
         float currentComfort = comfortStat.get();
