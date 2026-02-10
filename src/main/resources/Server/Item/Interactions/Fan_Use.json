@@ -7,12 +7,11 @@
     "Looping": true
   },
   "Next": {
-    "5.0": {
+    "2.0": {
       "Type": "Fan_Use"
     }
   },
   "Failed": {
     "Type": "Simple"
-  },
-  "RunTime": 5.0
+  }
 }

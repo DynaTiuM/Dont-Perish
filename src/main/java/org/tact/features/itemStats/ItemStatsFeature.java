@@ -1,11 +1,8 @@
 package org.tact.features.itemStats;
 
-import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
-import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInteraction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import org.tact.api.Feature;
 import org.tact.features.itemStats.config.ItemStatsConfig;
-import org.tact.features.itemStats.interaction.ItemStatsInteraction;
 import org.tact.features.itemStats.system.PassiveItemSystem;
 
 public class ItemStatsFeature implements Feature {

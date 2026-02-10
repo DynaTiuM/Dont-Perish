@@ -24,25 +24,8 @@
   },
   "Interactions": {
     "Secondary": {
-      "Interactions": [
-        {
-          "Type": "Charging",
-          "FailsOnDamage": false,
-          "HorizontalSpeedMultiplier": 0.5,
-          "Effects": {
-            "ItemAnimationId": "DP_Fan_Use",
-            "Looping": true
-          },
-          "Next": {
-            "5.0": {
-              "Type": "Fan_Effect"
-            }
-          },
-          "Failed": {
-            "Type": "Simple"
-          }
-        }
-      ]
+      "Interactions": ["Fan_Use"]
+
     }
   },
   "IconProperties": {

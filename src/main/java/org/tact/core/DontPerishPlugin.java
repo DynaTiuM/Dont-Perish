@@ -18,7 +18,6 @@ import org.tact.features.food_decay.FoodDecayFeature;
 import org.tact.features.hunger.HungerFeature;
 import org.tact.features.hunger.config.HungerConfig;
 import org.tact.features.itemStats.ItemStatsFeature;
-import org.tact.features.itemStats.interaction.ItemStatsInteraction;
 import org.tact.features.seasons.SeasonsFeature;
 import org.tact.features.temperature.TemperatureFeature;
 
@@ -36,7 +35,7 @@ public class DontPerishPlugin extends JavaPlugin {
     public DontPerishPlugin(@Nonnull JavaPluginInit init) {
         super(init);
         getCodecRegistry(Interaction.CODEC).register(
-                "Fan_Effect",
+                "Fan_Use",
                 SimpleInteraction.class,
                 SimpleInteraction.CODEC
         );
