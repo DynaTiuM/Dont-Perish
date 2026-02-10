@@ -28,7 +28,7 @@ public class UsageBufferComponent implements Component<EntityStore> {
         accumulatedDamages.put(key, Math.max(0, getDamage(key) - amount));
     }
     public void addSyncTime(float dt) { this.timeSinceLastSync += dt; }
-    public boolean shouldSync() { return timeSinceLastSync >= 0.5f; }
+    public boolean shouldSync() { return timeSinceLastSync >= 2.0F; }
     public void resetSyncTimer() { this.timeSinceLastSync = 0; }
 
     public ItemStatSnapshot getLastSnapshot() { return lastSnapshot; }
