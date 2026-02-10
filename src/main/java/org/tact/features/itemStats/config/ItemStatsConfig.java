@@ -22,6 +22,7 @@ public class ItemStatsConfig {
 
         ItemStats fan = new ItemStats();
         fan.thermalOffset = -12.0F;
+        fan.comfortModifier = 0.5F;
         fan.activeInHand = true;
         fan.requireUsage = true;
         items.put("DP_Fan", fan);

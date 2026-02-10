@@ -8,10 +8,10 @@
 
   "PlayerAnimationsId": "DP_Fan_Animations",
 
-  "MaxDurability": 50,
-  "Quality": "Rare",
+  "MaxDurability": 60,
+  "Quality": "Uncommon",
   "MaxStack": 1,
-  "ItemLevel": 3,
+  "ItemLevel": 2,
   "Categories": [
     "Items.Tools"
   ],
@@ -27,11 +27,6 @@
     "Secondary": {
       "Interactions": ["Fan_Condition"]
     }
-  },
-  "IconProperties": {
-    "Scale": 0.55,
-    "Translation": [ 0, -10 ],
-    "Rotation": [ 0, 45, 0 ]
   },
   "Set": "",
   "Scale": 1
