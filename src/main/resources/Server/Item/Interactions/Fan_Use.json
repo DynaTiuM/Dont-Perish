@@ -1,14 +1,14 @@
 {
   "Type": "Charging",
   "FailsOnDamage": false,
-  "HorizontalSpeedMultiplier": 0.5,
+  "HorizontalSpeedMultiplier": 0.6,
   "Effects": {
     "ItemAnimationId": "DP_Fan_Wave",
     "ClearAnimationOnFinish": true,
     "ClearSoundEventOnFinish": true
   },
   "Next": {
-    "2.0": {
+    "3.0": {
       "Type": "ModifyInventory",
       "NotifyOnBreak": true
     }
