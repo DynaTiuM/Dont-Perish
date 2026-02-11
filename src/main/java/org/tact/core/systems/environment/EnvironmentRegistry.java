@@ -1,4 +1,4 @@
-package org.tact.common.environment;
+package org.tact.core.systems.environment;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -13,6 +13,7 @@ public class EnvironmentRegistry {
             return;
         }
         handlers.put(id, handler);
+
         LOGGER.info("[Environment] Handler registered: " + id);
     }
 

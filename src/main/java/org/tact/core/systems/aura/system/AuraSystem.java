@@ -1,4 +1,4 @@
-package org.tact.common.aura;
+package org.tact.core.systems.aura.system;
 
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
@@ -9,6 +9,11 @@ import com.hypixel.hytale.server.core.modules.entity.component.TransformComponen
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import org.tact.core.systems.aura.AuraEmitter;
+import org.tact.core.systems.aura.AuraEvent;
+import org.tact.core.systems.aura.AuraHandler;
+import org.tact.core.systems.aura.AuraRegistry;
+import org.tact.features.comfort.component.ComfortComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +21,11 @@ import java.util.Map;
 
 public class AuraSystem extends EntityTickingSystem<EntityStore> {
 
-    private final float checkInterval;
+    private final int ticksInterval;
     private final AuraRegistry auraRegistry;
-    private float timeSinceLastCheck = 0.0F;
 
-    public AuraSystem(float checkInterval, AuraRegistry auraRegistry) {
-        this.checkInterval = checkInterval;
+    public AuraSystem(int ticksInterval, AuraRegistry auraRegistry) {
+        this.ticksInterval = ticksInterval;
         this.auraRegistry = auraRegistry;
     }
 
@@ -40,14 +44,19 @@ public class AuraSystem extends EntityTickingSystem<EntityStore> {
 
         collectAuras(index, entityRef, archetypeChunk);
 
-        timeSinceLastCheck += deltaTime;
-        if (timeSinceLastCheck >= checkInterval) {
-            timeSinceLastCheck = 0.0F;
+        long worldTime = player.getWorld().getTick();
+        if ((worldTime + index) % this.ticksInterval != 0) {
+            return;
+        }
 
-            List<AuraEvent> nearbyAuras = findNearbyAuras(entityRef, store);
+        List<AuraEvent> nearbyAuras = findNearbyAuras(entityRef, store);
 
+        if (nearbyAuras.isEmpty()) {
+            ComfortComponent comfortComponent = archetypeChunk.getComponent(index, ComfortComponent.getComponentType());
+            if (comfortComponent != null) comfortComponent.setAuraGain(0.0F);
+        } else {
             for (AuraHandler handler : auraRegistry.getAllHandlers().values()) {
-                handler.onAurasDetected(player, entityRef, store, nearbyAuras, deltaTime);
+                handler.onAurasDetected(player, entityRef, store, nearbyAuras);
             }
         }
     }

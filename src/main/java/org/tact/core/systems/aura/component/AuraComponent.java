@@ -1,15 +1,15 @@
-package org.tact.features.itemStats.component;
+package org.tact.core.systems.aura.component;
 
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
-import org.tact.common.aura.AuraEmitter;
-import org.tact.common.aura.AuraEvent;
+import org.tact.core.systems.aura.AuraEmitter;
+import org.tact.core.systems.aura.AuraEvent;
 
-public class DynamicAuraComponent implements Component<EntityStore>, AuraEmitter {
-    public static ComponentType<EntityStore, DynamicAuraComponent> TYPE;
+public class AuraComponent implements Component<EntityStore>, AuraEmitter {
+    public static ComponentType<EntityStore, AuraComponent> TYPE;
 
     @NullableDecl
     private AuraEvent currentAura = null;
@@ -19,22 +19,17 @@ public class DynamicAuraComponent implements Component<EntityStore>, AuraEmitter
     }
 
     @NullableDecl
-    public AuraEvent getCurrentAura() {
-        return currentAura;
-    }
-
-    @NullableDecl
-    @Override // Implémentation de ton interface AuraEmitter
+    @Override
     public AuraEvent getAura(Ref<EntityStore> entityRef) {
         return currentAura;
     }
 
     @Override
     public Component<EntityStore> clone() {
-        return new DynamicAuraComponent();
+        return new AuraComponent();
     }
 
-    public static ComponentType<EntityStore, DynamicAuraComponent> getComponentType() {
+    public static ComponentType<EntityStore, AuraComponent> getComponentType() {
         return TYPE;
     }
 }

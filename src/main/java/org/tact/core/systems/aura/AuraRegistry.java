@@ -1,4 +1,4 @@
-package org.tact.common.aura;
+package org.tact.core.systems.aura;
 
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -14,7 +14,7 @@ public class AuraRegistry {
 
     private final Map<Ref<EntityStore>, List<AuraEvent>> activeAuras = new ConcurrentHashMap<>();
 
-    public void registerHandler(String id, AuraHandler handler) {
+    public void register(String id, AuraHandler handler) {
         if (handlers.containsKey(id)) {
             LOGGER.warning("[Aura] Handler '" + id + "' is already registered!");
             return;

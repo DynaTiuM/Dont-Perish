@@ -8,8 +8,8 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.api.Feature;
-import org.tact.common.aura.AuraRegistry;
-import org.tact.common.environment.EnvironmentRegistry;
+import org.tact.core.systems.aura.AuraRegistry;
+import org.tact.core.systems.environment.EnvironmentRegistry;
 import org.tact.common.ui.HudManager;
 import org.tact.features.comfort.component.ComfortComponent;
 import org.tact.features.comfort.config.ComfortConfig;
@@ -19,7 +19,6 @@ import org.tact.features.comfort.system.ComfortBlockSystem;
 import org.tact.features.comfort.system.ComfortDamageSystem;
 import org.tact.features.comfort.system.ComfortSystem;
 import org.tact.features.comfort.ui.ComfortHud;
-import org.tact.features.itemStats.config.ItemStatsConfig;
 
 public class ComfortFeature implements Feature {
     private final ComfortConfig config;
@@ -75,7 +74,7 @@ public class ComfortFeature implements Feature {
         plugin.getEntityStoreRegistry().registerSystem(new ComfortDamageSystem(config));
         plugin.getEntityStoreRegistry().registerSystem(new ComfortBlockSystem(config));
 
-        auraRegistry.registerHandler("comfort_aura", new ComfortAuraHandler(config));
+        auraRegistry.register("comfort_aura", new ComfortAuraHandler(config));
     }
 
     @Override

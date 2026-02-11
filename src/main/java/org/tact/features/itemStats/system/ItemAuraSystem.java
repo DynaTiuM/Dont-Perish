@@ -14,8 +14,8 @@ import com.hypixel.hytale.server.core.modules.interaction.InteractionModule;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
-import org.tact.common.aura.AuraEvent;
-import org.tact.features.itemStats.component.DynamicAuraComponent;
+import org.tact.core.systems.aura.AuraEvent;
+import org.tact.core.systems.aura.component.AuraComponent;
 import org.tact.features.itemStats.config.ItemStats;
 import org.tact.features.itemStats.config.ItemStatsConfig;
 import org.tact.features.itemStats.util.ItemStatCalculator;
@@ -38,7 +38,7 @@ public class ItemAuraSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
-        DynamicAuraComponent auraComp = archetypeChunk.getComponent(index, DynamicAuraComponent.getComponentType());
+        AuraComponent auraComp = archetypeChunk.getComponent(index, AuraComponent.getComponentType());
         InteractionManager interactionManager = archetypeChunk.getComponent(index, managerType);
         Ref<EntityStore> playerRef = archetypeChunk.getReferenceTo(index);
 
@@ -74,7 +74,7 @@ public class ItemAuraSystem extends EntityTickingSystem<EntityStore> {
     public Query<EntityStore> getQuery() {
         return Query.and(
                 Player.getComponentType(),
-                DynamicAuraComponent.getComponentType(),
+                AuraComponent.getComponentType(),
                 managerType
         );
     }

@@ -1,27 +1,25 @@
 package org.tact.core;
 
-import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
-import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInteraction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.util.Config;
 import org.tact.commands.BaxterCommand;
-import org.tact.common.aura.AuraRegistry;
-import org.tact.common.aura.AuraSystem;
-import org.tact.common.environment.EnvironmentRegistry;
-import org.tact.common.environment.EnvironmentScannerSystem;
+import org.tact.core.systems.aura.AuraFeature;
+import org.tact.core.systems.aura.AuraRegistry;
+import org.tact.core.systems.aura.system.AuraSystem;
+import org.tact.core.systems.environment.EnvironmentFeature;
+import org.tact.core.systems.environment.EnvironmentRegistry;
+import org.tact.core.systems.environment.system.EnvironmentSystem;
 import org.tact.core.config.FoodDefinition;
 import org.tact.core.config.GlobalFoodConfig;
 import org.tact.core.config.ModConfig;
 import org.tact.core.registry.FeatureRegistry;
 import org.tact.features.baxter.BaxterFeature;
 import org.tact.features.comfort.ComfortFeature;
-import org.tact.features.comfort.handler.ComfortAuraHandler;
 import org.tact.features.food_decay.FoodDecayFeature;
 import org.tact.features.hunger.HungerFeature;
 import org.tact.features.hunger.config.HungerConfig;
 import org.tact.features.itemStats.ItemStatsFeature;
-import org.tact.features.music.MusicFeature;
 import org.tact.features.seasons.SeasonsFeature;
 import org.tact.features.temperature.TemperatureFeature;
 
@@ -76,17 +74,12 @@ public class DontPerishPlugin extends JavaPlugin {
             feature.enable(this);
         });
 
-        getEntityStoreRegistry().registerSystem(
-                new EnvironmentScannerSystem(4, 1.0F, environmentRegistry)
-        );
-        getEntityStoreRegistry().registerSystem(
-                new AuraSystem(1.0F, auraRegistry)
-        );
-
         LOGGER.info("DontPerish mod successfully started!");
     }
 
     private void registerFeatures() {
+        featureRegistry.register(new AuraFeature(auraRegistry));
+        featureRegistry.register(new EnvironmentFeature(environmentRegistry));
 
         dispatchGlobalFoodDefinitions();
 

@@ -3,12 +3,9 @@ package org.tact.features.comfort.handler;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
-import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
-import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import org.tact.common.aura.AuraEvent;
-import org.tact.common.aura.AuraHandler;
+import org.tact.core.systems.aura.AuraEvent;
+import org.tact.core.systems.aura.AuraHandler;
 import org.tact.features.comfort.component.ComfortComponent;
 import org.tact.features.comfort.config.ComfortConfig;
 
@@ -28,8 +25,7 @@ public class ComfortAuraHandler implements AuraHandler {
             Player player,
             Ref<EntityStore> entityRef,
             Store<EntityStore> store,
-            List<AuraEvent> nearbyAuras,
-            float deltaTime
+            List<AuraEvent> nearbyAuras
     ) {
         ComfortComponent comfortComp = store.getComponent(entityRef, ComfortComponent.getComponentType());
         if (comfortComp == null) return;

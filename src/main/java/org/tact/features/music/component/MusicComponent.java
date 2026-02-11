@@ -4,8 +4,8 @@ import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import org.tact.common.aura.AuraEmitter;
-import org.tact.common.aura.AuraEvent;
+import org.tact.core.systems.aura.AuraEmitter;
+import org.tact.core.systems.aura.AuraEvent;
 
 import javax.annotation.Nullable;
 

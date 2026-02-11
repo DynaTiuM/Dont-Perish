@@ -1,4 +1,4 @@
-package org.tact.common.environment;
+package org.tact.core.systems.environment;
 
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;

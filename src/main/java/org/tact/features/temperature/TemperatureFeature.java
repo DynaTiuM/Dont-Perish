@@ -8,7 +8,8 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.api.Feature;
-import org.tact.common.environment.EnvironmentRegistry;
+import org.tact.core.systems.environment.EnvironmentRegistry;
+import org.tact.core.systems.environment.component.EnvironmentComponent;
 import org.tact.common.ui.HudManager;
 import org.tact.features.itemStats.config.ItemStatsConfig;
 import org.tact.features.temperature.component.TemperatureComponent;
@@ -57,6 +58,9 @@ public class TemperatureFeature implements Feature {
 
             if (store.getComponent(ref, TemperatureComponent.getComponentType()) == null) {
                 store.addComponent(ref, TemperatureComponent.getComponentType());
+            }
+            if (store.getComponent(ref, EnvironmentComponent.getComponentType()) == null) {
+                store.addComponent(ref, EnvironmentComponent.getComponentType());
             }
 
             PlayerRef pRef = store.getComponent(ref, PlayerRef.getComponentType());
