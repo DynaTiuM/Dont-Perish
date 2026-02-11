@@ -4,6 +4,8 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.util.Config;
 import org.tact.commands.BaxterCommand;
+import org.tact.common.aura.AuraRegistry;
+import org.tact.common.aura.AuraSystem;
 import org.tact.common.environment.EnvironmentRegistry;
 import org.tact.common.environment.EnvironmentScannerSystem;
 import org.tact.core.config.FoodDefinition;
@@ -16,6 +18,7 @@ import org.tact.features.food_decay.FoodDecayFeature;
 import org.tact.features.hunger.HungerFeature;
 import org.tact.features.hunger.config.HungerConfig;
 import org.tact.features.itemStats.ItemStatsFeature;
+import org.tact.features.music.MusicFeature;
 import org.tact.features.seasons.SeasonsFeature;
 import org.tact.features.temperature.TemperatureFeature;
 
@@ -29,6 +32,7 @@ public class DontPerishPlugin extends JavaPlugin {
     private ModConfig modConfig;
     private FeatureRegistry featureRegistry;
     private EnvironmentRegistry environmentRegistry;
+    private AuraRegistry auraRegistry;
 
     public DontPerishPlugin(@Nonnull JavaPluginInit init) {
         super(init);
@@ -43,6 +47,7 @@ public class DontPerishPlugin extends JavaPlugin {
 
         featureRegistry = new FeatureRegistry();
         environmentRegistry = new EnvironmentRegistry();
+        auraRegistry = new AuraRegistry();
 
         getCommandRegistry().registerCommand(new BaxterCommand(modConfig.baxter));
 
@@ -68,7 +73,10 @@ public class DontPerishPlugin extends JavaPlugin {
         });
 
         getEntityStoreRegistry().registerSystem(
-                new EnvironmentScannerSystem(4, 1.0f, environmentRegistry)
+                new EnvironmentScannerSystem(4, 1.0F, environmentRegistry)
+        );
+        getEntityStoreRegistry().registerSystem(
+                new AuraSystem(1.0F, auraRegistry)
         );
 
         LOGGER.info("DontPerish mod successfully started!");
@@ -84,8 +92,10 @@ public class DontPerishPlugin extends JavaPlugin {
         featureRegistry.register(new BaxterFeature(modConfig.baxter));
         featureRegistry.register(new FoodDecayFeature(modConfig.foodDecay));
 
+        featureRegistry.register(new MusicFeature());
         featureRegistry.register(new ItemStatsFeature(modConfig.itemStats));
-        featureRegistry.register(new ComfortFeature(modConfig.comfort, modConfig.itemStats, environmentRegistry));
+
+        featureRegistry.register(new ComfortFeature(modConfig.comfort, modConfig.itemStats, environmentRegistry, auraRegistry));
         featureRegistry.register(new TemperatureFeature(modConfig.temperature, modConfig.itemStats, environmentRegistry));
     }
 

@@ -27,6 +27,10 @@ public class ComfortConfig {
 
     public float creativeRegenSpeed = 100.0F;
 
+    public float musicComfortBonus = 3.0F;
+    public float speechComfortBonus = 2.0F;
+    public float laughterComfortBonus = 3.0F;
+
     public Map<String, Float> comfortValues = new HashMap<>();
 
     public ComfortConfig() {
@@ -130,6 +134,14 @@ public class ComfortConfig {
 
         b.append(new KeyedCodec<>("ComfortValues", new MapCodec<>(Codec.FLOAT, HashMap::new)),
                 (cfg, v) -> cfg.comfortValues = v, cfg -> cfg.comfortValues).add();
+
+
+        b.append(new KeyedCodec<>("MusicComfortBonus", Codec.FLOAT),
+                (cfg, v) -> cfg.musicComfortBonus = v, cfg -> cfg.musicComfortBonus).add();
+        b.append(new KeyedCodec<>("SpeechComfortBonus", Codec.FLOAT),
+                (cfg, v) -> cfg.speechComfortBonus = v, cfg -> cfg.speechComfortBonus).add();
+        b.append(new KeyedCodec<>("LaughterComfortBonus", Codec.FLOAT),
+                (cfg, v) -> cfg.laughterComfortBonus = v, cfg -> cfg.laughterComfortBonus).add();
 
         CODEC = b.build();
     }

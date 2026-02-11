@@ -3,9 +3,15 @@ package org.tact.features.itemStats.config;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
+import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 public class ItemStats {
     public static final BuilderCodec<ItemStats> CODEC;
+
+    @NullableDecl
+    public String auraType = null;
+    public float auraRadius = 0.0f;
+    public float auraStrength = 0.0f;
 
     public float thermalOffset = 0.0f;
     public float insulationCooling = 0.0f;
@@ -41,6 +47,10 @@ public class ItemStats {
         b.append(new KeyedCodec<>("ActiveInHand", Codec.BOOLEAN), (c, v) -> c.activeInHand = v, c -> c.activeInHand).add();
         b.append(new KeyedCodec<>("ActiveInArmor", Codec.BOOLEAN), (c, v) -> c.activeInArmor = v, c -> c.activeInArmor).add();
         b.append(new KeyedCodec<>("ActiveInInventory", Codec.BOOLEAN), (c, v) -> c.activeInInventory = v, c -> c.activeInInventory).add();
+
+        b.append(new KeyedCodec<>("AuraType", Codec.STRING), (s, v) -> s.auraType = v, s -> s.auraType).add();
+        b.append(new KeyedCodec<>("AuraRadius", Codec.FLOAT), (s, v) -> s.auraRadius = v, s -> s.auraRadius).add();
+        b.append(new KeyedCodec<>("AuraStrength", Codec.FLOAT), (s, v) -> s.auraStrength = v, s -> s.auraStrength).add();
 
         b.append(new KeyedCodec<>("RequireUsage", Codec.BOOLEAN), (c, v) -> c.requireUsage = v, c -> c.requireUsage).add();
         

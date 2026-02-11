@@ -8,10 +8,12 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.api.Feature;
+import org.tact.common.aura.AuraRegistry;
 import org.tact.common.environment.EnvironmentRegistry;
 import org.tact.common.ui.HudManager;
 import org.tact.features.comfort.component.ComfortComponent;
 import org.tact.features.comfort.config.ComfortConfig;
+import org.tact.features.comfort.handler.ComfortAuraHandler;
 import org.tact.features.comfort.handler.ComfortEnvironmentHandler;
 import org.tact.features.comfort.system.ComfortBlockSystem;
 import org.tact.features.comfort.system.ComfortDamageSystem;
@@ -23,15 +25,18 @@ public class ComfortFeature implements Feature {
     private final ComfortConfig config;
     private final ItemStatsConfig itemConfig;
     private final EnvironmentRegistry environmentRegistry;
+    private final AuraRegistry auraRegistry;
 
     public ComfortFeature(
             ComfortConfig config,
             ItemStatsConfig itemConfig,
-            EnvironmentRegistry environmentRegistry
+            EnvironmentRegistry environmentRegistry,
+            AuraRegistry auraRegistry
     ) {
         this.config = config;
         this.itemConfig = itemConfig;
         this.environmentRegistry = environmentRegistry;
+        this.auraRegistry = auraRegistry;
     }
 
     @Override
@@ -73,6 +78,7 @@ public class ComfortFeature implements Feature {
         plugin.getEntityStoreRegistry().registerSystem(new ComfortDamageSystem(config));
         plugin.getEntityStoreRegistry().registerSystem(new ComfortBlockSystem(config));
 
+        auraRegistry.registerHandler("comfort_aura", new ComfortAuraHandler(config));
     }
 
     @Override
