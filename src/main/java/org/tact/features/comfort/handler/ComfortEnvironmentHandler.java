@@ -4,8 +4,8 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import org.tact.common.environment.EnvironmentHandler;
-import org.tact.common.environment.EnvironmentResult;
+import org.tact.core.systems.environment.EnvironmentHandler;
+import org.tact.core.systems.environment.EnvironmentResult;
 import org.tact.features.comfort.component.ComfortComponent;
 import org.tact.features.comfort.config.ComfortConfig;
 

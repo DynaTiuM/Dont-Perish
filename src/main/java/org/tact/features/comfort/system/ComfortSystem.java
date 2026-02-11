@@ -22,20 +22,18 @@ import org.tact.common.util.StatHelper;
 import org.tact.features.comfort.component.ComfortComponent;
 import org.tact.features.comfort.config.ComfortConfig;
 import org.tact.features.comfort.ui.ComfortHud;
+import org.tact.features.itemStats.component.UsageBufferComponent;
 import org.tact.features.itemStats.config.ItemStatsConfig;
 import org.tact.features.itemStats.model.ItemStatSnapshot;
 import org.tact.features.itemStats.util.ItemStatCalculator;
 
 public class ComfortSystem extends EntityTickingSystem<EntityStore> {
     private final ComfortConfig config;
-    private final ItemStatsConfig itemConfig;
 
     public ComfortSystem(
-            ComfortConfig config,
-            ItemStatsConfig itemConfig
+            ComfortConfig config
     ) {
         this.config = config;
-        this.itemConfig = itemConfig;
     }
 
     @Override
@@ -53,9 +51,10 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
         EntityStatMap statMap = store.getComponent(playerRef, EntityStatMap.getComponentType());
         EntityStatValue comfortStat = statMap.get(getComfortStatIndex());
 
-        ComponentType<EntityStore, InteractionManager> managerType = InteractionModule.get().getInteractionManagerComponent();
-        InteractionManager interactionManager = store.getComponent(playerRef, managerType);
-        ItemStatSnapshot itemStats = ItemStatCalculator.calculate(player, interactionManager, itemConfig);
+        UsageBufferComponent buffer = archetypeChunk.getComponent(index, UsageBufferComponent.getComponentType());
+
+        ItemStatSnapshot itemStats = (buffer != null) ? buffer.getLastSnapshot() : new ItemStatSnapshot();
+
         float equipmentBonus = itemStats.comfortModifier;
 
         float currentComfort = comfortStat.get();
@@ -101,7 +100,8 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
             }
         } else {
             float loss = (config.comfortLossSpeed / config.comfortLossInterval);
-            float gain = comp.getEnvironmentalGain() * config.globalGainMultiplier;
+            float gain = comp.getAuraGain() + comp.getEnvironmentalGain() * config.environmentGlobalGainMultiplier;
+
             float totalChangePerSecond = gain - loss + equipmentBonus;
 
             return pendingComfort + (totalChangePerSecond * deltaTime);

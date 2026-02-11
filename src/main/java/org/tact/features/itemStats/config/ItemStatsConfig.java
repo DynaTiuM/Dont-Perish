@@ -21,7 +21,8 @@ public class ItemStatsConfig {
         items.put("DP_Compact_Ice_Cube", iceCubeStats);
 
         ItemStats fan = new ItemStats();
-        fan.thermalOffset = -12.0F;
+        fan.thermalOffset = -10.0F;
+        fan.comfortModifier = 0.3F;
         fan.activeInHand = true;
         fan.requireUsage = true;
         items.put("DP_Fan", fan);
@@ -54,6 +55,14 @@ public class ItemStatsConfig {
         gloves.thermalOffset = 1.0F;
         gloves.activeInArmor = true;
         items.put("DP_Gloves", gloves);
+
+        ItemStats guitar = new ItemStats();
+        guitar.activeInHand = true;
+        guitar.requireUsage = true;
+        guitar.auraRadius = 12.0F;
+        guitar.auraType = "music";
+        guitar.auraStrength = 1.0F;
+        items.put("DP_Guitar", guitar);
     }
 
     static {

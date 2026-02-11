@@ -1,16 +1,17 @@
-package org.tact.common.environment;
+package org.tact.core.systems.aura;
 
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
-public interface EnvironmentHandler {
-    void onEnvironmentScanned(
+import java.util.List;
+
+public interface AuraHandler {
+    void onAurasDetected(
             Player player,
-            Ref<EntityStore> entityStoreRef,
+            Ref<EntityStore> entityRef,
             Store<EntityStore> store,
-            EnvironmentResult result,
-            float deltaTime
+            List<AuraEvent> nearbyAuras
     );
 }

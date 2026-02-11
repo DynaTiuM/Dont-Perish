@@ -21,6 +21,7 @@ import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.tact.common.ui.HudManager;
 import org.tact.common.util.TimeUtil;
+import org.tact.features.itemStats.component.UsageBufferComponent;
 import org.tact.features.itemStats.config.ItemStatsConfig;
 import org.tact.features.itemStats.model.ItemStatSnapshot;
 import org.tact.features.itemStats.util.ItemStatCalculator;
@@ -77,10 +78,10 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         WorldTimeResource timeResource = store.getResource(WorldTimeResource.getResourceType());
         float seasonStretch = getSeasonStretch(store);
 
-        ComponentType<EntityStore, InteractionManager> managerType = InteractionModule.get().getInteractionManagerComponent();
-        InteractionManager interactionManager = store.getComponent(playerRef, managerType);
 
-        ItemStatSnapshot equipmentStats = ItemStatCalculator.calculate(player, interactionManager, itemConfig);
+        UsageBufferComponent buffer = archetypeChunk.getComponent(index, UsageBufferComponent.getComponentType());
+
+        ItemStatSnapshot itemStats = (buffer != null) ? buffer.getLastSnapshot() : new ItemStatSnapshot();
 
         // Temperature of the player
         float targetTemperature = calculateTargetTemperature(
@@ -88,7 +89,7 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
                 timeResource,
                 seasonStretch,
                 playerY,
-                equipmentStats.thermalOffset
+                itemStats.thermalOffset
         );
 
         temperatureComponent.setTargetTemperature(targetTemperature);
@@ -98,9 +99,8 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
                 currentTemperature,
                 targetTemperature,
                 deltaTime,
-                equipmentStats
+                itemStats
         );
-        player.sendMessage(Message.raw("[Temperature]" + nextTemperature));
         if (nextTemperature != currentTemperature) {
             statMap.setStatValue(getTemperatureStatIndex(), nextTemperature);
             temperatureComponent.setLerpedTemperature(nextTemperature);
@@ -217,7 +217,8 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         boolean targetIsSafe = (target > base - safeThreshold) && (target < base + safeThreshold);
 
         boolean directionTowardsBase = (isHeatingUp && current < base) || (isCoolingDown && current > base);
-        boolean isRecovering = directionTowardsBase && targetIsSafe;
+        boolean fightingAgainstItem = (itemWantsToCool && isHeatingUp) || (itemWantsToHeat && isCoolingDown);
+        boolean isRecovering = directionTowardsBase && targetIsSafe && !fightingAgainstItem;
 
         float selectedSpeed = isRecovering ? config.fastResponseSpeed : config.slowResponseSpeed;
 

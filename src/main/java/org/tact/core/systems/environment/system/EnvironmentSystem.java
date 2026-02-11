@@ -1,33 +1,29 @@
-package org.tact.common.environment;
+package org.tact.core.systems.environment.system;
 
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
-import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
-import com.hypixel.hytale.server.core.asset.type.fluid.Fluid;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import org.tact.core.systems.environment.EnvironmentHandler;
+import org.tact.core.systems.environment.EnvironmentRegistry;
+import org.tact.core.systems.environment.EnvironmentResult;
+import org.tact.core.systems.environment.component.EnvironmentComponent;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-public class EnvironmentScannerSystem extends EntityTickingSystem<EntityStore> {
+public class EnvironmentSystem extends EntityTickingSystem<EntityStore> {
 
     private final int radius;
-    private final float scanInterval;
+    private final int ticksInterval;
     private final EnvironmentRegistry registry;
 
-    private final Map<Ref<EntityStore>, CachedScan> scanCache = new ConcurrentHashMap<>();
-
-    public EnvironmentScannerSystem(int radius, float scanInterval, EnvironmentRegistry registry) {
+    public EnvironmentSystem(int radius, int ticksInterval, EnvironmentRegistry registry) {
         this.radius = radius;
-        this.scanInterval = scanInterval;
+        this.ticksInterval = ticksInterval;
         this.registry = registry;
     }
 
@@ -39,29 +35,23 @@ public class EnvironmentScannerSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl Store<EntityStore> store,
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
-
-        scanCache.keySet().removeIf(entityRef -> !entityRef.isValid());
-
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
         Ref<EntityStore> playerRef = archetypeChunk.getReferenceTo(index);
+        EnvironmentComponent envState = archetypeChunk.getComponent(index, EnvironmentComponent.getComponentType());
 
-        if (player == null) return;
+        if (player == null || envState == null) return;
 
-        CachedScan cached = scanCache.get(playerRef);
+        long worldTick = player.getWorld().getTick();
 
-        if (cached == null) {
-            cached = new CachedScan();
-            scanCache.put(playerRef, cached);
+        if ((worldTick + index) % this.ticksInterval == 0) {
+            EnvironmentResult newResult = scanBlocks(player, playerRef);
+            envState.lastResult = newResult;
         }
 
-        cached.timeSinceLastScan += deltaTime;
-
-        if (cached.timeSinceLastScan >= scanInterval) {
-            cached.timeSinceLastScan = 0.0f;
-            cached.lastResult = scanBlocks(player, playerRef);
-
+        if (envState.lastResult != null) {
             for (EnvironmentHandler handler : registry.getAllHandlers().values()) {
-                handler.onEnvironmentScanned(player, playerRef, store, cached.lastResult, deltaTime);
+
+                handler.onEnvironmentScanned(player, playerRef, store, envState.lastResult, deltaTime);
             }
         }
 
@@ -155,13 +145,6 @@ public class EnvironmentScannerSystem extends EntityTickingSystem<EntityStore> {
 
         return null;
     }
-
-
-    private static class CachedScan {
-        EnvironmentResult lastResult = null;
-        float timeSinceLastScan = 0.0f;
-    }
-
 
     @NullableDecl
     @Override

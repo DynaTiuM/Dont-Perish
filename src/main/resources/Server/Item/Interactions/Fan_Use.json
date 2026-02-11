@@ -1,7 +1,24 @@
 {
-  "Type": "Simple",
+  "Type": "Charging",
+  "FailsOnDamage": false,
+  "HorizontalSpeedMultiplier": 0.6,
   "Effects": {
-    "WaitForAnimationToFinish": true,
-    "LocalSoundEventId": "hytale:sfx.mud.break"
+    "ItemAnimationId": "DP_Fan_Wave",
+    "ClearAnimationOnFinish": true,
+    "ClearSoundEventOnFinish": true
+  },
+  "Next": {
+    "3.0": {
+      "Type": "ModifyInventory",
+      "NotifyOnBreak": true
+    }
+  },
+
+  "Failed": {
+    "Type": "Simple",
+    "Effects": {
+      "ItemAnimationId": "Idle",
+      "Looping": true
+    }
   }
 }

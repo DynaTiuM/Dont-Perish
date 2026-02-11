@@ -10,15 +10,18 @@ import com.hypixel.hytale.server.core.modules.interaction.InteractionModule;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import org.tact.features.itemStats.component.UsageBufferComponent;
 import org.tact.features.itemStats.config.ItemStatsConfig;
 import org.tact.features.itemStats.model.ItemStatSnapshot;
 import org.tact.features.itemStats.util.ItemStatCalculator;
 
 public class PassiveItemSystem extends EntityTickingSystem<EntityStore> {
     private final ItemStatsConfig config;
+    private final ComponentType<EntityStore, InteractionManager> managerType;
 
     public PassiveItemSystem(ItemStatsConfig config) {
         this.config = config;
+        this.managerType = InteractionModule.get().getInteractionManagerComponent();
     }
 
     @Override
@@ -32,9 +35,19 @@ public class PassiveItemSystem extends EntityTickingSystem<EntityStore> {
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
         Ref<EntityStore> playerRef = archetypeChunk.getReferenceTo(index);
 
-        ComponentType<EntityStore, InteractionManager> managerType = InteractionModule.get().getInteractionManagerComponent();
-        InteractionManager interactionManager = store.getComponent(playerRef, managerType);
-        ItemStatSnapshot totals = ItemStatCalculator.calculate(player, interactionManager, config);
+        InteractionManager interactionManager = archetypeChunk.getComponent(index, managerType);
+        UsageBufferComponent buffer = archetypeChunk.getComponent(index, UsageBufferComponent.getComponentType());
+
+        ItemStatSnapshot totals = ItemStatCalculator.calculate(
+                player,
+                interactionManager,
+                config,
+                deltaTime,
+                buffer,
+                true
+        );
+        assert buffer != null;
+        buffer.setLastSnapshot(totals);
 
         applySpeed(store, playerRef, totals.speedModifier);
 
@@ -65,6 +78,6 @@ public class PassiveItemSystem extends EntityTickingSystem<EntityStore> {
     @NullableDecl
     @Override
     public Query<EntityStore> getQuery() {
-        return Query.and(Player.getComponentType());
+        return Query.and(Player.getComponentType(), UsageBufferComponent.getComponentType());
     }
 }

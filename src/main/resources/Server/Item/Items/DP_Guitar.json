@@ -1,6 +1,6 @@
 {
   "TranslationProperties": {
-    "Name": "items.DP_Fan.name"
+    "Name": "items.DP_Guitar.name"
   },
   "Icon": "Icons/ItemsGenerated/DP_Fan.png",
   "Model": "Items/Tools/DP_Fan/Fan.blockymodel",
@@ -8,7 +8,7 @@
 
   "PlayerAnimationsId": "DP_Fan_Animations",
 
-  "MaxDurability": 60,
+  "MaxDurability": 30,
   "Quality": "Uncommon",
   "MaxStack": 1,
   "ItemLevel": 2,

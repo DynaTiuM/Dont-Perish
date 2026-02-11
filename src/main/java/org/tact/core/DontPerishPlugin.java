@@ -4,8 +4,12 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.util.Config;
 import org.tact.commands.BaxterCommand;
-import org.tact.common.environment.EnvironmentRegistry;
-import org.tact.common.environment.EnvironmentScannerSystem;
+import org.tact.core.systems.aura.AuraFeature;
+import org.tact.core.systems.aura.AuraRegistry;
+import org.tact.core.systems.aura.system.AuraSystem;
+import org.tact.core.systems.environment.EnvironmentFeature;
+import org.tact.core.systems.environment.EnvironmentRegistry;
+import org.tact.core.systems.environment.system.EnvironmentSystem;
 import org.tact.core.config.FoodDefinition;
 import org.tact.core.config.GlobalFoodConfig;
 import org.tact.core.config.ModConfig;
@@ -29,9 +33,11 @@ public class DontPerishPlugin extends JavaPlugin {
     private ModConfig modConfig;
     private FeatureRegistry featureRegistry;
     private EnvironmentRegistry environmentRegistry;
+    private AuraRegistry auraRegistry;
 
     public DontPerishPlugin(@Nonnull JavaPluginInit init) {
         super(init);
+
         this.configWrapper = this.withConfig("DontPerish", ModConfig.CODEC);
     }
 
@@ -43,6 +49,7 @@ public class DontPerishPlugin extends JavaPlugin {
 
         featureRegistry = new FeatureRegistry();
         environmentRegistry = new EnvironmentRegistry();
+        auraRegistry = new AuraRegistry();
 
         getCommandRegistry().registerCommand(new BaxterCommand(modConfig.baxter));
 
@@ -54,7 +61,7 @@ public class DontPerishPlugin extends JavaPlugin {
             feature.registerEvents(this);
             feature.registerSystems(this);
         });
-        
+
         this.configWrapper.save();
     }
 
@@ -67,14 +74,12 @@ public class DontPerishPlugin extends JavaPlugin {
             feature.enable(this);
         });
 
-        getEntityStoreRegistry().registerSystem(
-                new EnvironmentScannerSystem(4, 1.0f, environmentRegistry)
-        );
-
         LOGGER.info("DontPerish mod successfully started!");
     }
 
     private void registerFeatures() {
+        featureRegistry.register(new AuraFeature(auraRegistry));
+        featureRegistry.register(new EnvironmentFeature(environmentRegistry));
 
         dispatchGlobalFoodDefinitions();
 
@@ -83,9 +88,9 @@ public class DontPerishPlugin extends JavaPlugin {
 
         featureRegistry.register(new BaxterFeature(modConfig.baxter));
         featureRegistry.register(new FoodDecayFeature(modConfig.foodDecay));
-
         featureRegistry.register(new ItemStatsFeature(modConfig.itemStats));
-        featureRegistry.register(new ComfortFeature(modConfig.comfort, modConfig.itemStats, environmentRegistry));
+
+        featureRegistry.register(new ComfortFeature(modConfig.comfort, environmentRegistry, auraRegistry));
         featureRegistry.register(new TemperatureFeature(modConfig.temperature, modConfig.itemStats, environmentRegistry));
     }
 
