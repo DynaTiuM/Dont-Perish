@@ -55,6 +55,12 @@ public class ItemStatsConfig {
         gloves.thermalOffset = 1.0F;
         gloves.activeInArmor = true;
         items.put("DP_Gloves", gloves);
+
+        ItemStats guitar = new ItemStats();
+        guitar.activeInHand = true;
+        guitar.requireUsage = true;
+        guitar.comfortModifier = 5.0f;
+        items.put("DP_Guitar", guitar);
     }
 
     static {
