@@ -14,7 +14,7 @@ public class ComfortConfig {
     public float comfortLossSpeed = 0.15f;
     public float comfortLossInterval = 1.0F;
 
-    public float globalGainMultiplier = 0.3F;
+    public float environmentGlobalGainMultiplier = 0.3F;
 
     public float maxStaminaPenaltyPercent = 0.15F;
     public float maxStaminaBonusPercent = 0.5F;
@@ -27,9 +27,9 @@ public class ComfortConfig {
 
     public float creativeRegenSpeed = 100.0F;
 
-    public float musicComfortBonus = 3.0F;
-    public float speechComfortBonus = 2.0F;
-    public float laughterComfortBonus = 3.0F;
+    public float musicComfortBonus = 2.0F;
+    public float speechComfortBonus = 1.0F;
+    public float laughterComfortBonus = 2.0F;
 
     public Map<String, Float> comfortValues = new HashMap<>();
 
@@ -108,8 +108,8 @@ public class ComfortConfig {
         b.append(new KeyedCodec<>("ComfortLossInterval", Codec.FLOAT),
                 (cfg, v) -> cfg.comfortLossInterval = v, cfg -> cfg.comfortLossInterval).add();
 
-        b.append(new KeyedCodec<>("GlobalGainMultiplier", Codec.FLOAT),
-                (cfg, v) -> cfg.globalGainMultiplier = v, cfg -> cfg.globalGainMultiplier).add();
+        b.append(new KeyedCodec<>("EnvironmentGlobalGainMultiplier", Codec.FLOAT),
+                (cfg, v) -> cfg.environmentGlobalGainMultiplier = v, cfg -> cfg.environmentGlobalGainMultiplier).add();
 
         b.append(new KeyedCodec<>("CreativeRegenSpeed", Codec.FLOAT),
                 (cfg, v) -> cfg.creativeRegenSpeed = v, cfg -> cfg.creativeRegenSpeed).add();

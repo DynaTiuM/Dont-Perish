@@ -16,6 +16,7 @@ import org.tact.core.config.ModConfig;
 import org.tact.core.registry.FeatureRegistry;
 import org.tact.features.baxter.BaxterFeature;
 import org.tact.features.comfort.ComfortFeature;
+import org.tact.features.comfort.handler.ComfortAuraHandler;
 import org.tact.features.food_decay.FoodDecayFeature;
 import org.tact.features.hunger.HungerFeature;
 import org.tact.features.hunger.config.HungerConfig;
@@ -94,11 +95,9 @@ public class DontPerishPlugin extends JavaPlugin {
 
         featureRegistry.register(new BaxterFeature(modConfig.baxter));
         featureRegistry.register(new FoodDecayFeature(modConfig.foodDecay));
-
-        featureRegistry.register(new MusicFeature());
         featureRegistry.register(new ItemStatsFeature(modConfig.itemStats));
 
-        featureRegistry.register(new ComfortFeature(modConfig.comfort, modConfig.itemStats, environmentRegistry, auraRegistry));
+        featureRegistry.register(new ComfortFeature(modConfig.comfort, environmentRegistry, auraRegistry));
         featureRegistry.register(new TemperatureFeature(modConfig.temperature, modConfig.itemStats, environmentRegistry));
     }
 

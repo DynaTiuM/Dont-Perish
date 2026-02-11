@@ -14,6 +14,7 @@ public class ComfortComponent implements Component<EntityStore>{
 
     private float environmentalGain;
     private float comfortBuffer;
+    private float auraGain;
 
     public static ComponentType<EntityStore, ComfortComponent> TYPE;
 
@@ -21,6 +22,7 @@ public class ComfortComponent implements Component<EntityStore>{
 
     public ComfortComponent() {
         this.environmentalGain = 0.0F;
+        this.auraGain = 0.0F;
         this.comfortBuffer = 0.0F;
     }
 
@@ -43,6 +45,7 @@ public class ComfortComponent implements Component<EntityStore>{
     public Component<EntityStore> clone() {
         ComfortComponent cloned = new ComfortComponent();
         cloned.environmentalGain = this.environmentalGain;
+        cloned.auraGain = this.auraGain;
         cloned.comfortBuffer = this.comfortBuffer;
         cloned.lastAppliedBonus = this.lastAppliedBonus;
         return cloned;
@@ -54,6 +57,9 @@ public class ComfortComponent implements Component<EntityStore>{
     public void setEnvironmentalGain(float gain) {
         this.environmentalGain = gain;
     }
+
+    public float getAuraGain() { return this.auraGain; }
+    public void setAuraGain(float gain) { this.auraGain = gain; }
 
     public float getComfortBuffer() { return comfortBuffer; }
     public void addComfortBuffer(float amount) { this.comfortBuffer += amount; }

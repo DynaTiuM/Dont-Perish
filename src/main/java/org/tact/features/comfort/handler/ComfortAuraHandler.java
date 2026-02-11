@@ -9,7 +9,7 @@ import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.common.aura.AuraEvent;
 import org.tact.common.aura.AuraHandler;
-import org.tact.common.util.StatHelper;
+import org.tact.features.comfort.component.ComfortComponent;
 import org.tact.features.comfort.config.ComfortConfig;
 
 import java.util.List;
@@ -31,20 +31,12 @@ public class ComfortAuraHandler implements AuraHandler {
             List<AuraEvent> nearbyAuras,
             float deltaTime
     ) {
-        EntityStatMap statMap = store.getComponent(entityRef, EntityStatMap.getComponentType());
-        if (statMap == null) return;
+        ComfortComponent comfortComp = store.getComponent(entityRef, ComfortComponent.getComponentType());
+        if (comfortComp == null) return;
 
-        EntityStatValue comfortStat = statMap.get(getComfortStatIndex());
-        if (comfortStat == null) return;
+        float totalGain = getComfortGain(nearbyAuras);
 
-        float currentComfort = comfortStat.get();
-        float comfortGain = getComfortGain(nearbyAuras);
-
-        if (comfortGain > 0.0f) {
-            float newComfort = currentComfort + comfortGain * deltaTime;
-            newComfort = StatHelper.clamp(comfortStat, newComfort);
-            statMap.setStatValue(getComfortStatIndex(), newComfort);
-        }
+        comfortComp.setAuraGain(totalGain);
     }
 
     private float getComfortGain(List<AuraEvent> nearbyAuras) {
@@ -64,12 +56,5 @@ public class ComfortAuraHandler implements AuraHandler {
             }
         }
         return comfortGain;
-    }
-
-    private int getComfortStatIndex() {
-        if (comfortStatIndex == -1) {
-            comfortStatIndex = EntityStatType.getAssetMap().getIndex("Comfort");
-        }
-        return comfortStatIndex;
     }
 }

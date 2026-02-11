@@ -53,7 +53,7 @@ public class ItemAuraSystem extends EntityTickingSystem<EntityStore> {
                 boolean shouldEmit = true;
 
                 if (stats.requireUsage) {
-                    shouldEmit = ItemStatCalculator.isPlayerUsingItem(interactionManager);
+                    shouldEmit = ItemStatCalculator.isUsingItem(interactionManager);
                 }
 
                 if (shouldEmit) {

@@ -122,7 +122,7 @@ public class ItemStatCalculator {
         return totals;
     }
 
-    private static boolean isUsingItem(InteractionManager im) {
+    public static boolean isUsingItem(InteractionManager im) {
         if (im == null) return false;
         return im.getChains().values().stream()
                 .anyMatch(c -> c.getType() == InteractionType.Secondary && c.getServerState() == InteractionState.NotFinished);

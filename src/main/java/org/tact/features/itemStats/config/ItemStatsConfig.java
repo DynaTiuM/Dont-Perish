@@ -59,7 +59,9 @@ public class ItemStatsConfig {
         ItemStats guitar = new ItemStats();
         guitar.activeInHand = true;
         guitar.requireUsage = true;
-        guitar.comfortModifier = 5.0f;
+        guitar.auraRadius = 12.0F;
+        guitar.auraType = "music";
+        guitar.auraStrength = 1.0F;
         items.put("DP_Guitar", guitar);
     }
 

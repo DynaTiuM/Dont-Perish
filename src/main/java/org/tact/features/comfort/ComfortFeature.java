@@ -23,18 +23,15 @@ import org.tact.features.itemStats.config.ItemStatsConfig;
 
 public class ComfortFeature implements Feature {
     private final ComfortConfig config;
-    private final ItemStatsConfig itemConfig;
     private final EnvironmentRegistry environmentRegistry;
     private final AuraRegistry auraRegistry;
 
     public ComfortFeature(
             ComfortConfig config,
-            ItemStatsConfig itemConfig,
             EnvironmentRegistry environmentRegistry,
             AuraRegistry auraRegistry
     ) {
         this.config = config;
-        this.itemConfig = itemConfig;
         this.environmentRegistry = environmentRegistry;
         this.auraRegistry = auraRegistry;
     }
@@ -74,7 +71,7 @@ public class ComfortFeature implements Feature {
     @Override
     public void enable(JavaPlugin plugin) {
         environmentRegistry.register("comfort", new ComfortEnvironmentHandler(config));
-        plugin.getEntityStoreRegistry().registerSystem(new ComfortSystem(config, itemConfig));
+        plugin.getEntityStoreRegistry().registerSystem(new ComfortSystem(config));
         plugin.getEntityStoreRegistry().registerSystem(new ComfortDamageSystem(config));
         plugin.getEntityStoreRegistry().registerSystem(new ComfortBlockSystem(config));
 

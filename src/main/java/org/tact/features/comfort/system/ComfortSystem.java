@@ -29,14 +29,11 @@ import org.tact.features.itemStats.util.ItemStatCalculator;
 
 public class ComfortSystem extends EntityTickingSystem<EntityStore> {
     private final ComfortConfig config;
-    private final ItemStatsConfig itemConfig;
 
     public ComfortSystem(
-            ComfortConfig config,
-            ItemStatsConfig itemConfig
+            ComfortConfig config
     ) {
         this.config = config;
-        this.itemConfig = itemConfig;
     }
 
     @Override
@@ -103,7 +100,8 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
             }
         } else {
             float loss = (config.comfortLossSpeed / config.comfortLossInterval);
-            float gain = comp.getEnvironmentalGain() * config.globalGainMultiplier;
+            float gain = comp.getAuraGain() + comp.getEnvironmentalGain() * config.environmentGlobalGainMultiplier;
+
             float totalChangePerSecond = gain - loss + equipmentBonus;
 
             return pendingComfort + (totalChangePerSecond * deltaTime);

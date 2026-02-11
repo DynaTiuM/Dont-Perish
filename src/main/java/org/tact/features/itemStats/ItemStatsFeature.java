@@ -7,8 +7,10 @@ import com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.tact.api.Feature;
+import org.tact.features.itemStats.component.DynamicAuraComponent;
 import org.tact.features.itemStats.component.UsageBufferComponent;
 import org.tact.features.itemStats.config.ItemStatsConfig;
+import org.tact.features.itemStats.system.ItemAuraSystem;
 import org.tact.features.itemStats.system.PassiveItemSystem;
 
 public class ItemStatsFeature implements Feature {
@@ -25,7 +27,8 @@ public class ItemStatsFeature implements Feature {
     public void registerComponents(JavaPlugin plugin) {
         UsageBufferComponent.TYPE = plugin.getEntityStoreRegistry()
                 .registerComponent(UsageBufferComponent.class, UsageBufferComponent::new);
-
+        DynamicAuraComponent.TYPE = plugin.getEntityStoreRegistry()
+                .registerComponent(DynamicAuraComponent.class, DynamicAuraComponent::new);
     }
 
     @Override
@@ -43,14 +46,16 @@ public class ItemStatsFeature implements Feature {
             if (store.getComponent(ref, UsageBufferComponent.getComponentType()) == null) {
                 store.putComponent(ref, UsageBufferComponent.getComponentType(), new UsageBufferComponent());
             }
-
+            if (store.getComponent(ref, DynamicAuraComponent.getComponentType()) == null) {
+                store.putComponent(ref, DynamicAuraComponent.getComponentType(), new DynamicAuraComponent());
+            }
         });
     }
 
     @Override
     public void enable(JavaPlugin plugin) {
         plugin.getEntityStoreRegistry().registerSystem(new PassiveItemSystem(config));
-
+        plugin.getEntityStoreRegistry().registerSystem(new ItemAuraSystem(config));
     }
     @Override
     public boolean isEnabled() {
