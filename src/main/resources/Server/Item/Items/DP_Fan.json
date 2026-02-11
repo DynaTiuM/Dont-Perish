@@ -23,6 +23,18 @@
       "Dont Perish"
     ]
   },
+  "IconProperties": {
+    "Scale": 1.1,
+    "Rotation": [
+      350,
+      112,
+      0
+    ],
+    "Translation": [
+      1,
+      -6
+    ]
+  },
   "Interactions": {
     "Secondary": {
       "Interactions": ["Fan_Condition"]
