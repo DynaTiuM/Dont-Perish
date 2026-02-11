@@ -217,7 +217,8 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         boolean targetIsSafe = (target > base - safeThreshold) && (target < base + safeThreshold);
 
         boolean directionTowardsBase = (isHeatingUp && current < base) || (isCoolingDown && current > base);
-        boolean isRecovering = directionTowardsBase && targetIsSafe;
+        boolean fightingAgainstItem = (itemWantsToCool && isHeatingUp) || (itemWantsToHeat && isCoolingDown);
+        boolean isRecovering = directionTowardsBase && targetIsSafe && !fightingAgainstItem;
 
         float selectedSpeed = isRecovering ? config.fastResponseSpeed : config.slowResponseSpeed;
 
