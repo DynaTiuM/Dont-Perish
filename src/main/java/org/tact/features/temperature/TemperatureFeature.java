@@ -53,18 +53,20 @@ public class TemperatureFeature implements Feature {
     public void registerEvents(JavaPlugin plugin) {
         plugin.getEventRegistry().registerGlobal(PlayerReadyEvent.class, event -> {
             Player player = event.getPlayer();
-            Ref<EntityStore> ref = player.getReference();
-            Store<EntityStore> store = ref.getStore();
+            player.getWorld().execute(() -> {
+                Ref<EntityStore> ref = player.getReference();
+                Store<EntityStore> store = ref.getStore();
 
-            if (store.getComponent(ref, TemperatureComponent.getComponentType()) == null) {
-                store.addComponent(ref, TemperatureComponent.getComponentType());
-            }
-            if (store.getComponent(ref, EnvironmentComponent.getComponentType()) == null) {
-                store.addComponent(ref, EnvironmentComponent.getComponentType());
-            }
+                if (store.getComponent(ref, TemperatureComponent.getComponentType()) == null) {
+                    store.addComponent(ref, TemperatureComponent.getComponentType());
+                }
+                if (store.getComponent(ref, EnvironmentComponent.getComponentType()) == null) {
+                    store.addComponent(ref, EnvironmentComponent.getComponentType());
+                }
 
-            PlayerRef pRef = store.getComponent(ref, PlayerRef.getComponentType());
-            HudManager.open(player, pRef, new TemperatureHud(pRef), getId());
+                PlayerRef pRef = store.getComponent(ref, PlayerRef.getComponentType());
+                HudManager.open(player, pRef, new TemperatureHud(pRef), getId());
+            });
         });
     }
 

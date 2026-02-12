@@ -55,15 +55,17 @@ public class ComfortFeature implements Feature {
     public void registerEvents(JavaPlugin plugin) {
         plugin.getEventRegistry().registerGlobal(PlayerReadyEvent.class, event -> {
             Player player = event.getPlayer();
-            Ref<EntityStore> ref = player.getReference();
-            Store<EntityStore> store = ref.getStore();
+            player.getWorld().execute(() -> {
+                Ref<EntityStore> ref = player.getReference();
+                Store<EntityStore> store = ref.getStore();
 
-            if (store.getComponent(ref, ComfortComponent.getComponentType()) == null) {
-                store.addComponent(ref, ComfortComponent.getComponentType());
-            }
+                if (store.getComponent(ref, ComfortComponent.getComponentType()) == null) {
+                    store.addComponent(ref, ComfortComponent.getComponentType());
+                }
 
-            PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
-            HudManager.open(player, playerRef, new ComfortHud(playerRef), getId());
+                PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
+                HudManager.open(player, playerRef, new ComfortHud(playerRef), getId());
+            });
         });
     }
 

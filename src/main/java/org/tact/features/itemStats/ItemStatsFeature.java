@@ -38,15 +38,17 @@ public class ItemStatsFeature implements Feature {
     public void registerEvents(JavaPlugin plugin) {
         plugin.getEventRegistry().registerGlobal(PlayerReadyEvent.class, event -> {
             Player player = event.getPlayer();
-            Ref<EntityStore> ref = player.getReference();
-            Store<EntityStore> store = ref.getStore();
+            player.getWorld().execute(() -> {
+                Ref<EntityStore> ref = player.getReference();
+                Store<EntityStore> store = ref.getStore();
 
-            if (store.getComponent(ref, UsageBufferComponent.getComponentType()) == null) {
-                store.putComponent(ref, UsageBufferComponent.getComponentType(), new UsageBufferComponent());
-            }
-            if (store.getComponent(ref, AuraComponent.getComponentType()) == null) {
-                store.putComponent(ref, AuraComponent.getComponentType(), new AuraComponent());
-            }
+                if (store.getComponent(ref, UsageBufferComponent.getComponentType()) == null) {
+                    store.putComponent(ref, UsageBufferComponent.getComponentType(), new UsageBufferComponent());
+                }
+                if (store.getComponent(ref, AuraComponent.getComponentType()) == null) {
+                    store.putComponent(ref, AuraComponent.getComponentType(), new AuraComponent());
+                }
+            });
         });
     }
 

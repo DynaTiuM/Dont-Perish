@@ -56,7 +56,11 @@ public class FoodDecayFeature implements Feature {
     @Override
     public void registerEvents(JavaPlugin plugin) {
         plugin.getEventRegistry().registerGlobal(PlayerReadyEvent.class, event -> {
-            stackingManager.registerPlayer(event.getPlayer());
+            Player player = event.getPlayer();
+
+            player.getWorld().execute(() -> {
+                stackingManager.registerPlayer(event.getPlayer());
+            });
         });
     }
 
