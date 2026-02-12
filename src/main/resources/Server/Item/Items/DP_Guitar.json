@@ -2,11 +2,11 @@
   "TranslationProperties": {
     "Name": "items.DP_Guitar.name"
   },
-  "Icon": "Icons/ItemsGenerated/DP_Fan.png",
-  "Model": "Items/Tools/DP_Fan/Fan.blockymodel",
-  "Texture": "Items/Tools/DP_Fan/Fan_Texture.png",
+  "Icon": "Icons/ItemsGenerated/DP_Guitar.png",
+  "Model": "Items/Tools/DP_Guitar/Guitar.blockymodel",
+  "Texture": "Items/Tools/DP_Guitar/Guitar_Texture.png",
 
-  "PlayerAnimationsId": "DP_Fan_Animations",
+  "PlayerAnimationsId": "DP_Guitar_Animations",
 
   "MaxDurability": 30,
   "Quality": "Uncommon",
@@ -24,20 +24,21 @@
     ]
   },
   "IconProperties": {
-    "Scale": 1.1,
-    "Rotation": [
-      350,
-      112,
-      0
-    ],
+    "Scale": 0.32,
     "Translation": [
-      1,
-      -6
+      22.200001,
+      -21
+    ],
+    "Rotation": [
+      0,
+      180,
+      315
     ]
   },
+
   "Interactions": {
     "Secondary": {
-      "Interactions": ["Fan_Condition"]
+      "Interactions": ["Guitar_Condition"]
     }
   },
   "Set": "",

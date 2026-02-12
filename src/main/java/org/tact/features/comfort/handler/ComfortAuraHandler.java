@@ -14,7 +14,6 @@ import java.util.List;
 public class ComfortAuraHandler implements AuraHandler {
 
     private final ComfortConfig config;
-    private int comfortStatIndex = -1;
 
     public ComfortAuraHandler(ComfortConfig config) {
         this.config = config;

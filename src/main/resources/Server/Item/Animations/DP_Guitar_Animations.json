@@ -1,0 +1,83 @@
+{
+  "Parent": "Shovel",
+  "Animations": {
+    "Idle": {
+      "FirstPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Idle_FPS.blockyanim",
+      "ThirdPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Idle.blockyanim",
+      "Speed": 0.5,
+      "Looping": true
+    },
+    "Crouch": {
+      "FirstPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Idle_FPS.blockyanim",
+      "ThirdPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Crouch.blockyanim",
+      "Speed": 1.0,
+      "Looping": true
+    },
+    "Run": {
+      "FirstPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Idle_FPS.blockyanim",
+      "ThirdPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Run.blockyanim",
+      "Speed": 1.0,
+      "Looping": true
+    },
+    "RunBackward": {
+      "FirstPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Idle_FPS.blockyanim",
+      "ThirdPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Run_Backward.blockyanim",
+      "Speed": 1.0,
+      "Looping": true
+    },
+    "Sprint": {
+      "FirstPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Idle_FPS.blockyanim",
+      "ThirdPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Sprint.blockyanim",
+      "Speed": 1.0,
+      "Looping": true
+    },
+    "Walk": {
+      "FirstPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Idle_FPS.blockyanim",
+      "ThirdPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Walk.blockyanim",
+      "Speed": 1.0,
+      "Looping": true
+    },
+    "Jump": {
+      "FirstPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Idle_FPS.blockyanim",
+      "ThirdPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Jump.blockyanim",
+      "Speed": 1.0,
+      "Looping": true
+    },
+    "CrouchWalk": {
+      "FirstPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Idle_FPS.blockyanim",
+      "ThirdPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Crouch_Walk.blockyanim",
+      "Speed": 1.0,
+      "Looping": true
+    },
+    "CrouchWalkBackward": {
+      "FirstPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Idle_FPS.blockyanim",
+      "ThirdPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Crouch_Walk_Backward.blockyanim",
+      "Speed": 1.0,
+      "Looping": true
+    },
+    "WalkBackward": {
+      "FirstPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Idle_FPS.blockyanim",
+      "ThirdPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Walk_Backward.blockyanim",
+      "Speed": 1.0,
+      "Looping": true
+    },
+    "Fall": {
+      "FirstPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Idle_FPS.blockyanim",
+      "ThirdPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Fall.blockyanim",
+      "Speed": 1.0,
+      "Looping": true
+    },
+    "FallFar": {
+      "FirstPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Idle_FPS.blockyanim",
+      "ThirdPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Fall_Far.blockyanim",
+      "Speed": 1.0,
+      "Looping": true
+    },
+    "Interact": {
+      "FirstPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Interact_FPS.blockyanim",
+      "ThirdPerson": "Characters/Animations/Items/Dual_Handed/Guitar/Interact.blockyanim",
+      "Speed": 1,
+      "BlendingDuration": 0.1
+    }
+  }
+}

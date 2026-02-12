@@ -1,9 +1,9 @@
 {
   "Type": "Charging",
   "FailsOnDamage": false,
-  "HorizontalSpeedMultiplier": 0.6,
+  "HorizontalSpeedMultiplier": 0.5,
   "Effects": {
-    "ItemAnimationId": "Wave",
+    "ItemAnimationId": "Idle",
     "ClearAnimationOnFinish": true,
     "ClearSoundEventOnFinish": true
   },

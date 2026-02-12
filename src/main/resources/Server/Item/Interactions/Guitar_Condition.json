@@ -1,0 +1,6 @@
+{
+  "Type": "Condition",
+  "RequiredGameMode": "Adventure",
+  "Next": "Guitar_Use",
+  "Failed": "Simple"
+}

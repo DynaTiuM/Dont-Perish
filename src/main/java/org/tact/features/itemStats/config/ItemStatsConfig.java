@@ -61,7 +61,7 @@ public class ItemStatsConfig {
         guitar.requireUsage = true;
         guitar.auraRadius = 12.0F;
         guitar.auraType = "music";
-        guitar.auraStrength = 1.0F;
+        guitar.auraStrength = 0.9F;
         items.put("DP_Guitar", guitar);
     }
 

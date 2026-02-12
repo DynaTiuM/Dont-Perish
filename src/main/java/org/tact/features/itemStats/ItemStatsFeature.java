@@ -44,9 +44,6 @@ public class ItemStatsFeature implements Feature {
             if (store.getComponent(ref, UsageBufferComponent.getComponentType()) == null) {
                 store.putComponent(ref, UsageBufferComponent.getComponentType(), new UsageBufferComponent());
             }
-            if (store.getComponent(ref, AuraComponent.getComponentType()) == null) {
-                store.putComponent(ref, AuraComponent.getComponentType(), new AuraComponent());
-            }
         });
     }
 
