@@ -44,8 +44,7 @@ public class EnvironmentSystem extends EntityTickingSystem<EntityStore> {
         long worldTick = player.getWorld().getTick();
 
         if ((worldTick + index) % this.ticksInterval == 0) {
-            EnvironmentResult newResult = scanBlocks(player, playerRef);
-            envState.lastResult = newResult;
+            envState.lastResult = scanBlocks(player, playerRef);
         }
 
         if (envState.lastResult != null) {
@@ -97,7 +96,7 @@ public class EnvironmentSystem extends EntityTickingSystem<EntityStore> {
             );
 
             if (skyBlockType != null && !skyBlockType.getId().equals("Empty")) {
-                result.setRoof(true, height);
+                result.setRoof(true);
                 break;
             }
         }

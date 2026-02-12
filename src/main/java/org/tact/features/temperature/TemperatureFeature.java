@@ -75,7 +75,7 @@ public class TemperatureFeature implements Feature {
         environmentRegistry.register("temperature", new TemperatureEnvironmentHandler(config));
 
         plugin.getEntityStoreRegistry().registerSystem(
-                new TemperatureSystem(config, itemConfig)
+                new TemperatureSystem(config)
         );
     }
 

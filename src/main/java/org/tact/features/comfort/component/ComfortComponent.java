@@ -16,6 +16,8 @@ public class ComfortComponent implements Component<EntityStore>{
     private float comfortBuffer;
     private float auraGain;
 
+    private float lastWeatherMalus;
+
     public static ComponentType<EntityStore, ComfortComponent> TYPE;
 
     private transient float lastAppliedBonus = -1.0f;
@@ -24,6 +26,7 @@ public class ComfortComponent implements Component<EntityStore>{
         this.environmentalGain = 0.0F;
         this.auraGain = 0.0F;
         this.comfortBuffer = 0.0F;
+        this.lastWeatherMalus = 0.0F;
     }
 
     static {
@@ -48,6 +51,7 @@ public class ComfortComponent implements Component<EntityStore>{
         cloned.auraGain = this.auraGain;
         cloned.comfortBuffer = this.comfortBuffer;
         cloned.lastAppliedBonus = this.lastAppliedBonus;
+        cloned.lastWeatherMalus = this.lastWeatherMalus;
         return cloned;
     }
 
@@ -70,6 +74,8 @@ public class ComfortComponent implements Component<EntityStore>{
     public float getLastAppliedBonus() { return lastAppliedBonus; }
     public void setLastAppliedBonus(float v) { this.lastAppliedBonus = v; }
 
+    public void setLastWeatherMalus(float malus) { this.lastWeatherMalus = malus; }
+    public float getLastWeatherMalus() { return this.lastWeatherMalus; }
     public static ComponentType<EntityStore, ComfortComponent> getComponentType() {
         return TYPE;
     }

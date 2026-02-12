@@ -1,9 +1,11 @@
 package org.tact.features.temperature.system;
 
+import com.hypixel.hytale.builtin.weather.resources.WeatherResource;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.asset.type.weather.config.Weather;
 import com.hypixel.hytale.server.core.entity.InteractionManager;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
@@ -21,6 +23,7 @@ import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.tact.common.ui.HudManager;
 import org.tact.common.util.TimeUtil;
+import org.tact.common.util.WeatherHelper;
 import org.tact.features.itemStats.component.UsageBufferComponent;
 import org.tact.features.itemStats.config.ItemStatsConfig;
 import org.tact.features.itemStats.model.ItemStatSnapshot;
@@ -32,7 +35,6 @@ import org.tact.features.temperature.ui.TemperatureHud;
 
 public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     private final TemperatureConfig config;
-    private final ItemStatsConfig itemConfig;
 
     private int temperatureStatIndex = -1;
 
@@ -40,11 +42,9 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     private DamageCause coldDamageCause;
 
     public TemperatureSystem(
-            TemperatureConfig config,
-            ItemStatsConfig itemConfig
+            TemperatureConfig config
     ) {
         this.config = config;
-        this.itemConfig = itemConfig;
     }
 
     @Override
@@ -57,6 +57,8 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     ) {
 
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
+        if(player == null || player.getWorld() == null) return;
+
         Ref<EntityStore> playerRef = archetypeChunk.getReferenceTo(index);
 
         TemperatureComponent temperatureComponent = archetypeChunk.getComponent(index, TemperatureComponent.getComponentType());
@@ -76,17 +78,25 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         }
 
         WorldTimeResource timeResource = store.getResource(WorldTimeResource.getResourceType());
+        WeatherResource weatherResource = store.getResource(WeatherResource.getResourceType());
         float seasonStretch = getSeasonStretch(store);
-
 
         UsageBufferComponent buffer = archetypeChunk.getComponent(index, UsageBufferComponent.getComponentType());
 
         ItemStatSnapshot itemStats = (buffer != null) ? buffer.getLastSnapshot() : new ItemStatSnapshot();
 
+        String currentWeatherId = temperatureComponent.getLastWeatherId();
+
+        if (player.getWorld().getTick() % 10 == 0) {
+            currentWeatherId = WeatherHelper.getWeatherId(player, weatherResource, transformComponent);
+            temperatureComponent.setLastWeatherId(currentWeatherId);
+        }
+
         // Temperature of the player
         float targetTemperature = calculateTargetTemperature(
                 temperatureComponent,
                 timeResource,
+                currentWeatherId,
                 seasonStretch,
                 playerY,
                 itemStats.thermalOffset
@@ -147,6 +157,7 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     private float calculateTargetTemperature(
             TemperatureComponent temperatureComponent,
             WorldTimeResource timeResource,
+            String weatherId,
             float dayLengthMultiplier,
             double playerY,
             float equipmentOffset
@@ -162,8 +173,10 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         float environment = temperatureComponent.getEnvironmentModifier();
         // Modifier 3: Altitude
         float altitude = calculateAltitudeModifier(playerY);
+        // Modifier 4: Weather
+        float weather = calculateWeatherModifier(weatherId);
 
-        return baseTemperature + environment + seasonal + timeModifier + altitude + equipmentOffset;
+        return baseTemperature + environment + seasonal + timeModifier + altitude + equipmentOffset + weather;
     }
 
     private float calculateTimeModifier(WorldTimeResource timeResource, float dayLengthMultiplier) {
@@ -185,6 +198,22 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
         double gaussian = Math.exp(-Math.pow(entityY - optimalY, 2) / (2 * Math.pow(spread, 2)));
 
         return (float) ((gaussian - 1.0) * maxDrop);
+    }
+
+    private float calculateWeatherModifier(String weatherId) {
+        if(weatherId == null) return 0.0F;
+
+        if(weatherId.contains("Rain")) {
+            return -3.0F;
+        }
+        else if(weatherId.contains("Storm")) {
+            return -5.0F;
+        }
+        else if(weatherId.contains("Snow")) {
+            return -4.0F;
+        }
+
+        return 0.0F;
     }
 
     private float interpolateTemperature(

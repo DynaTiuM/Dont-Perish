@@ -9,6 +9,8 @@ public class TemperatureComponent implements Component<EntityStore> {
     private float lerpedTemperature;
     private float targetTemperature ;
 
+    private String lastWeatherId;
+
     private float seasonalModifier;
     private float environmentModifier;
     private float altitudeModifier;
@@ -44,13 +46,6 @@ public class TemperatureComponent implements Component<EntityStore> {
         this.targetTemperature = temperature;
     }
 
-    public boolean hasProtection() {
-        return this.hasProtection;
-    }
-    public void setHasProtection(boolean hasProtection) {
-        this.hasProtection = hasProtection;
-    }
-
     public float getDamageTimer() {
         return this.damageTimer;
     }
@@ -71,9 +66,8 @@ public class TemperatureComponent implements Component<EntityStore> {
         this.seasonalModifier = seasonalModifier;
     }
 
-    public float getAltitudeModifier() { return altitudeModifier; }
-    public void setAltitudeModifier(float altitudeModifier) { this.altitudeModifier = altitudeModifier; }
-
+    public String getLastWeatherId() { return this.lastWeatherId; }
+    public void setLastWeatherId(String weatherId) { this.lastWeatherId = weatherId; }
 
     @NullableDecl
     @Override

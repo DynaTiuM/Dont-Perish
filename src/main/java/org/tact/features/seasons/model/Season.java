@@ -1,7 +1,7 @@
 package org.tact.features.seasons.model;
 
 public enum Season {
-    SPRING("Spring", "\uD83C\uDF38", 1.1F, 0.12F, 0.08F, 0.0F),
+    SPRING("Spring", "\uD83C\uDF38", 1.1F, 0.0F, 0.0F, 0.0F),
     SUMMER("Summer", "☀\uFE0F", 1.25F, 0.05F, 0.03F, 0.0F),
     AUTUMN("Autumn", "\uD83C\uDF42", 1.0F, 0.4F, 0.15F, 0.05F),
     WINTER("Winter", "❄\uFE0F", 0.8F, 0.1F, 0.05F, 0.45F);

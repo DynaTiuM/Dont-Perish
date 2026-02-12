@@ -9,8 +9,7 @@ public class EnvironmentResult {
     private final int radius;
 
     private boolean isUnderRoof = false;
-    private int roofHeight = -1;
-    private String blockUnderFeet = "air";
+    private String blockUnderFeet = "Empty";
 
     public EnvironmentResult(int radius) {
         this.radius = radius;
@@ -31,9 +30,8 @@ public class EnvironmentResult {
     public void setBlockUnderFeet(String blockId) { this.blockUnderFeet = blockId; }
     public String getBlockUnderFeet() { return blockUnderFeet; }
 
-    public void setRoof(boolean isUnderRoof, int height) {
+    public void setRoof(boolean isUnderRoof) {
         this.isUnderRoof = isUnderRoof;
-        this.roofHeight = height;
     }
     public boolean isUnderRoof() { return isUnderRoof; }
 }
