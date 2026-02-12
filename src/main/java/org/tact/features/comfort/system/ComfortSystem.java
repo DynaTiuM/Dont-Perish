@@ -60,53 +60,71 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
-        if(player == null) return;
-        ComfortComponent comfortComponent = archetypeChunk.getComponent(index, ComfortComponent.getComponentType());
-        TransformComponent transformComponent = archetypeChunk.getComponent(index, TransformComponent.getComponentType());
-        if(comfortComponent == null || transformComponent == null) return;
+        ComfortComponent comfort = archetypeChunk.getComponent(index, ComfortComponent.getComponentType());
+        TransformComponent transform = archetypeChunk.getComponent(index, TransformComponent.getComponentType());
+        EnvironmentComponent env = archetypeChunk.getComponent(index, EnvironmentComponent.getComponentType());
 
-        Ref<EntityStore> playerRef = archetypeChunk.getReferenceTo(index);
-        EntityStatMap statMap = store.getComponent(playerRef, EntityStatMap.getComponentType());
-        EntityStatValue comfortStat = statMap.get(getComfortStatIndex());
+        if (player == null || comfort == null || transform == null) return;
 
-        UsageBufferComponent buffer = archetypeChunk.getComponent(index, UsageBufferComponent.getComponentType());
+        updateWeatherStatus(player, comfort, transform, store);
 
-        ItemStatSnapshot itemStats = (buffer != null) ? buffer.getLastSnapshot() : new ItemStatSnapshot();
+        processComfortEvolution(player, comfort, env, archetypeChunk, index, deltaTime);
+    }
 
-        float equipmentBonus = itemStats.comfortModifier;
+    private void updateWeatherStatus(
+            Player player,
+            ComfortComponent comfort,
+            TransformComponent transform,
+            Store<EntityStore> store
+    ) {
+        if (player.getWorld() == null || player.getWorld().getTick() % 10 != 0) return;
 
-        float currentComfort = comfortStat.get();
-        float pendingComfort = currentComfort;
+        WeatherResource weatherRes = store.getResource(WeatherResource.getResourceType());
+        String weatherId = WeatherHelper.getWeatherId(player, weatherRes, transform);
+        comfort.setLastWeatherMalus(calculateWeatherMalus(weatherId));
+    }
 
-        WeatherResource weatherResource = store.getResource(WeatherResource.getResourceType());
-        pendingComfort = applyComfortAnimation(comfortComponent, pendingComfort, deltaTime);
-        EnvironmentComponent environmentComponent = archetypeChunk.getComponent(index, EnvironmentComponent.getComponentType());
+    private void processComfortEvolution(
+            Player player,
+            ComfortComponent comfort,
+            EnvironmentComponent env,
+            ArchetypeChunk<EntityStore> chunk,
+            int index,
+            float deltaTime
+    ) {
+        Ref<EntityStore> ref = chunk.getReferenceTo(index);
+        EntityStatMap statMap = ref.getStore().getComponent(ref, EntityStatMap.getComponentType());
+        EntityStatValue stat = statMap.get(getComfortStatIndex());
 
-        if(player.getWorld() != null) {
-            if (player.getWorld().getTick() % 10 == 0) {
-                String weatherId = WeatherHelper.getWeatherId(player, weatherResource, transformComponent);
+        float pending = applyComfortAnimation(comfort, stat.get(), deltaTime);
 
-                float malus = calculateWeatherMalus(weatherId);
-                comfortComponent.setLastWeatherMalus(malus);
-            }
+        if (player.getGameMode() != GameMode.Creative) {
+            UsageBufferComponent buffer = chunk.getComponent(index, UsageBufferComponent.getComponentType());
+            float equipmentBonus = (buffer != null) ? buffer.getLastSnapshot().comfortModifier : 0;
+
+            pending += calculateComfortDelta(comfort, env, equipmentBonus) * deltaTime;
+        } else {
+            pending += (config.creativeRegenSpeed > 0 ? config.creativeRegenSpeed : 50.0F) * deltaTime;
         }
 
-        pendingComfort = applyComfortLogic(
-                player,
-                comfortComponent,
-                environmentComponent,
-                comfortStat,
-                pendingComfort,
-                deltaTime,
-                equipmentBonus
-        );
+        float finalValue = StatHelper.clamp(stat, pending);
+        updateStatIfChanged(statMap, stat.get(), finalValue);
 
-        float finalComfort = StatHelper.clamp(comfortStat, pendingComfort);
-        updateStatIfChanged(statMap, currentComfort, finalComfort);
+        float ratio = finalValue / stat.getMax();
+        updateComfortHud(player, ratio);
+        handleMaxStaminaBonus(statMap, ratio, comfort);
+    }
 
-        float comfortRatio = finalComfort / comfortStat.getMax();
-        updateComfortHud(player, comfortRatio);
-        handleMaxStaminaBonus(statMap, comfortRatio, comfortComponent);
+    private float calculateComfortDelta(ComfortComponent comfort, EnvironmentComponent env, float equipmentBonus) {
+        boolean isExposed = env == null || env.lastResult == null || !env.lastResult.isUnderRoof();
+
+        float loss = (config.comfortLossSpeed / config.comfortLossInterval);
+        if (isExposed && comfort.getLastWeatherMalus() > 0) {
+            loss += comfort.getLastWeatherMalus();
+        }
+
+        float gain = comfort.getAuraGain() + (comfort.getEnvironmentalGain() * config.environmentGlobalGainMultiplier);
+        return gain - loss + equipmentBonus;
     }
 
     private float applyComfortAnimation(ComfortComponent comp, float pendingComfort, float deltaTime) {
@@ -121,46 +139,6 @@ public class ComfortSystem extends EntityTickingSystem<EntityStore> {
 
         comp.reduceComfortBuffer(amountToTransfer);
         return pendingComfort + amountToTransfer;
-    }
-
-    private float applyComfortLogic(
-            Player player,
-            ComfortComponent comfortComponent,
-            EnvironmentComponent environmentComponent,
-            EntityStatValue stat,
-            float pendingComfort,
-            float deltaTime,
-            float equipmentBonus
-    ) {
-        if (player.getGameMode() == GameMode.Creative) {
-            if (pendingComfort < stat.getMax()) {
-                float regenSpeed = config.creativeRegenSpeed > 0 ? config.creativeRegenSpeed : 50.0F;
-                return pendingComfort + (regenSpeed * deltaTime);
-            }
-        } else {
-            float totalChangePerSecond = getTotalChangePerSecond(comfortComponent, environmentComponent, equipmentBonus);
-
-            return pendingComfort + (totalChangePerSecond * deltaTime);
-        }
-        return pendingComfort;
-    }
-
-    private float getTotalChangePerSecond(ComfortComponent comfortComponent, EnvironmentComponent environmentComponent, float equipmentBonus) {
-        boolean exposed = true;
-        if (environmentComponent != null && environmentComponent.lastResult != null) {
-            if (environmentComponent.lastResult.isUnderRoof()) {
-                exposed = false;
-            }
-        }
-
-        float loss = (config.comfortLossSpeed / config.comfortLossInterval);
-        if (comfortComponent.getLastWeatherMalus() > 0 && exposed) {
-            loss += comfortComponent.getLastWeatherMalus();
-        }
-        float gain = comfortComponent.getAuraGain() + comfortComponent.getEnvironmentalGain() * config.environmentGlobalGainMultiplier;
-
-        float totalChangePerSecond = gain - loss + equipmentBonus;
-        return totalChangePerSecond;
     }
 
     private float calculateWeatherMalus(String weatherId) {

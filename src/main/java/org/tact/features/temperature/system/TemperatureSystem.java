@@ -57,71 +57,73 @@ public class TemperatureSystem extends EntityTickingSystem<EntityStore> {
     ) {
 
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
-        if(player == null || player.getWorld() == null) return;
+        TemperatureComponent tempComp = archetypeChunk.getComponent(index, TemperatureComponent.getComponentType());
+        TransformComponent transform = archetypeChunk.getComponent(index, TransformComponent.getComponentType());
 
-        Ref<EntityStore> playerRef = archetypeChunk.getReferenceTo(index);
+        if(player == null || tempComp == null || player.getWorld() == null) return;
 
-        TemperatureComponent temperatureComponent = archetypeChunk.getComponent(index, TemperatureComponent.getComponentType());
-        if(temperatureComponent == null) return;
+        updateWeatherCache(player, tempComp, transform, store);
+
+        processTemperatureEvolution(player, tempComp, transform, archetypeChunk, index, deltaTime, commandBuffer);
+    }
+
+    private void updateWeatherCache(
+            Player player,
+            TemperatureComponent tempComp,
+            TransformComponent transform,
+            Store<EntityStore> store
+    ) {
+        if (player.getWorld().getTick() % 10 == 0) {
+            WeatherResource weatherRes = store.getResource(WeatherResource.getResourceType());
+            String weatherId = WeatherHelper.getWeatherId(player, weatherRes, transform);
+            tempComp.setLastWeatherId(weatherId);
+        }
+    }
+
+    private void processTemperatureEvolution(
+            Player player,
+            TemperatureComponent tempComp,
+            TransformComponent transform,
+            ArchetypeChunk<EntityStore> chunk,
+            int index,
+            float deltaTime,
+            CommandBuffer<EntityStore> commandBuffer
+    ) {
+        Ref<EntityStore> playerRef = chunk.getReferenceTo(index);
+        Store<EntityStore> store = playerRef.getStore();
 
         EntityStatMap statMap = store.getComponent(playerRef, EntityStatMap.getComponentType());
-        if (statMap == null) return;
+        EntityStatValue tempStat = statMap.get(getTemperatureStatIndex());
 
-        EntityStatValue temperatureStat = statMap.get(getTemperatureStatIndex());
-        if (temperatureStat == null) return;
+        WorldTimeResource timeRes = store.getResource(WorldTimeResource.getResourceType());
+        UsageBufferComponent buffer = chunk.getComponent(index, UsageBufferComponent.getComponentType());
+        ItemStatSnapshot items = (buffer != null) ? buffer.getLastSnapshot() : new ItemStatSnapshot();
 
-        TransformComponent transformComponent = archetypeChunk.getComponent(index, TransformComponent.getComponentType());
+        double altitude = (transform != null) ? transform.getPosition().getY() : config.optimalAltitude;
 
-        double playerY = config.optimalAltitude;
-        if(transformComponent != null) {
-            playerY = transformComponent.getPosition().getY();
-        }
-
-        WorldTimeResource timeResource = store.getResource(WorldTimeResource.getResourceType());
-        WeatherResource weatherResource = store.getResource(WeatherResource.getResourceType());
-        float seasonStretch = getSeasonStretch(store);
-
-        UsageBufferComponent buffer = archetypeChunk.getComponent(index, UsageBufferComponent.getComponentType());
-
-        ItemStatSnapshot itemStats = (buffer != null) ? buffer.getLastSnapshot() : new ItemStatSnapshot();
-
-        String currentWeatherId = temperatureComponent.getLastWeatherId();
-
-        if (player.getWorld().getTick() % 10 == 0) {
-            currentWeatherId = WeatherHelper.getWeatherId(player, weatherResource, transformComponent);
-            temperatureComponent.setLastWeatherId(currentWeatherId);
-        }
-
-        // Temperature of the player
-        float targetTemperature = calculateTargetTemperature(
-                temperatureComponent,
-                timeResource,
-                currentWeatherId,
-                seasonStretch,
-                playerY,
-                itemStats.thermalOffset
+        float target = calculateTargetTemperature(
+                tempComp,
+                timeRes,
+                tempComp.getLastWeatherId(),
+                getSeasonStretch(store),
+                altitude,
+                items.thermalOffset
         );
 
-        temperatureComponent.setTargetTemperature(targetTemperature);
+        tempComp.setTargetTemperature(target);
 
-        float currentTemperature = temperatureStat.get();
-        float nextTemperature = interpolateTemperature(
-                currentTemperature,
-                targetTemperature,
-                deltaTime,
-                itemStats
-        );
-        if (nextTemperature != currentTemperature) {
-            statMap.setStatValue(getTemperatureStatIndex(), nextTemperature);
-            temperatureComponent.setLerpedTemperature(nextTemperature);
+        float nextTemp = interpolateTemperature(tempStat.get(), target, deltaTime, items);
+
+        if (nextTemp != tempStat.get()) {
+            statMap.setStatValue(getTemperatureStatIndex(), nextTemp);
+            tempComp.setLerpedTemperature(nextTemp);
         }
 
-        boolean shouldApplyDamage = updateDamageTimer(temperatureComponent, nextTemperature, deltaTime);
-        if (shouldApplyDamage) {
-            applyTemperatureDamage(playerRef, commandBuffer, nextTemperature);
+        if (updateDamageTimer(tempComp, nextTemp, deltaTime)) {
+            applyTemperatureDamage(playerRef, commandBuffer, nextTemp);
         }
 
-        updateHud(player, temperatureComponent);
+        updateHud(player, tempComp);
     }
 
     private void updateHud(
