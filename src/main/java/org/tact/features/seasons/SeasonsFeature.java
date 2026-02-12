@@ -13,6 +13,7 @@ import org.tact.features.seasons.config.SeasonsConfig;
 import org.tact.features.seasons.resource.SeasonsResource;
 import org.tact.features.seasons.system.SeasonsCycleSystem;
 import org.tact.features.seasons.system.SeasonsTemperatureBridgeSystem;
+import org.tact.features.seasons.system.SeasonsWeatherSystem;
 import org.tact.features.seasons.ui.SeasonsHud;
 
 public class SeasonsFeature implements Feature {
@@ -44,9 +45,10 @@ public class SeasonsFeature implements Feature {
     public void registerEvents(JavaPlugin plugin) {
         plugin.getEventRegistry().registerGlobal(PlayerReadyEvent.class, event -> {
             Player player = event.getPlayer();
-
-            setupPlayer(player);
-            player.sendMessage(Message.raw("[Seasons] Player set up"));
+            player.getWorld().execute(() -> {
+                setupPlayer(player);
+                player.sendMessage(Message.raw("[Seasons] Player set up"));
+            });
         });
     }
 
@@ -65,6 +67,9 @@ public class SeasonsFeature implements Feature {
     public void enable(JavaPlugin plugin) {
         plugin.getEntityStoreRegistry().registerSystem(
                 new SeasonsCycleSystem(config)
+        );
+        plugin.getEntityStoreRegistry().registerSystem(
+                new SeasonsWeatherSystem()
         );
         plugin.getEntityStoreRegistry().registerSystem(
                 new SeasonsTemperatureBridgeSystem(config)

@@ -1,5 +1,6 @@
 package org.tact.core.systems.environment;
 
+import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import org.tact.api.Feature;
@@ -35,11 +36,15 @@ public class EnvironmentFeature implements Feature {
     @Override
     public void registerEvents(JavaPlugin plugin) {
         plugin.getEventRegistry().registerGlobal(PlayerReadyEvent.class, event -> {
-            var ref = event.getPlayer().getReference();
-            var store = ref.getStore();
-            if (store.getComponent(ref, EnvironmentComponent.getComponentType()) == null) {
-                store.addComponent(ref, EnvironmentComponent.getComponentType());
-            }
+            Player player = event.getPlayer();
+
+            player.getWorld().execute(() -> {
+                var ref = event.getPlayer().getReference();
+                var store = ref.getStore();
+                if (store.getComponent(ref, EnvironmentComponent.getComponentType()) == null) {
+                    store.addComponent(ref, EnvironmentComponent.getComponentType());
+                }
+            });
         });
     }
 

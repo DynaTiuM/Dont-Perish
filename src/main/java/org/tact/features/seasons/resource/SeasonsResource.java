@@ -17,6 +17,10 @@ public class SeasonsResource implements Resource<EntityStore> {
     private float seasonTimer = 0.0f;
     private float seasonProgress = 0.0f;
 
+    private boolean isWeatherForced = false;
+    private float weatherForcedDuration = 0.0f;
+    private float weatherCheckTimer = 0.0f;
+
     public static final BuilderCodec<SeasonsResource> CODEC;
 
     static {
@@ -29,33 +33,49 @@ public class SeasonsResource implements Resource<EntityStore> {
                 (resource, value) ->
                     resource.setCurrentSeason(Season.valueOf(value)),
                 resource -> {
-                    String season = resource.getCurrentSeason().name();
-                    System.out.println("[Seasons] SAVING Season: " + season);
-                    return season;
+                    return resource.getCurrentSeason().name();
                 }
         ).add();
 
         builder.append(new KeyedCodec<>("SeasonTimer", Codec.FLOAT),
                 SeasonsResource::setSeasonTimer,
-                resource -> {
-                    float timer = resource.getSeasonTimer();
-                    System.out.println("[Seasons] SAVING Timer: " + timer + "s");
-                    return timer;
-                }
+                SeasonsResource::getSeasonTimer
         ).add();
 
         builder.append(new KeyedCodec<>("SeasonProgress", Codec.FLOAT),
                 (resource, value) -> {
                     if (value != null) {
                         resource.setSeasonProgress(value);
-                        System.out.println("[Seasons] Codec -> Loaded Progress: " + value);
                     }
                 },
-                resource -> {
-                    float progress = resource.getSeasonProgress();
-                    System.out.println("[Seasons] SAVING Progress: " + progress);
-                    return progress;
-                }
+                SeasonsResource::getSeasonProgress
+        ).add();
+
+        builder.append(new KeyedCodec<>("IsWeatherForced", Codec.BOOLEAN),
+                (resource, value) -> {
+                    if (value != null) {
+                        resource.setWeatherForced(value);
+                    }
+                },
+                SeasonsResource::isWeatherForced
+        ).add();
+
+        builder.append(new KeyedCodec<>("WeatherForcedDuration", Codec.FLOAT),
+                (resource, value) -> {
+                    if (value != null) {
+                        resource.setWeatherForcedDuration(value);
+                    }
+                },
+                SeasonsResource::getWeatherForcedDuration
+        ).add();
+
+        builder.append(new KeyedCodec<>("WeatherCheckTimer", Codec.FLOAT),
+                (resource, value) -> {
+                    if (value != null) {
+                        resource.setWeatherCheckTimer(value);
+                    }
+                },
+                SeasonsResource::getWeatherCheckTimer
         ).add();
 
         CODEC = builder.build();
@@ -69,6 +89,18 @@ public class SeasonsResource implements Resource<EntityStore> {
     public float getSeasonProgress() { return seasonProgress; }
     public void setSeasonProgress(float progress) { this.seasonProgress = progress; }
 
+    public boolean isWeatherForced() { return isWeatherForced; }
+    public void setWeatherForced(boolean forced) { isWeatherForced = forced; }
+
+    public float getWeatherForcedDuration() { return weatherForcedDuration; }
+    public void setWeatherForcedDuration(float duration) { weatherForcedDuration = duration; }
+
+    public void decreaseWeatherForcedDuration(float dt) { weatherForcedDuration -= dt; }
+
+    public float getWeatherCheckTimer() { return weatherCheckTimer; }
+    public void addWeatherCheckTimer(float dt) { weatherCheckTimer += dt; }
+    public void setWeatherCheckTimer(float timer) { weatherCheckTimer = timer; }
+
     public void resetSeasonTime() {
         this.seasonTimer = 0.0F;
     }
@@ -80,6 +112,10 @@ public class SeasonsResource implements Resource<EntityStore> {
         cloned.currentSeason = this.currentSeason;
         cloned.seasonTimer = this.seasonTimer;
         cloned.seasonProgress = this.seasonProgress;
+
+        cloned.isWeatherForced = this.isWeatherForced;
+        cloned.weatherCheckTimer = this.weatherCheckTimer;
+        cloned.weatherForcedDuration = this.weatherForcedDuration;
         return cloned;
     }
 }

@@ -1,5 +1,6 @@
 package org.tact.features.seasons.system;
 
+import com.hypixel.hytale.builtin.weather.resources.WeatherResource;
 import com.hypixel.hytale.component.ArchetypeChunk;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Store;
@@ -40,44 +41,64 @@ public class SeasonsCycleSystem extends EntityTickingSystem<EntityStore> {
             @NonNullDecl Store<EntityStore> store,
             @NonNullDecl CommandBuffer<EntityStore> commandBuffer
     ) {
+
         Player player = archetypeChunk.getComponent(index, Player.getComponentType());
-        SeasonsResource data = store.getResource(SeasonsResource.TYPE);
-        Season currentSeason = data.getCurrentSeason();
+        SeasonsResource seasonsResource = store.getResource(SeasonsResource.TYPE);
+        
+        if (index == 0) {
+            Season currentSeason = seasonsResource.getCurrentSeason();
 
-        // Progression of the Timer
-        data.addSeasonTimer(deltaTime);
+            // Progression of the Timer
+            seasonsResource.addSeasonTimer(deltaTime);
 
-        // Duration of the actual season
-        float seasonDuration = config.getSeasonDuration(currentSeason.ordinal());
+            // Duration of the actual season
+            float seasonDuration = config.getSeasonDuration(currentSeason.ordinal());
 
-        float progress = Math.min(1.0F, data.getSeasonTimer() / seasonDuration);
-        data.setSeasonProgress(progress);
+            float progress = Math.min(1.0F, seasonsResource.getSeasonTimer() / seasonDuration);
+            seasonsResource.setSeasonProgress(progress);
 
-        if(data.getSeasonTimer() >= seasonDuration) {
-            changeSeason(data, currentSeason, seasonDuration, commandBuffer, store);
+            if(seasonsResource.getSeasonTimer() >= seasonDuration) {
+                changeSeason(seasonsResource, currentSeason, seasonDuration, commandBuffer, store);
+            }
+
         }
+        Season currentSeason = seasonsResource.getCurrentSeason();
+        float progress = seasonsResource.getSeasonProgress();
 
         int globalDay = calculateGlobalDay(store);
         updateHud(player, currentSeason, progress, globalDay);
     }
 
     private void changeSeason(
-            SeasonsResource data,
+            SeasonsResource seasonsResource,
             Season currentSeason,
             float oldDuration,
             CommandBuffer<EntityStore> commandBuffer,
-            Store store
+            Store<EntityStore> store
     ) {
         Season nextSeason = currentSeason.next();
-        data.setCurrentSeason(nextSeason);
+        seasonsResource.setCurrentSeason(nextSeason);
 
         // Preventing the temporal drifting
-        float currentTimer = data.getSeasonTimer();
-        data.setSeasonTimer(currentTimer - oldDuration);
-        data.setSeasonProgress(0.0F);
+        float currentTimer = seasonsResource.getSeasonTimer();
+        seasonsResource.setSeasonTimer(currentTimer - oldDuration);
+        seasonsResource.setSeasonProgress(0.0F);
         World world = commandBuffer.getExternalData().getWorld();
 
         applyDayNightCycle(world, nextSeason);
+
+        WeatherResource weatherResource = store.getResource(WeatherResource.getResourceType());
+        weatherResource.setForcedWeather(null);
+
+        String transitionWeather = null;
+
+        switch(nextSeason) {
+            case WINTER -> transitionWeather = "Zone3_Snow";
+            case AUTUMN -> transitionWeather = "Zone1_Rain";
+        }
+        if (transitionWeather != null) {
+            weatherResource.setForcedWeather(transitionWeather);
+        }
 
         store.saveAllResources();
         world.getPlayerRefs().forEach(playerRef -> {

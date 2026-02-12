@@ -46,27 +46,29 @@ public class HungerFeature implements Feature {
     public void registerEvents(JavaPlugin plugin) {
         plugin.getEventRegistry().registerGlobal(PlayerReadyEvent.class, event -> {
             Player player = event.getPlayer();
-            Ref<EntityStore> ref = player.getReference();
-            Store<EntityStore> store = ref.getStore();
+            player.getWorld().execute(() -> {
+                Ref<EntityStore> ref = player.getReference();
+                Store<EntityStore> store = ref.getStore();
 
-            if(store.getComponent(ref, HungerComponent.getComponentType()) == null) {
-                store.addComponent(ref, HungerComponent.getComponentType());
-            }
+                if(store.getComponent(ref, HungerComponent.getComponentType()) == null) {
+                    store.addComponent(ref, HungerComponent.getComponentType());
+                }
 
-            PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
-            HudManager.open(player, playerRef, new HungerHud(playerRef), getId());
+                PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
+                HudManager.open(player, playerRef, new HungerHud(playerRef), getId());
 
-            Inventory playerInventory = player.getInventory();
-            ItemContainer hotbar = playerInventory.getHotbar();
+                Inventory playerInventory = player.getInventory();
+                ItemContainer hotbar = playerInventory.getHotbar();
 
-            if (hotbar != null) {
-                hotbar.registerChangeEvent(changeEvent -> {
-                    if (changeEvent.transaction() instanceof ItemStackSlotTransaction) {
-                        ItemStackSlotTransaction transaction = (ItemStackSlotTransaction) changeEvent.transaction();
-                        foodManager.handleTransaction(player, transaction);
-                    }
-                });
-            }
+                if (hotbar != null) {
+                    hotbar.registerChangeEvent(changeEvent -> {
+                        if (changeEvent.transaction() instanceof ItemStackSlotTransaction) {
+                            ItemStackSlotTransaction transaction = (ItemStackSlotTransaction) changeEvent.transaction();
+                            foodManager.handleTransaction(player, transaction);
+                        }
+                    });
+                }
+            });
         });
 
 
